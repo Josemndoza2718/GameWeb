@@ -1,0 +1,13 @@
+.search-bar-container {
+    max-width: 500px;
+
+    .text-truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .object-cover {
+        object-fit: cover;
+    }
+}

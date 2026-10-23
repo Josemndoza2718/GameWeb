@@ -1,0 +1,167 @@
+<p-toast></p-toast>
+
+<div *ngIf="loading()" class="flex justify-content-center my-6">
+    <p-progressspinner></p-progressspinner>
+</div>
+
+<div *ngIf="!loading() && !profile()" class="profile-container p-4 text-center py-8">
+    <i class="pi pi-user-slash text-6xl text-400 mb-3 block"></i>
+    <h2 class="text-3xl font-bold mb-2">Usuario no encontrado</h2>
+    <p class="text-600 mb-4 max-w-25rem mx-auto">El perfil que estás buscando no existe o aún no ha sido inicializado en la base de datos.</p>
+    <p-button label="Volver a la Biblioteca" icon="pi pi-arrow-left" routerLink="/dashboard"></p-button>
+</div>
+
+<div *ngIf="!loading() && profile()" class="profile-container p-4">
+
+    <!-- HEADER DEL PERFIL -->
+    <p-card styleClass="mb-4 shadow-2">
+        <div class="flex flex-column md:flex-row align-items-center gap-4 text-center md:text-left">
+
+            <p-avatar [image]="profile()?.avatar_url || 'assets/images/default-avatar.png'" shape="circle"
+                styleClass="w-8rem h-8rem shadow-3 border-2 surface-border flex-shrink-0">
+            </p-avatar>
+
+            <div class="flex-1">
+                <div class="flex flex-column md:flex-row align-items-center justify-content-between gap-3 mb-2">
+                    <div>
+                        <h1 class="text-3xl font-bold m-0 mb-1">&#064;{{ profile()?.username }}</h1>
+                        <small class="text-500">Miembro desde {{ profile()?.created_at | date:'MMMM yyyy' }}</small>
+                    </div>
+
+                    <p-button *ngIf="isOwnProfile()" label="Editar Perfil" icon="pi pi-user-edit" [outlined]="true"
+                        (onClick)="openEditModal()">
+                    </p-button>
+                </div>
+
+                <p class="text-700 m-0 line-height-3 max-w-30rem">
+                    {{ profile()?.bio || 'Este usuario aún no ha escrito una biografía.' }}
+                </p>
+            </div>
+
+        </div>
+    </p-card>
+
+    <!-- METRICAS / ESTADÍSTICAS -->
+    <div class="grid mb-4" *ngIf="stats()">
+        <div class="col-6 md:col-3">
+            <div class="surface-card p-3 border-round shadow-1 text-center">
+                <span class="text-500 font-semibold block mb-1">Colección</span>
+                <span class="text-3xl font-bold text-primary">{{ stats()?.totalGames }}</span>
+            </div>
+        </div>
+        <div class="col-6 md:col-3">
+            <div class="surface-card p-3 border-round shadow-1 text-center">
+                <span class="text-500 font-semibold block mb-1">Completados</span>
+                <span class="text-3xl font-bold text-green-500">{{ stats()?.completedGames }}</span>
+            </div>
+        </div>
+        <div class="col-6 md:col-3">
+            <div class="surface-card p-3 border-round shadow-1 text-center">
+                <span class="text-500 font-semibold block mb-1">Publicaciones</span>
+                <span class="text-3xl font-bold text-blue-500">{{ stats()?.totalPosts }}</span>
+            </div>
+        </div>
+        <div class="col-6 md:col-3">
+            <div class="surface-card p-3 border-round shadow-1 text-center">
+                <span class="text-500 font-semibold block mb-1">Tierlists</span>
+                <span class="text-3xl font-bold text-purple-500">{{ stats()?.totalTierlists }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PÚBLICO TABULADO (PrimeNG 18+) -->
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Biblioteca ({{ userGames().length }})</p-tab>
+            <p-tab value="1">Aportes ({{ userPosts().length }})</p-tab>
+            <p-tab value="2">Tierlists ({{ userTierlists().length }})</p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+            <!-- PESTAÑA BIBLIOTECA -->
+            <p-tabpanel value="0">
+                <div class="grid mt-2">
+                    <div *ngFor="let g of userGames()" class="col-6 sm:col-4 md:col-3 lg:col-2">
+                        <a [routerLink]="['/game', g.game_id]" class="no-underline">
+                            <div
+                                class="surface-card border-round overflow-hidden shadow-1 hover:shadow-3 transition-duration-200">
+                                <img [src]="g.game_cover" [alt]="g.game_title" class="w-full h-9rem object-cover block" />
+                                <div class="p-2">
+                                    <span class="font-bold text-sm text-truncate block text-900" [title]="g.game_title">{{
+                                        g.game_title }}</span>
+                                    <small class="text-500 capitalize">{{ g.status }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </p-tabpanel>
+
+            <!-- PESTAÑA PUBLICACIONES -->
+            <p-tabpanel value="1">
+                <div class="flex flex-column gap-3 mt-2">
+                    <p-card *ngFor="let post of userPosts()" styleClass="shadow-1">
+                        <div class="flex align-items-center justify-content-between mb-2">
+                            <p-tag [value]="post.post_type" severity="info"></p-tag>
+                            <small class="text-500">{{ post.created_at | date:'dd/MM/yyyy' }}</small>
+                        </div>
+                        <h3 class="text-lg font-bold m-0 mb-1">{{ post.title }}</h3>
+                        <p class="text-700 text-sm line-clamp-2 m-0">{{ post.content }}</p>
+                    </p-card>
+                </div>
+            </p-tabpanel>
+
+            <!-- PESTAÑA TIERLISTS -->
+            <p-tabpanel value="2">
+                <div class="grid mt-2">
+                    <div *ngFor="let t of userTierlists()" class="col-12 sm:col-6 md:col-4">
+                        <p-card styleClass="shadow-1">
+                            <h3 class="text-lg font-bold m-0 mb-2">{{ t.title }}</h3>
+                            <p class="text-500 text-xs mb-3">{{ t.description || 'Sin descripción' }}</p>
+                            <a [routerLink]="['/tierlist/edit', t.id]">
+                                <p-button label="Ver Tierlist" icon="pi pi-eye" size="small" [text]="true"></p-button>
+                            </a>
+                        </p-card>
+                    </div>
+                </div>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+
+    <!-- MODAL DE EDICIÓN DE PERFIL -->
+    <p-dialog header="Editar Perfil" [(visible)]="displayEditDialog" [modal]="true"
+        [style]="{ width: '100%', maxWidth: '500px' }">
+        <div class="flex flex-column gap-3 mt-2">
+
+            <!-- Avatar Preview e Input -->
+            <div class="flex flex-column align-items-center gap-2">
+                <p-avatar [image]="previewAvatarUrl || 'assets/images/default-avatar.png'" shape="circle"
+                    styleClass="w-6rem h-6rem shadow-2"></p-avatar>
+                <label for="avatarInput" class="p-button p-button-sm p-button-outlined cursor-pointer">
+                    <i class="pi pi-upload mr-2"></i> Cambiar Foto
+                </label>
+                <input id="avatarInput" type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+            </div>
+
+            <!-- Username -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold text-sm">Nombre de usuario</label>
+                <input type="text" pInputText [(ngModel)]="editUsername" />
+            </div>
+
+            <!-- Bio -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold text-sm">Biografía</label>
+                <textarea pTextarea [(ngModel)]="editBio" rows="3"
+                    placeholder="Escribe algo sobre ti..."></textarea>
+            </div>
+
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" [text]="true" (onClick)="displayEditDialog = false"></p-button>
+            <p-button label="Guardar" icon="pi pi-check" [loading]="updating()" (onClick)="saveProfile()"></p-button>
+        </ng-template>
+    </p-dialog>
+
+</div>

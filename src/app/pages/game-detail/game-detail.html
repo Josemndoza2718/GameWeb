@@ -1,0 +1,152 @@
+<p-toast />
+
+@if (loading()) {
+    <div class="flex justify-content-center align-items-center min-h-screen">
+        <p-progress-spinner ariaLabel="Cargando detalles del juego" />
+    </div>
+} @else if (game(); as currentGame) {
+    <div class="game-detail-container pb-6">
+
+        <!-- HERO BANNER -->
+        <div class="hero-banner relative border-round-xl overflow-hidden mb-4"
+            [style.backgroundImage]="'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(18,18,18,0.95)), url(' + (currentGame.background_image || '') + ')'">
+
+            <div class="hero-content p-4 md:p-6 flex flex-column md:flex-row gap-4 align-items-end">
+                <img [src]="currentGame.background_image" [alt]="currentGame.name" class="cover-image border-round-lg shadow-4" />
+
+                <div class="flex-1 text-white">
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        @for (p of currentGame.platforms; track p.platform.id) {
+                            <p-tag [value]="p.platform.name" severity="secondary" />
+                        }
+                    </div>
+
+                    <h1 class="text-4xl md:text-5xl font-bold m-0 mb-2">{{ currentGame.name }}</h1>
+
+                    <div class="flex align-items-center gap-4 text-sm text-300">
+                        @if (currentGame.released) {
+                            <span>Fecha: {{ currentGame.released | date:'dd/MM/yyyy' }}</span>
+                        }
+                        @if (currentGame.metacritic) {
+                            <span class="metacritic-badge font-bold px-2 py-1 border-round">
+                                Metacritic: {{ currentGame.metacritic }}
+                            </span>
+                        }
+                        <span>RAWG: ★ {{ currentGame.rating }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+
+            <!-- COLUMNA PRINCIPAL: Descripción y Capturas -->
+            <div class="col-12 lg:col-8">
+                <p-card header="Sobre el Juego" styleClass="mb-4">
+                    <p class="line-height-3 text-700 m-0 white-space-pre-line">
+                        {{ currentGame.description_raw || 'Sin descripción disponible.' }}
+                    </p>
+                </p-card>
+
+                <!-- GALERÍA DE CAPTURAS -->
+                @if (screenshots().length > 0) {
+                    <p-card header="Capturas de Pantalla">
+                        <div class="grid">
+                            @for (shot of screenshots(); track shot) {
+                                <div class="col-6 md:col-4">
+                                    <img [src]="shot" alt="Screenshot"
+                                        class="w-full border-round hover:shadow-4 transition-duration-200 cursor-pointer object-cover h-8rem" />
+                                </div>
+                            }
+                        </div>
+                    </p-card>
+                }
+            </div>
+
+            <!-- COLUMNA LATERAL: Panel de Usuario y Detalles -->
+            <div class="col-12 lg:col-4">
+
+                <!-- ACCIONES DE BIBLIOTECA DEL USUARIO -->
+                <p-card header="Mi Registro" styleClass="mb-4">
+                    @if (authService.currentUser()) {
+                        <div class="flex flex-column gap-3">
+                            <div class="flex flex-column gap-2">
+                                <label class="font-semibold" for="game-status-select">Estado en tu biblioteca:</label>
+                                <p-select 
+                                    id="game-status-select"
+                                    [options]="statusOptions" 
+                                    [(ngModel)]="selectedStatus"
+                                    (onChange)="onStatusOrRatingChange()" 
+                                    placeholder="Seleccionar estado" 
+                                    styleClass="w-full"
+                                    [disabled]="saving()" />
+                            </div>
+
+                            @if (selectedStatus()) {
+                                <div class="flex flex-column gap-2">
+                                    <label class="font-semibold">Tu Valoración Personal:</label>
+                                    <p-rating 
+                                        [(ngModel)]="userRating" 
+                                        (onRate)="onStatusOrRatingChange()"
+                                        (onCancel)="onStatusOrRatingChange()" 
+                                        [disabled]="saving()" />
+                                </div>
+                            }
+
+                            @if (userGame()) {
+                                <p-button 
+                                    label="Quitar de mi biblioteca" 
+                                    icon="pi pi-trash" 
+                                    severity="danger"
+                                    [text]="true" 
+                                    (onClick)="removeFromLibrary()" 
+                                    [loading]="saving()" 
+                                    styleClass="w-full mt-2" />
+                            }
+                        </div>
+                    } @else {
+                        <div class="text-center py-3">
+                            <p class="text-600 mb-3">Inicia sesión para agregar este juego a tu biblioteca y registrar tu progreso.</p>
+                            <a routerLink="/auth">
+                                <p-button label="Iniciar Sesión / Registrarse" icon="pi pi-user" styleClass="w-full" />
+                            </a>
+                        </div>
+                    }
+                </p-card>
+
+                <!-- FICHA TÉCNICA -->
+                <p-card header="Información Adicional">
+                    <ul class="list-none p-0 m-0 flex flex-column gap-3 text-sm">
+                        <li class="flex justify-content-between">
+                            <span class="text-500 font-semibold">Géneros:</span>
+                            <span class="font-medium text-right">
+                                {{ (currentGame.genres || []) | json }}
+                            </span>
+                        </li>
+                        @if (currentGame.developers.length) {
+                            <li class="flex justify-content-between">
+                                <span class="text-500 font-semibold">Desarrollador:</span>
+                                <span class="font-medium text-right">{{ currentGame.developers[0]?.name }}</span>
+                            </li>
+                        }
+                        @if (currentGame.publishers.length) {
+                            <li class="flex justify-content-between">
+                                <span class="text-500 font-semibold">Editor:</span>
+                                <span class="font-medium text-right">{{ currentGame.publishers[0]?.name }}</span>
+                            </li>
+                        }
+                        @if (currentGame.website) {
+                            <li class="flex justify-content-between">
+                                <span class="text-500 font-semibold">Sitio Oficial:</span>
+                                <a [href]="currentGame.website" target="_blank"
+                                    class="text-primary no-underline font-medium">Visitar</a>
+                            </li>
+                        }
+                    </ul>
+                </p-card>
+
+            </div>
+        </div>
+
+    </div>
+}

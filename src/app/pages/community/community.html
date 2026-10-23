@@ -1,0 +1,183 @@
+<p-toast></p-toast>
+
+<div class="community-container p-4">
+
+    <!-- HEADER Y BOTÓN PUBLICAR -->
+    <div
+        class="flex flex-column sm:flex-row justify-content-between align-items-start sm:align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="text-3xl font-bold m-0 mb-1">Comunidad Gamer</h1>
+            <p class="text-600 m-0">Explora reseñas, dudas, guías y conversaciones sobre cualquier videojuego.</p>
+        </div>
+
+        <div class="flex align-items-center gap-2">
+            <p-button 
+                label="Mi Biblioteca" 
+                icon="pi pi-th-large" 
+                severity="secondary" 
+                [outlined]="true" 
+                routerLink="/dashboard">
+            </p-button>
+
+            <p-button 
+                label="Crear Tierlist" 
+                icon="pi pi-sort-amount-down" 
+                severity="help" 
+                [outlined]="true" 
+                routerLink="/tierlist/create">
+            </p-button>
+
+            <p-button 
+                *ngIf="currentUsername()"
+                label="Mi Perfil" 
+                icon="pi pi-user" 
+                severity="secondary" 
+                [outlined]="true" 
+                [routerLink]="['/profile', currentUsername()]">
+            </p-button>
+
+            <p-button *ngIf="authService.currentUser()" label="Crear Publicación" icon="pi pi-plus"
+                (onClick)="openNewPostModal()">
+            </p-button>
+        </div>
+    </div>
+
+    <!-- BARRA DE FILTROS -->
+    <div class="mb-4 overflow-x-auto">
+        <p-selectbutton [options]="filterOptions" [ngModel]="selectedFilter()" (onChange)="onFilterChange($event.value)"
+            optionLabel="label" optionValue="value">
+        </p-selectbutton>
+    </div>
+
+    <!-- SPINNER CARGA -->
+    <div *ngIf="loading()" class="flex justify-content-center my-6">
+        <p-progressspinner></p-progressspinner>
+    </div>
+
+    <!-- FEED DE PUBLICACIONES -->
+    <div *ngIf="!loading()" class="flex flex-column gap-3">
+
+        <div *ngIf="posts().length === 0" class="text-center py-6 text-500">
+            <i class="pi pi-comments text-5xl mb-3 block"></i>
+            <p class="text-xl">No hay publicaciones disponibles en esta categoría.</p>
+        </div>
+
+        <p-card *ngFor="let post of posts()" styleClass="post-card shadow-1">
+            <div class="flex flex-column md:flex-row gap-4">
+
+                <!-- PORTADA DEL JUEGO -->
+                <div class="shrink-0 align-self-start">
+                    <a [routerLink]="['/game', post.game_id]">
+                        <img [src]="post.game_cover || 'assets/images/placeholder-game.png'" [alt]="post.game_title"
+                            class="w-full md:w-7rem h-9rem border-round object-cover block shadow-2 hover:opacity-90 transition-opacity" />
+                    </a>
+                </div>
+
+                <!-- CONTENIDO DE LA PUBLICACIÓN -->
+                <div class="flex-1 flex flex-column justify-content-between">
+
+                    <div>
+                        <!-- ENCABEZADO: TIPO, AUTOR Y FECHA -->
+                        <div class="flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                            <div class="flex align-items-center gap-2">
+                                <p-tag [value]="getLabelInfo(post.post_type).label"
+                                    [severity]="getLabelInfo(post.post_type).severity"></p-tag>
+                                <a [routerLink]="['/game', post.game_id]"
+                                    class="text-secondary font-semibold no-underline hover:underline text-sm">
+                                    {{ post.game_title }}
+                                </a>
+                            </div>
+
+                            <div class="flex align-items-center gap-2 text-500 text-xs">
+                                <span>Publicado por 
+                                    @if (post.profiles?.username) {
+                                        <a [routerLink]="['/profile', post.profiles?.username]" class="font-bold text-primary no-underline hover:underline cursor-pointer">
+                                            &#064;{{ post.profiles?.username }}
+                                        </a>
+                                    } @else {
+                                        <strong>&#064;Usuario</strong>
+                                    }
+                                </span>
+                                <span>•</span>
+                                <span>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- TÍTULO Y CONTENIDO -->
+                        <h2 class="text-xl font-bold m-0 mb-2">{{ post.title }}</h2>
+                        <p class="text-700 line-height-3 m-0 white-space-pre-line">{{ post.content }}</p>
+                    </div>
+
+                    <!-- PIE: PUNTUACIÓN Y ACCIONES -->
+                    <div class="flex justify-content-between align-items-center mt-3 pt-2 border-top-1 surface-border">
+                        <div>
+                            <span *ngIf="post.score" class="font-bold text-yellow-500 text-sm">
+                                ★ Valoración: {{ post.score }} / 10
+                            </span>
+                        </div>
+
+                        <p-button *ngIf="post.user_id === authService.currentUser()?.id" icon="pi pi-trash"
+                            severity="danger" [text]="true" size="small" (onClick)="deletePost(post.id!)"
+                            pTooltip="Eliminar publicación">
+                        </p-button>
+                    </div>
+
+                </div>
+
+            </div>
+        </p-card>
+
+    </div>
+
+    <!-- MODAL PARA CREAR NUEVA PUBLICACIÓN -->
+    <p-dialog header="Crear Nueva Publicación" [(visible)]="displayNewPostDialog" [modal]="true"
+        [style]="{ width: '100%', maxWidth: '600px' }">
+
+        <div class="flex flex-column gap-3 mt-2">
+
+            <!-- Seleccionar Juego -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold">Selecciona el Juego (*)</label>
+                <p-autocomplete [ngModel]="selectedGame()" (ngModelChange)="selectedGame.set($event)"
+                    [suggestions]="gameSuggestions()" (completeMethod)="searchGames($event)" optionLabel="name"
+                    placeholder="Buscar videojuego..." styleClass="w-full" inputStyleClass="w-full">
+                </p-autocomplete>
+            </div>
+
+            <!-- Tipo de Publicación -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold">Tipo de Contenido</label>
+                <p-select [options]="postTypeOptions" [(ngModel)]="formPostType" styleClass="w-full">
+                </p-select>
+            </div>
+
+            <!-- Puntuación si es reseña -->
+            <div class="flex flex-column gap-1" *ngIf="formPostType === 'review'">
+                <label class="font-semibold">Tu Nota (1 a 5 Estrellas)</label>
+                <p-rating [(ngModel)]="formRating"></p-rating>
+            </div>
+
+            <!-- Título -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold">Título (*)</label>
+                <input type="text" pInputText [(ngModel)]="formTitle"
+                    placeholder="Ej: ¿Alguien sabe cómo vencer al jefe del Nivel 3?" />
+            </div>
+
+            <!-- Contenido -->
+            <div class="flex flex-column gap-1">
+                <label class="font-semibold">Detalle / Texto (*)</label>
+                <textarea pTextarea [(ngModel)]="formContent" rows="5"
+                    placeholder="Escribe tu opinión, duda o consejo aquí..."></textarea>
+            </div>
+
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" [text]="true" (onClick)="displayNewPostDialog = false"></p-button>
+            <p-button label="Publicar" icon="pi pi-send" [loading]="submitting()" (onClick)="submitPost()"></p-button>
+        </ng-template>
+
+    </p-dialog>
+
+</div>

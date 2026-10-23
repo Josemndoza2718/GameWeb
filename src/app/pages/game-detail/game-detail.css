@@ -1,0 +1,25 @@
+.game-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .hero-banner {
+        background-size: cover;
+        background-position: center;
+        min-height: 380px;
+
+        .cover-image {
+            width: 180px;
+            height: 240px;
+            object-fit: cover;
+        }
+
+        .metacritic-badge {
+            background-color: #6c5ce7;
+            color: white;
+        }
+    }
+
+    .object-cover {
+        object-fit: cover;
+    }
+}

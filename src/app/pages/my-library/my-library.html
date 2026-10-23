@@ -1,0 +1,126 @@
+<p-toast></p-toast>
+
+<div class="my-library-container p-4">
+
+    <!-- ENCABEZADO Y RESUMEN -->
+    <div
+        class="flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="text-3xl font-bold m-0 mb-1">Mi Biblioteca de Juegos</h1>
+            <p class="text-600 m-0">Gestiona tu catálogo personal, estados de progreso y calificaciones.</p>
+        </div>
+        <p-tag styleClass="text-lg px-3 py-2">
+            Total en Colección: {{ library().length }}
+        </p-tag>
+    </div>
+
+    <!-- SPINNER DE CARGA -->
+    @if (loading()) {
+        <div class="flex justify-content-center my-6">
+            <p-progress-spinner></p-progress-spinner>
+        </div>
+    } @else {
+        <!-- CONTENIDO DE PESTAÑAS (PrimeNG 18+) -->
+        <p-tabs value="0">
+            <p-tablist>
+                <p-tab value="0">Jugando ({{ playingGames().length }})</p-tab>
+                <p-tab value="1">Completados ({{ completedGames().length }})</p-tab>
+                <p-tab value="2">Por Jugar ({{ planToPlayGames().length }})</p-tab>
+                <p-tab value="3">En Espera ({{ onHoldGames().length }})</p-tab>
+                <p-tab value="4">Abandonados ({{ droppedGames().length }})</p-tab>
+                <p-tab value="5">Todos ({{ library().length }})</p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: playingGames() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: completedGames() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: planToPlayGames() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: onHoldGames() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="4">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: droppedGames() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="5">
+                    <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: library() }"></ng-container>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    }
+
+    <!-- PLANTILLA REUTILIZABLE PARA LA REJILLA DE JUEGOS -->
+    <ng-template #gamesGrid let-gamesList>
+        @if (gamesList.length === 0) {
+            <div class="text-center py-6 text-500">
+                <i class="pi pi-inbox text-5xl mb-3 block"></i>
+                <p class="text-xl">No tienes videojuegos registrados en esta categoría.</p>
+            </div>
+        } @else {
+            <div class="grid mt-2">
+                @for (game of gamesList; track game.game_id) {
+                    <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+                        <p-card styleClass="h-full flex flex-column overflow-hidden game-card shadow-2">
+
+                            <ng-template pTemplate="header">
+                                <div class="relative">
+                                    <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" [alt]="game.game_title"
+                                        class="w-full h-12rem object-cover block" />
+                                    <p-tag [value]="game.status" [severity]="getSeverity(game.status)"
+                                        class="absolute top-0 right-0 m-2">
+                                    </p-tag>
+                                </div>
+                            </ng-template>
+
+                            <div class="flex flex-column gap-2 h-full justify-content-between">
+                                <div>
+                                    <h3 class="text-lg font-bold m-0 text-truncate" [title]="game.game_title">
+                                        {{ game.game_title }}
+                                    </h3>
+                                </div>
+
+                                <div class="flex flex-column gap-2 mt-2">
+                                    <!-- Cambiar Estado -->
+                                    <div class="flex flex-column gap-1">
+                                        <small class="text-500 font-semibold">Estado:</small>
+                                        <p-select [options]="statusOptions" [ngModel]="game.status"
+                                            (onChange)="onStatusChange(game, $event.value)" appendTo="body"
+                                            styleClass="w-full p-inputtext-sm">
+                                        </p-select>
+                                    </div>
+
+                                    <!-- Cambiar Puntuación (Escala 1-5 convertida internamente) -->
+                                    <div class="flex flex-column gap-1">
+                                        <small class="text-500 font-semibold">Tu Nota:</small>
+                                        <p-rating [ngModel]="getStars(game.user_rating)"
+                                            (onRate)="onRatingChange(game, $event.value)">
+                                        </p-rating>
+                                    </div>
+                                </div>
+
+                                <!-- Acciones -->
+                                <div
+                                    class="flex justify-content-between align-items-center mt-3 pt-2 border-top-1 surface-border">
+                                    <a [routerLink]="['/game', game.game_id]">
+                                        <p-button label="Ver Ficha" icon="pi pi-external-link" [text]="true"
+                                            size="small"></p-button>
+                                    </a>
+                                    <p-button icon="pi pi-trash" severity="danger" [text]="true" size="small"
+                                        (onClick)="removeGame(game.game_id)" pTooltip="Eliminar de mi biblioteca">
+                                    </p-button>
+                                </div>
+                            </div>
+
+                        </p-card>
+                    </div>
+                }
+            </div>
+        }
+    </ng-template>
+
+</div>
