@@ -1,13 +1,35 @@
 .search-bar-container {
-    max-width: 500px;
+  width: 100%;
+}
 
-    .text-truncate {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 2;
+}
 
-    .object-cover {
-        object-fit: cover;
-    }
+:host ::ng-deep .search-input {
+  background: var(--bg-surface-mid) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-main) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+  padding: 8px 14px 8px 36px !important;
+  border-radius: var(--radius-md) !important;
+  transition: all 0.2s ease !important;
+}
+
+:host ::ng-deep .search-input:focus {
+  background: var(--bg-surface-low) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 16px -2px var(--primary-glow) !important;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

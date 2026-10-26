@@ -27,6 +27,7 @@ export interface Game {
     background_image: string;
     rating: number;
     ratings_count: number;
+    metacritic?: number;
     platforms?: PlatformInfo[];
     genres?: Genre[];
 }

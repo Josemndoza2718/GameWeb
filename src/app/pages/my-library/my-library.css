@@ -1,23 +1,167 @@
-.my-library-container {
-    max-width: 1300px;
-    margin: 0 auto;
+.library-page-container {
+  min-height: calc(100vh - 4rem);
+  background-color: var(--bg-root);
+}
 
-    .game-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+.profile-stage-section {
+  background: var(--bg-surface-low);
+}
 
-        &:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
-        }
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+  box-shadow: 0 0 8px var(--secondary-glow);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
 
-        .object-cover {
-            object-fit: cover;
-        }
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
 
-        .text-truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    }
+/* Bento Profile Card */
+.bento-profile-card {
+  background: var(--bg-surface-mid);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.watermark-level {
+  position: absolute;
+  right: -10px;
+  bottom: -20px;
+  font-family: var(--font-title);
+  font-size: 130px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.avatar-large {
+  width: 74px;
+  height: 74px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #0a0d14;
+  font-size: 32px;
+  font-weight: 800;
+  font-family: var(--font-title);
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.badge-level {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  background: var(--primary);
+  color: #0a0d14;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.xp-track {
+  height: 8px;
+  background: var(--bg-surface-high);
+}
+
+.xp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 10px var(--primary-glow);
+  transition: width 0.6s ease;
+}
+
+.circle-stat {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 185, 95, 0.25);
+  box-shadow: 0 0 16px -2px var(--tertiary-glow);
+  background: rgba(255, 185, 95, 0.05);
+}
+
+.dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dot-tertiary {
+  background: var(--tertiary);
+  box-shadow: 0 0 6px var(--tertiary-glow);
+}
+.dot-secondary {
+  background: var(--secondary);
+  box-shadow: 0 0 6px var(--secondary-glow);
+}
+
+/* Metric Ribbon Card */
+.metric-card {
+  background: var(--bg-surface-mid);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+.metric-card:hover {
+  background: var(--bg-surface-high);
+  border-color: var(--border-hover);
+}
+
+/* Library Game Card */
+.library-card {
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.library-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-glow);
+  box-shadow: 0 10px 24px -4px var(--primary-glow);
+}
+
+.lib-cover-wrapper {
+  aspect-ratio: 16 / 9;
+  background: var(--bg-surface-mid);
+}
+
+.lib-cover-wrapper img {
+  transition: transform 0.4s ease;
+}
+.library-card:hover .lib-cover-wrapper img {
+  transform: scale(1.04);
+}
+
+.cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(16, 20, 26, 0.85) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.link-details {
+  color: var(--secondary);
+  transition: all 0.2s ease;
+}
+.link-details:hover {
+  color: var(--secondary-hover);
+  text-decoration: underline;
+}
+
+.btn-delete {
+  background: transparent;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+.btn-delete:hover {
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

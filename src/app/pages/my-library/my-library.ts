@@ -5,19 +5,15 @@ import { RouterLink } from '@angular/router';
 
 // PrimeNG
 import { TabsModule } from 'primeng/tabs';
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
-import { RatingModule } from 'primeng/rating';
 import { SelectModule } from 'primeng/select';
+import { RatingModule } from 'primeng/rating';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-
 import { TooltipModule } from 'primeng/tooltip';
 
 // Servicios y Modelos
-
 import { UserGame, GameStatus, GAME_STATUS_LABELS } from '../../models/user-game.model';
 import { UserGamesService } from '../../services/user-games';
 import { AuthService } from '../../services/auth';
@@ -30,11 +26,9 @@ import { AuthService } from '../../services/auth';
     FormsModule,
     RouterLink,
     TabsModule,
-    CardModule,
     ButtonModule,
-    TagModule,
-    RatingModule,
     SelectModule,
+    RatingModule,
     ProgressSpinnerModule,
     ToastModule,
     TooltipModule
@@ -60,12 +54,50 @@ export class MyLibraryComponent implements OnInit {
     { label: GAME_STATUS_LABELS.plan_to_play, value: 'plan_to_play' }
   ];
 
-  // Computados para filtrar la lista según la pestaña seleccionada
+  // Perfil del Archivista (Fusionado con perfil)
+  currentUser = this.authService.currentUser;
+
+  username = computed(() => {
+    const user = this.currentUser();
+    return user?.user_metadata?.['username'] || user?.email?.split('@')[0] || 'Archivist';
+  });
+
+  userInitial = computed(() => {
+    return this.username().charAt(0).toUpperCase();
+  });
+
+  // Métricas computadas de la biblioteca
+  totalGames = computed(() => this.library().length);
   playingGames = computed(() => this.library().filter(g => g.status === 'playing'));
   completedGames = computed(() => this.library().filter(g => g.status === 'completed'));
   onHoldGames = computed(() => this.library().filter(g => g.status === 'on_hold'));
   droppedGames = computed(() => this.library().filter(g => g.status === 'dropped'));
   planToPlayGames = computed(() => this.library().filter(g => g.status === 'plan_to_play'));
+
+  completionRatio = computed(() => {
+    const total = this.totalGames();
+    if (!total) return 0;
+    return Math.round((this.completedGames().length / total) * 100);
+  });
+
+  estimatedHours = computed(() => {
+    return (this.completedGames().length * 28) + (this.playingGames().length * 14) + (this.onHoldGames().length * 8);
+  });
+
+  level = computed(() => {
+    const score = (this.totalGames() * 2) + (this.completedGames().length * 5);
+    return Math.max(1, Math.floor(score / 5) + 1);
+  });
+
+  xpProgress = computed(() => {
+    const score = (this.totalGames() * 200) + (this.completedGames().length * 450);
+    const inLevel = score % 1000;
+    return {
+      current: inLevel,
+      max: 1000,
+      percent: Math.min(100, Math.round((inLevel / 1000) * 100))
+    };
+  });
 
   ngOnInit(): void {
     this.loadLibrary();
@@ -94,7 +126,6 @@ export class MyLibraryComponent implements OnInit {
     try {
       await this.userGamesService.updateStatus(game.game_id, newStatus);
 
-      // Actualización inmutable local del Signal
       this.library.update(current =>
         current.map(g => g.game_id === game.game_id ? { ...g, status: newStatus } : g)
       );
@@ -110,7 +141,7 @@ export class MyLibraryComponent implements OnInit {
   }
 
   /**
-   * Actualiza la valoración del juego (convertida de escala 1-5 a 1-10)
+   * Actualiza la valoración del juego (escala 1-5 a 1-10)
    */
   async onRatingChange(game: UserGame, newStars: number | null): Promise<void> {
     const rating10 = newStars ? newStars * 2 : null;
@@ -143,15 +174,5 @@ export class MyLibraryComponent implements OnInit {
 
   getStars(rating: number | null | undefined): number {
     return rating ? Math.round(rating / 2) : 0;
-  }
-
-  getSeverity(status: GameStatus): 'success' | 'info' | 'warn' | 'danger' | 'secondary' {
-    switch (status) {
-      case 'playing': return 'success';
-      case 'completed': return 'info';
-      case 'on_hold': return 'warn';
-      case 'dropped': return 'danger';
-      case 'plan_to_play': return 'secondary';
-    }
   }
 }

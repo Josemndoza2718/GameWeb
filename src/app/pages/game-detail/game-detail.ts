@@ -1,20 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 // PrimeNG
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
 import { RatingModule } from 'primeng/rating';
-import { CardModule } from 'primeng/card';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 // Servicios y Modelos
-
 import { GameDetail } from '../../models/rawg.model';
 import { UserGame, GameStatus, GAME_STATUS_LABELS } from '../../models/user-game.model';
 import { RawgService } from '../../services/rawg';
@@ -28,11 +23,7 @@ import { AuthService } from '../../services/auth';
     CommonModule,
     FormsModule,
     RouterLink,
-    TagModule,
-    ButtonModule,
-    SelectModule,
     RatingModule,
-    CardModule,
     ProgressSpinnerModule,
     ToastModule
   ],
@@ -42,6 +33,7 @@ import { AuthService } from '../../services/auth';
 })
 export class GameDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private rawgService = inject(RawgService);
   private userGamesService = inject(UserGamesService);
   public authService = inject(AuthService);
@@ -58,14 +50,38 @@ export class GameDetailComponent implements OnInit {
   selectedStatus = signal<GameStatus | null>(null);
   userRating = signal<number | null>(null);
 
-  // Opciones para el p-dropdown
-  statusOptions = [
-    { label: GAME_STATUS_LABELS.playing, value: 'playing' },
-    { label: GAME_STATUS_LABELS.completed, value: 'completed' },
-    { label: GAME_STATUS_LABELS.on_hold, value: 'on_hold' },
-    { label: GAME_STATUS_LABELS.dropped, value: 'dropped' },
-    { label: GAME_STATUS_LABELS.plan_to_play, value: 'plan_to_play' }
+  statusList: { status: GameStatus; label: string; icon: string }[] = [
+    { status: 'playing', label: 'Jugando', icon: 'videogame_asset' },
+    { status: 'completed', label: 'Completado', icon: 'check_circle' },
+    { status: 'plan_to_play', label: 'Backlog', icon: 'hourglass_empty' },
+    { status: 'on_hold', label: 'En Espera', icon: 'pause_circle' },
+    { status: 'dropped', label: 'Abandonado', icon: 'block' }
   ];
+
+  metacriticScore = computed(() => {
+    const g = this.game();
+    if (!g) return 85;
+    return g.metacritic || (g.rating ? Math.round(g.rating * 20) : 85);
+  });
+
+  acclaimText = computed(() => {
+    const score = this.metacriticScore();
+    if (score >= 90) return 'Universal Acclaim';
+    if (score >= 80) return 'Generally Favorable';
+    return 'Mixed Reviews';
+  });
+
+  developersList = computed(() => {
+    const g = this.game();
+    if (!g?.developers?.length) return 'Desarrollador N/A';
+    return g.developers.map(d => d.name).join(', ');
+  });
+
+  publishersList = computed(() => {
+    const g = this.game();
+    if (!g?.publishers?.length) return 'Publisher N/A';
+    return g.publishers.map(p => p.name).join(', ');
+  });
 
   ngOnInit(): void {
     const gameId = this.route.snapshot.paramMap.get('id');
@@ -79,43 +95,70 @@ export class GameDetailComponent implements OnInit {
     const numericId = Number(id);
 
     try {
-      // 1. Cargar detalle y capturas de pantalla desde RAWG
       this.rawgService.getGameDetails(id).subscribe({
-        next: (data) => this.game.set(data),
-        error: (err) => console.error('Error cargando detalles del juego:', err)
+        next: (data) => {
+          this.game.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          console.error('Error cargando detalles del juego:', err);
+          this.loading.set(false);
+        }
       });
 
       this.rawgService.getGameScreenshots(id).subscribe({
         next: (shots) => this.screenshots.set(shots)
       });
 
-      // 2. Si el usuario está autenticado, consultar si el juego ya está en su biblioteca
       if (this.authService.currentUser()) {
         const userGameData = await this.userGamesService.getGameStatusForUser(numericId);
         if (userGameData) {
           this.userGame.set(userGameData);
           this.selectedStatus.set(userGameData.status);
-          this.userRating.set(userGameData.user_rating ? Math.round(userGameData.user_rating / 2) : null); // Escala 1-5 para el p-rating
+          this.userRating.set(userGameData.user_rating ? Math.round(userGameData.user_rating / 2) : null);
         }
       }
     } catch (error) {
       console.error('Error al inicializar la ficha del juego:', error);
-    } finally {
       this.loading.set(false);
+    }
+  }
+
+  /**
+   * Cambiar de estado con un solo click en los pills de bitácora
+   */
+  async setStatus(status: GameStatus): Promise<void> {
+    if (!this.authService.currentUser()) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Inicia sesión',
+        detail: 'Debes iniciar sesión para guardar juegos en tu bitácora'
+      });
+      this.router.navigate(['/auth']);
+      return;
+    }
+
+    this.selectedStatus.set(status);
+    await this.saveToLibrary();
+  }
+
+  async onRatingChange(newStars: number | null): Promise<void> {
+    this.userRating.set(newStars);
+    if (this.selectedStatus()) {
+      await this.saveToLibrary();
     }
   }
 
   /**
    * Guarda o actualiza el juego en la biblioteca personal de Supabase
    */
-  async onStatusOrRatingChange(): Promise<void> {
+  async saveToLibrary(): Promise<void> {
     const currentGame = this.game();
     const status = this.selectedStatus();
     if (!currentGame || !status) return;
 
     this.saving.set(true);
     try {
-      // Convertimos la puntuación de 5 estrellas de PrimeNG a escala 1-10 para la BD
       const scaleRating = this.userRating() ? this.userRating()! * 2 : null;
 
       const updated = await this.userGamesService.addOrUpdateGame({
@@ -129,8 +172,8 @@ export class GameDetailComponent implements OnInit {
       this.userGame.set(updated);
       this.messageService.add({
         severity: 'success',
-        summary: 'Biblioteca actualizada',
-        detail: `Guardado como "${GAME_STATUS_LABELS[status]}"`
+        summary: 'Bitácora Actualizada',
+        detail: `Registrado como "${GAME_STATUS_LABELS[status]}"`
       });
     } catch (error: any) {
       this.messageService.add({
@@ -159,7 +202,7 @@ export class GameDetailComponent implements OnInit {
       this.messageService.add({
         severity: 'info',
         summary: 'Eliminado',
-        detail: 'El juego fue eliminado de tu biblioteca'
+        detail: 'El juego fue eliminado de tu bitácora'
       });
     } catch (error: any) {
       this.messageService.add({

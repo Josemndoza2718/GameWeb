@@ -1,61 +1,164 @@
-.tierlist-container {
-    max-width: 1200px;
-    margin: 0 auto;
+.tierlist-page-container {
+  min-height: calc(100vh - 4rem);
+  background-color: var(--bg-root);
+}
 
-    .tierlist-board {
-        .tier-row {
-            .tier-label {
-                width: 100px;
-                min-height: 112px;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            }
+/* Header Hub */
+.builder-header {
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
 
-            .tier-drop-zone {
-                background-color: #1e1e1e;
-            }
-        }
-    }
+.header-icon-box {
+  width: 44px;
+  height: 44px;
+  background: var(--bg-surface-high);
+  border: 1px solid var(--border-subtle);
+}
 
-    .game-card {
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+.tierlist-title-input {
+  max-width: 480px;
+  width: 100%;
+}
+.tierlist-title-input:focus {
+  border-bottom: 1px solid var(--primary) !important;
+}
 
-        &:hover {
-            transform: scale(1.04);
+.visibility-pill {
+  background: var(--bg-surface-mid);
+  border: 1px solid var(--border-subtle);
+}
 
-            .delete-btn {
-                opacity: 0.9 !important;
-            }
-        }
+.btn-tool {
+  background: var(--bg-surface-mid);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle) !important;
+  transition: all 0.2s ease;
+}
+.btn-tool:hover {
+  background: var(--bg-surface-high);
+  color: #ffffff;
+}
 
-        .object-cover {
-            object-fit: cover;
-        }
-    }
+.btn-publish {
+  background: var(--primary);
+  color: #0a0d14;
+  box-shadow: 0 0 16px var(--primary-glow);
+  transition: all 0.2s ease;
+}
+.btn-publish:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+.btn-publish:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
-    /* Estilos específicos de Angular CDK Drag and Drop */
-    .cdk-drag-preview {
-        box-sizing: border-box;
-        border-radius: 6px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        opacity: 0.85;
+/* Matrix Board */
+.tier-matrix-board {
+  background: var(--bg-surface-lowest, #080b10);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
 
-        img {
-            width: 80px;
-            height: 112px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-    }
+.tier-row {
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+}
 
-    .cdk-drag-placeholder {
-        opacity: 0.2;
-    }
+.tier-letter-badge {
+  width: 100px;
+  min-height: 85px;
+  text-align: center;
+}
 
-    .cdk-drag-animating {
-        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    }
+.tier-dropzone {
+  min-height: 90px;
+  background: rgba(10, 13, 20, 0.4);
+}
 
-    .tier-drop-zone.cdk-drop-list-dragging .game-card:not(.cdk-drag-placeholder) {
-        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    }
+.drop-hint {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Game Cards on Rows */
+.tier-game-card {
+  width: 72px;
+  height: 100px;
+  background: var(--bg-surface-high);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tier-game-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 13, 20, 0.95) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.tier-game-card:hover .card-overlay,
+.pool-game-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.btn-remove-card {
+  width: 20px;
+  height: 20px;
+  background: rgba(248, 113, 113, 0.85);
+  color: #ffffff;
+}
+
+/* Unranked Pool */
+.unranked-pool-section {
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+}
+
+.pool-dropzone {
+  min-height: 140px;
+  background: rgba(10, 13, 20, 0.6);
+  border: 1px dashed var(--border-subtle);
+}
+
+.pool-game-card {
+  width: 90px;
+  height: 130px;
+  background: var(--bg-surface-high);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s ease;
+}
+.pool-game-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--secondary);
+  box-shadow: 0 10px 24px -2px var(--secondary-glow);
+}
+
+/* CDK Drag & Drop styles */
+.cdk-drag-preview {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+  border-radius: var(--radius-md);
+  opacity: 0.95;
+  border: 2px solid var(--primary);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.tier-dropzone.cdk-drop-list-dragging .tier-game-card:not(.cdk-drag-placeholder),
+.pool-dropzone.cdk-drop-list-dragging .pool-game-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

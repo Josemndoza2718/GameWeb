@@ -19,13 +19,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
-    title: 'Mi Biblioteca - Game Web'
+    title: 'Explorar Catálogo · QuestLog'
   },
   {
     path: 'my-library',
     loadComponent: () =>
       import('./pages/my-library/my-library').then((m) => m.MyLibraryComponent),
-    title: 'Mi Biblioteca - Game Web'
+    title: 'Mi Biblioteca · QuestLog'
   },
   {
     path: 'community',

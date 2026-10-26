@@ -1,25 +1,153 @@
-.game-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
+.detail-page-container {
+  min-height: calc(100vh - 4rem);
+  background-color: var(--bg-root);
+}
 
-    .hero-banner {
-        background-size: cover;
-        background-position: center;
-        min-height: 380px;
+.game-hero-section {
+  position: relative;
+  background-color: var(--bg-surface-lowest, #080b10);
+  border-bottom: 1px solid var(--border-subtle);
+}
 
-        .cover-image {
-            width: 180px;
-            height: 240px;
-            object-fit: cover;
-        }
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px);
+  transform: scale(1.05);
+  opacity: 0.35;
+}
 
-        .metacritic-badge {
-            background-color: #6c5ce7;
-            color: white;
-        }
-    }
+.hero-scrim-vertical {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg-root) 0%, rgba(10, 13, 20, 0.75) 60%, transparent 100%);
+}
 
-    .object-cover {
-        object-fit: cover;
-    }
+.hero-scrim-horizontal {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--bg-root) 0%, rgba(10, 13, 20, 0.6) 40%, transparent 100%);
+}
+
+.glow-hero-accent {
+  position: absolute;
+  top: 10%;
+  right: 20%;
+  width: 450px;
+  height: 450px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle, rgba(160, 120, 255, 0.25) 0%, transparent 70%);
+  filter: blur(100px);
+}
+
+.boxart-wrapper {
+  width: 170px;
+  height: 240px;
+  background: var(--bg-surface-mid);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.4s ease;
+}
+.boxart-wrapper:hover {
+  transform: translateY(-4px);
+}
+
+.boxart-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(10, 14, 20, 0.85);
+  backdrop-filter: blur(8px);
+  color: var(--secondary);
+  font-size: 10px;
+  text-transform: uppercase;
+  border: 1px solid rgba(76, 215, 246, 0.3);
+}
+
+.score-card-hero {
+  background: rgba(22, 26, 36, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+.score-box {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 185, 95, 0.12);
+  border: 1px solid rgba(255, 185, 95, 0.3);
+  box-shadow: 0 0 16px -2px var(--tertiary-glow);
+}
+
+/* Card Bitácora Containers */
+.card-bitacora {
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+}
+
+.bg-surface-lowest {
+  background: rgba(10, 13, 20, 0.7);
+}
+
+.status-selector-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-selector-btn:hover {
+  background: var(--bg-surface-high);
+  color: var(--text-main);
+}
+
+.status-selector-btn.active {
+  background: var(--primary);
+  color: #0a0d14;
+  font-weight: 700;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.btn-remove-lib {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  transition: all 0.2s ease;
+}
+.btn-remove-lib:hover {
+  background: rgba(248, 113, 113, 0.25);
+  transform: translateY(-1px);
+}
+
+.screenshot-item img {
+  transition: transform 0.4s ease;
+}
+.screenshot-item:hover img {
+  transform: scale(1.04);
+}
+
+.btn-return {
+  background: var(--bg-surface-high);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+.btn-return:hover {
+  background: var(--bg-surface-highest);
+  color: #ffffff;
+}
+
+.synopsis-text {
+  max-height: 400px;
+  overflow-y: auto;
 }

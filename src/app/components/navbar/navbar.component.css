@@ -1,0 +1,95 @@
+.vault-navbar {
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.logo-emblem {
+  width: 38px;
+  height: 38px;
+  background: rgba(160, 120, 255, 0.12);
+  border: 1px solid rgba(160, 120, 255, 0.25);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 12px var(--primary-glow);
+  transition: transform 0.2s ease;
+}
+
+.logo-emblem:hover {
+  transform: scale(1.05);
+}
+
+.nav-pill-container {
+  background: rgba(10, 13, 20, 0.6);
+  border: 1px solid var(--border-subtle);
+}
+
+.nav-item {
+  color: var(--text-muted);
+  font-family: var(--font-title);
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  color: var(--text-main);
+  background: var(--bg-surface-high);
+}
+
+.nav-item.active {
+  background: var(--bg-surface-high);
+  color: var(--primary-light);
+  box-shadow: 0 0 14px -2px var(--primary-glow);
+  font-weight: 700;
+}
+
+.user-pill {
+  background: var(--bg-surface-mid);
+  border: 1px solid var(--border-subtle);
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #0a0d14;
+  font-weight: 800;
+  font-family: var(--font-title);
+  font-size: 14px;
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.logout-btn {
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  color: var(--danger);
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.btn-login-pill {
+  background: var(--primary);
+  color: #0a0d14;
+  font-family: var(--font-title);
+  box-shadow: 0 0 14px var(--primary-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-login-pill:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.mobile-nav-item {
+  color: var(--text-muted);
+  font-family: var(--font-title);
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-item.active {
+  color: var(--primary-light);
+  background: rgba(160, 120, 255, 0.1);
+}

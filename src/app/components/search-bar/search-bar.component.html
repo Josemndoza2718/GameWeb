@@ -1,26 +1,35 @@
-<div class="search-bar-container w-full">
-    <p-autocomplete [ngModel]="selectedGame()" (ngModelChange)="selectedGame.set($event)" [suggestions]="suggestions()"
-        (completeMethod)="onSearch($event)" (onSelect)="onSelect($event.value)" optionLabel="name"
-        placeholder="Buscar cualquier juego (ej: Zelda, Halo, Elden Ring)..." [delay]="300" [minQueryLength]="2"
-        styleClass="w-full" inputStyleClass="w-full p-inputtext-lg">
+<div class="search-bar-container w-full relative flex align-items-center">
+  <span class="material-symbols-outlined search-icon">search</span>
+  <p-autocomplete [ngModel]="selectedGame()" 
+                  (ngModelChange)="selectedGame.set($event)" 
+                  [suggestions]="suggestions()"
+                  (completeMethod)="onSearch($event)" 
+                  (onSelect)="onSelect($event.value)" 
+                  optionLabel="name"
+                  placeholder="Buscar por título, desarrollador..." 
+                  [delay]="300" 
+                  [minQueryLength]="2"
+                  styleClass="w-full" 
+                  inputStyleClass="w-full search-input">
 
-        <!-- Diseño personalizado para cada resultado desplegable -->
-        <ng-template let-game pTemplate="item">
-            <div class="flex align-items-center gap-3 p-1 w-full">
-                <img [src]="game.background_image || 'assets/images/placeholder-game.png'" [alt]="game.name"
-                    class="w-3rem h-3rem border-round object-cover flex-shrink-0" />
+    <!-- Custom Dropdown Result Template -->
+    <ng-template let-game pTemplate="item">
+      <div class="flex align-items-center gap-3 p-1 w-full">
+        <img [src]="game.background_image || 'assets/images/placeholder-game.png'" 
+             [alt]="game.name"
+             class="w-3rem h-3rem border-round object-cover flex-shrink-0" />
 
-                <div class="flex flex-column overflow-hidden">
-                    <span class="font-bold text-truncate text-base">{{ game.name }}</span>
-                    <small class="text-500">
-                        {{ game.released ? (game.released | date:'yyyy') : 'Año N/A' }}
-                        @if (game.rating) {
-                            <span class="ml-2 text-yellow-500">★ {{ game.rating }}</span>
-                        }
-                    </small>
-                </div>
-            </div>
-        </ng-template>
+        <div class="flex flex-column overflow-hidden">
+          <span class="font-title font-bold text-sm text-truncate text-color">{{ game.name }}</span>
+          <small class="text-muted font-title">
+            {{ game.released ? (game.released | date:'yyyy') : 'Año N/A' }}
+            @if (game.rating) {
+              <span class="ml-2 text-tertiary font-bold">★ {{ game.rating }}</span>
+            }
+          </small>
+        </div>
+      </div>
+    </ng-template>
 
-    </p-autocomplete>
+  </p-autocomplete>
 </div>

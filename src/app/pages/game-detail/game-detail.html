@@ -1,152 +1,243 @@
-<p-toast />
+<p-toast></p-toast>
 
-@if (loading()) {
-    <div class="flex justify-content-center align-items-center min-h-screen">
-        <p-progress-spinner ariaLabel="Cargando detalles del juego" />
+<div class="detail-page-container">
+
+  @if (loading()) {
+    <div class="flex flex-column align-items-center justify-content-center py-8 gap-3" style="min-height: 60vh;">
+      <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando ficha" />
+      <span class="text-xs font-title text-muted tracking-widest uppercase">Accediendo al Expediente del Videojuego...</span>
     </div>
-} @else if (game(); as currentGame) {
-    <div class="game-detail-container pb-6">
+  } @else if (game(); as g) {
 
-        <!-- HERO BANNER -->
-        <div class="hero-banner relative border-round-xl overflow-hidden mb-4"
-            [style.backgroundImage]="'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(18,18,18,0.95)), url(' + (currentGame.background_image || '') + ')'">
+    <!-- 1. IMMERSIVE HERO BANNER -->
+    <section class="game-hero-section relative overflow-hidden">
+      <!-- Backdrop image -->
+      <div class="hero-backdrop" [style.background-image]="'url(' + (g.background_image || '') + ')'">
+        <div class="hero-scrim-vertical"></div>
+        <div class="hero-scrim-horizontal"></div>
+        <div class="ambient-glow glow-hero-accent"></div>
+      </div>
 
-            <div class="hero-content p-4 md:p-6 flex flex-column md:flex-row gap-4 align-items-end">
-                <img [src]="currentGame.background_image" [alt]="currentGame.name" class="cover-image border-round-lg shadow-4" />
+      <!-- Hero Content Pod -->
+      <div class="hero-content max-w-7xl mx-auto px-3 sm:px-4 pt-6 sm:pt-8 pb-6 relative z-2">
+        <div class="flex flex-column lg:flex-row align-items-start lg:align-items-end gap-4">
+          
+          <!-- Box Art Floating Foil -->
+          <div class="boxart-wrapper relative border-round-xl overflow-hidden shadow-8 flex-shrink-0">
+            <img [src]="g.background_image || 'assets/images/placeholder-game.png'" 
+                 [alt]="g.name" 
+                 class="w-full h-full object-cover" />
+            <span class="boxart-badge font-title font-bold">
+              {{ g.genres && g.genres[0] ? g.genres[0].name : 'ARCHIVO' }}
+            </span>
+          </div>
 
-                <div class="flex-1 text-white">
-                    <div class="flex flex-wrap gap-2 mb-2">
-                        @for (p of currentGame.platforms; track p.platform.id) {
-                            <p-tag [value]="p.platform.name" severity="secondary" />
-                        }
-                    </div>
+          <!-- Metadata & Title -->
+          <div class="flex-1 flex flex-column gap-3 min-w-0">
+            <!-- Badges -->
+            <div class="flex flex-wrap align-items-center gap-2">
+              <span class="pill-badge pill-tertiary">
+                <span class="material-symbols-outlined text-sm">military_tech</span>
+                Masterpiece
+              </span>
+              <span class="pill-badge pill-surface">
+                {{ g.released ? (g.released.substring(0, 4)) : 'N/A' }}
+              </span>
+              <span class="pill-badge pill-secondary">
+                {{ g.genres && g.genres[0] ? g.genres[0].name : 'Videojuego' }}
+              </span>
+            </div>
 
-                    <h1 class="text-4xl md:text-5xl font-bold m-0 mb-2">{{ currentGame.name }}</h1>
+            <!-- Title & Developer -->
+            <div>
+              <div class="text-muted font-title text-xs tracking-widest uppercase mb-1">
+                {{ developersList() }} • {{ g.released || 'Fecha no disponible' }}
+              </div>
+              <h1 class="font-title text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight m-0 text-color">
+                {{ g.name }}
+              </h1>
+            </div>
 
-                    <div class="flex align-items-center gap-4 text-sm text-300">
-                        @if (currentGame.released) {
-                            <span>Fecha: {{ currentGame.released | date:'dd/MM/yyyy' }}</span>
-                        }
-                        @if (currentGame.metacritic) {
-                            <span class="metacritic-badge font-bold px-2 py-1 border-round">
-                                Metacritic: {{ currentGame.metacritic }}
-                            </span>
-                        }
-                        <span>RAWG: ★ {{ currentGame.rating }}</span>
-                    </div>
+            <!-- Technical Platforms -->
+            <div class="flex flex-wrap align-items-center gap-1 pt-1">
+              <span class="text-muted font-title uppercase tracking-wider mr-1" style="font-size: 11px;">
+                Plataformas:
+              </span>
+              @for (p of g.platforms?.slice(0, 5); track p.platform.id) {
+                <span class="pill-badge pill-surface" style="font-size: 10px;">{{ p.platform.name }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Acclaim Score Badge -->
+          <div class="score-card-hero flex align-items-center gap-3 p-3 border-round-xl self-stretch lg:self-auto flex-shrink-0">
+            <div class="score-box flex flex-column align-items-center justify-content-center border-round-lg">
+              <span class="font-title text-3xl font-bold text-tertiary leading-none">
+                {{ metacriticScore() }}
+              </span>
+              <span class="text-muted font-title uppercase" style="font-size: 9px;">/ 100</span>
+            </div>
+            <div class="flex flex-column">
+              <span class="font-title text-sm font-bold text-color leading-tight">
+                {{ acclaimText() }}
+              </span>
+              <span class="text-xs text-muted font-title">
+                Metacritic & Rawg Archive
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. MAIN WORKSPACE: 12-COLUMN LAYOUT -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-5">
+      <div class="grid">
+        
+        <!-- Left / Primary Column (8 Cols) -->
+        <div class="col-12 lg:col-8 flex flex-column gap-4">
+          
+          <!-- BITÁCORA PERSONAL INTERACTIVA -->
+          <section class="card-bitacora p-4 border-round-xl">
+            <div class="flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-xl">bookmark_manager</span>
+                <h2 class="font-title text-lg font-bold m-0 text-color">Tu Bitácora Personal</h2>
+              </div>
+              <div class="flex align-items-center gap-1 text-xs text-muted font-title">
+                <span class="material-symbols-outlined text-secondary text-sm">sync</span>
+                <span>Guardado Automático</span>
+              </div>
+            </div>
+
+            <!-- Botones de Estado tipo Stitch -->
+            <div class="grid p-1 border-round-lg bg-surface-lowest mb-3 gap-1">
+              @for (item of statusList; track item.status) {
+                <button type="button" 
+                        class="col status-selector-btn font-title text-xs font-semibold"
+                        [class.active]="selectedStatus() === item.status"
+                        (click)="setStatus(item.status)">
+                  <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
+                  <span>{{ item.label }}</span>
+                </button>
+              }
+            </div>
+
+            <!-- Calificación con Estrellas y Acciones -->
+            <div class="flex align-items-center justify-content-between flex-wrap gap-3 pt-2 border-top-1 surface-border">
+              <div class="flex flex-column gap-1">
+                <span class="text-xs text-muted font-title uppercase font-semibold">Tu Valoración Personal</span>
+                <div class="flex align-items-center gap-2">
+                  <p-rating [ngModel]="userRating()" 
+                            (onRate)="onRatingChange($event.value)">
+                  </p-rating>
+                  <span class="font-title font-bold text-sm text-tertiary">
+                    {{ userRating() ? (userRating()! * 2) + '/10 Pts' : 'Sin valorar' }}
+                  </span>
                 </div>
+              </div>
+
+              @if (userGame()) {
+                <button type="button" 
+                        (click)="removeFromLibrary()" 
+                        class="btn-remove-lib flex align-items-center gap-1 px-3 py-2 border-round-lg border-none cursor-pointer text-xs font-title font-bold">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                  <span>Quitar de mi colección</span>
+                </button>
+              }
             </div>
-        </div>
+          </section>
 
-        <div class="grid">
+          <!-- SINOPSIS / EXPEDIENTE COMPLETO -->
+          <section class="card-bitacora p-4 border-round-xl">
+            <div class="flex align-items-center gap-2 mb-3">
+              <span class="material-symbols-outlined text-secondary text-xl">description</span>
+              <h2 class="font-title text-lg font-bold m-0 text-color">Expediente & Sinopsis</h2>
+            </div>
+            <div class="text-sm line-height-3 text-muted synopsis-text" [innerHTML]="g.description_raw || 'No se dispone de sinopsis detallada en los registros del archivo.'">
+            </div>
+          </section>
 
-            <!-- COLUMNA PRINCIPAL: Descripción y Capturas -->
-            <div class="col-12 lg:col-8">
-                <p-card header="Sobre el Juego" styleClass="mb-4">
-                    <p class="line-height-3 text-700 m-0 white-space-pre-line">
-                        {{ currentGame.description_raw || 'Sin descripción disponible.' }}
-                    </p>
-                </p-card>
-
-                <!-- GALERÍA DE CAPTURAS -->
-                @if (screenshots().length > 0) {
-                    <p-card header="Capturas de Pantalla">
-                        <div class="grid">
-                            @for (shot of screenshots(); track shot) {
-                                <div class="col-6 md:col-4">
-                                    <img [src]="shot" alt="Screenshot"
-                                        class="w-full border-round hover:shadow-4 transition-duration-200 cursor-pointer object-cover h-8rem" />
-                                </div>
-                            }
-                        </div>
-                    </p-card>
+          <!-- GALERÍA DE CAPTURAS -->
+          @if (screenshots().length > 0) {
+            <section class="card-bitacora p-4 border-round-xl">
+              <div class="flex align-items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-tertiary text-xl">photo_library</span>
+                <h2 class="font-title text-lg font-bold m-0 text-color">Capturas del Archivo</h2>
+              </div>
+              <div class="grid">
+                @for (shot of screenshots().slice(0, 4); track shot) {
+                  <div class="col-6 sm:col-6">
+                    <div class="screenshot-item border-round-lg overflow-hidden relative shadow-3">
+                      <img [src]="shot" alt="Captura de juego" class="w-full h-10rem sm:h-12rem object-cover" />
+                    </div>
+                  </div>
                 }
-            </div>
+              </div>
+            </section>
+          }
 
-            <!-- COLUMNA LATERAL: Panel de Usuario y Detalles -->
-            <div class="col-12 lg:col-4">
-
-                <!-- ACCIONES DE BIBLIOTECA DEL USUARIO -->
-                <p-card header="Mi Registro" styleClass="mb-4">
-                    @if (authService.currentUser()) {
-                        <div class="flex flex-column gap-3">
-                            <div class="flex flex-column gap-2">
-                                <label class="font-semibold" for="game-status-select">Estado en tu biblioteca:</label>
-                                <p-select 
-                                    id="game-status-select"
-                                    [options]="statusOptions" 
-                                    [(ngModel)]="selectedStatus"
-                                    (onChange)="onStatusOrRatingChange()" 
-                                    placeholder="Seleccionar estado" 
-                                    styleClass="w-full"
-                                    [disabled]="saving()" />
-                            </div>
-
-                            @if (selectedStatus()) {
-                                <div class="flex flex-column gap-2">
-                                    <label class="font-semibold">Tu Valoración Personal:</label>
-                                    <p-rating 
-                                        [(ngModel)]="userRating" 
-                                        (onRate)="onStatusOrRatingChange()"
-                                        (onCancel)="onStatusOrRatingChange()" 
-                                        [disabled]="saving()" />
-                                </div>
-                            }
-
-                            @if (userGame()) {
-                                <p-button 
-                                    label="Quitar de mi biblioteca" 
-                                    icon="pi pi-trash" 
-                                    severity="danger"
-                                    [text]="true" 
-                                    (onClick)="removeFromLibrary()" 
-                                    [loading]="saving()" 
-                                    styleClass="w-full mt-2" />
-                            }
-                        </div>
-                    } @else {
-                        <div class="text-center py-3">
-                            <p class="text-600 mb-3">Inicia sesión para agregar este juego a tu biblioteca y registrar tu progreso.</p>
-                            <a routerLink="/auth">
-                                <p-button label="Iniciar Sesión / Registrarse" icon="pi pi-user" styleClass="w-full" />
-                            </a>
-                        </div>
-                    }
-                </p-card>
-
-                <!-- FICHA TÉCNICA -->
-                <p-card header="Información Adicional">
-                    <ul class="list-none p-0 m-0 flex flex-column gap-3 text-sm">
-                        <li class="flex justify-content-between">
-                            <span class="text-500 font-semibold">Géneros:</span>
-                            <span class="font-medium text-right">
-                                {{ (currentGame.genres || []) | json }}
-                            </span>
-                        </li>
-                        @if (currentGame.developers.length) {
-                            <li class="flex justify-content-between">
-                                <span class="text-500 font-semibold">Desarrollador:</span>
-                                <span class="font-medium text-right">{{ currentGame.developers[0]?.name }}</span>
-                            </li>
-                        }
-                        @if (currentGame.publishers.length) {
-                            <li class="flex justify-content-between">
-                                <span class="text-500 font-semibold">Editor:</span>
-                                <span class="font-medium text-right">{{ currentGame.publishers[0]?.name }}</span>
-                            </li>
-                        }
-                        @if (currentGame.website) {
-                            <li class="flex justify-content-between">
-                                <span class="text-500 font-semibold">Sitio Oficial:</span>
-                                <a [href]="currentGame.website" target="_blank"
-                                    class="text-primary no-underline font-medium">Visitar</a>
-                            </li>
-                        }
-                    </ul>
-                </p-card>
-
-            </div>
         </div>
 
+        <!-- Right / Specs Column (4 Cols) -->
+        <div class="col-12 lg:col-4 flex flex-column gap-4">
+          
+          <div class="card-bitacora p-4 border-round-xl">
+            <h3 class="font-title text-base font-bold m-0 mb-3 text-color pb-2 border-bottom-1 surface-border">
+              Ficha Técnica
+            </h3>
+
+            <div class="flex flex-column gap-3 text-sm">
+              <div>
+                <span class="text-muted font-title uppercase font-semibold text-xs block mb-1">Desarrollador</span>
+                <span class="text-color font-semibold">{{ developersList() }}</span>
+              </div>
+
+              <div>
+                <span class="text-muted font-title uppercase font-semibold text-xs block mb-1">Editor / Publisher</span>
+                <span class="text-color font-semibold">{{ publishersList() }}</span>
+              </div>
+
+              <div>
+                <span class="text-muted font-title uppercase font-semibold text-xs block mb-1">Fecha de Estreno</span>
+                <span class="text-color font-semibold">{{ g.released || 'Desconocido' }}</span>
+              </div>
+
+              <div>
+                <span class="text-muted font-title uppercase font-semibold text-xs block mb-1">Sitio Web Oficial</span>
+                @if (g.website) {
+                  <a [href]="g.website" target="_blank" rel="noopener" class="text-secondary no-underline font-semibold flex align-items-center gap-1 hover:underline">
+                    <span>Visitar Web</span>
+                    <span class="material-symbols-outlined text-xs">open_in_new</span>
+                  </a>
+                } @else {
+                  <span class="text-muted">No disponible</span>
+                }
+              </div>
+
+              <div>
+                <span class="text-muted font-title uppercase font-semibold text-xs block mb-1">Comunidad RAWG</span>
+                <span class="text-tertiary font-bold flex align-items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">star</span>
+                  {{ g.rating }} / 5 ({{ g.ratings_count }} votos)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Return Action -->
+          <a routerLink="/dashboard" 
+             class="btn-return flex align-items-center justify-content-center gap-2 p-3 border-round-xl text-center no-underline font-title font-bold text-sm">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            <span>Volver al Catálogo</span>
+          </a>
+
+        </div>
+
+      </div>
     </div>
-}
+
+  }
+
+</div>

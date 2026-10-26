@@ -1,116 +1,224 @@
 <p-toast></p-toast>
 
-<div *ngIf="loading()" class="flex justify-content-center my-6">
-    <p-progressspinner></p-progressspinner>
-</div>
+<div class="tierlist-page-container">
 
-<div *ngIf="!loading()" class="tierlist-container p-3 md:p-5">
-
-    <!-- ENCABEZADO Y CONFIGURACIÓN -->
-    <div
-        class="flex flex-column lg:flex-row justify-content-between align-items-start lg:align-items-center mb-4 gap-3">
-        <div class="w-full lg:w-7">
-            <input type="text" pInputText [ngModel]="title()" (ngModelChange)="title.set($event)"
-                class="text-2xl md:text-3xl font-bold w-full p-inputtext-sm mb-2"
-                placeholder="Título de la Tierlist..." />
-            <textarea pTextarea [ngModel]="description()" (ngModelChange)="description.set($event)" rows="2"
-                class="w-full text-sm"
-                placeholder="Añade una descripción u opinión sobre esta clasificación..."></textarea>
-        </div>
-
-        <div class="flex align-items-center gap-3">
-            <div class="flex align-items-center gap-2">
-                <p-checkbox [binary]="true" [ngModel]="isPublic()" (ngModelChange)="isPublic.set($event)"
-                    inputId="publicCheck"></p-checkbox>
-                <label for="publicCheck" class="cursor-pointer text-sm font-semibold">Hacer Pública</label>
-            </div>
-
-            <p-button 
-                label="Volver" 
-                icon="pi pi-arrow-left" 
-                severity="secondary" 
-                [outlined]="true" 
-                routerLink="/dashboard">
-            </p-button>
-
-            <p-button label="Guardar Tierlist" icon="pi pi-save" [loading]="saving()" (onClick)="saveTierlist()">
-            </p-button>
-        </div>
+  @if (loading()) {
+    <div class="flex flex-column align-items-center justify-content-center py-8 gap-3" style="min-height: 60vh;">
+      <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando tierlist" />
+      <span class="text-xs font-title text-muted tracking-widest uppercase">Cargando Tablero de Clasificación...</span>
     </div>
+  } @else {
 
-    <!-- LIENZO DE TIERLIST (FILAS CLASIFICATORIAS) -->
-    <div class="tierlist-board flex flex-column gap-2 mb-5">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-5 flex flex-column gap-4">
 
-        <div *ngFor="let row of rows(); let i = index" class="tier-row flex border-round overflow-hidden shadow-1">
+      <!-- 1. BUILDER HEADER CONTROL HUB -->
+      <header class="builder-header p-3 sm:p-4 border-round-xl flex flex-column xl:flex-row align-items-start xl:align-items-center justify-content-between gap-3">
+        <!-- Title & Metadata -->
+        <div class="flex align-items-center gap-3 w-full xl:w-auto">
+          <div class="header-icon-box flex align-items-center justify-content-center border-round-lg flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-2xl">view_timeline</span>
+          </div>
+          <div class="flex flex-column w-full">
+            <div class="flex align-items-center gap-2 flex-wrap">
+              <input type="text" 
+                     [ngModel]="title()" 
+                     (ngModelChange)="title.set($event)"
+                     placeholder="Título de la Tierlist..." 
+                     class="tierlist-title-input font-title text-lg sm:text-xl font-bold border-none outline-none text-color bg-transparent" />
+              <span class="pill-badge pill-tertiary">Borrador</span>
+            </div>
+            <span class="text-xs text-muted font-title mt-1">
+              {{ totalRanked() }} ordenados en tablero • {{ totalUnranked() }} en banco
+            </span>
+          </div>
+        </div>
 
-            <!-- ETIQUETA LATERAL DEL NIVEL -->
-            <div class="tier-label flex align-items-center justify-content-center px-4 font-bold text-xl text-primary-900 select-none flex-shrink-0"
-                [style.backgroundColor]="row.color">
+        <!-- Tool Actions & Visibility Controls -->
+        <div class="flex flex-wrap align-items-center gap-2 w-full xl:w-auto justify-content-start xl:justify-content-end">
+          
+          <!-- Visibility Selector -->
+          <div class="visibility-pill flex align-items-center px-2 py-1 border-round-lg">
+            <span class="material-symbols-outlined text-sm text-muted mr-1">public</span>
+            <select [ngModel]="isPublic()" 
+                    (ngModelChange)="isPublic.set($event)"
+                    class="bg-transparent border-none text-color font-title text-xs font-bold outline-none cursor-pointer">
+              <option [ngValue]="true" class="bg-surface-mid">Público</option>
+              <option [ngValue]="false" class="bg-surface-mid">Privado</option>
+            </select>
+          </div>
+
+          <!-- Utility Buttons -->
+          <button type="button" 
+                  (click)="addRow()" 
+                  class="btn-tool flex align-items-center gap-1 px-3 py-2 border-round-lg font-title text-xs font-semibold cursor-pointer border-none">
+            <span class="material-symbols-outlined text-sm">playlist_add</span>
+            <span>Añadir Fila (+)</span>
+          </button>
+
+          <button type="button" 
+                  (click)="clearBoard()" 
+                  class="btn-tool flex align-items-center gap-1 px-3 py-2 border-round-lg font-title text-xs font-semibold cursor-pointer border-none">
+            <span class="material-symbols-outlined text-sm">undo</span>
+            <span>Vaciar Tablero</span>
+          </button>
+
+          <!-- Primary Save / Publish Button -->
+          <button type="button" 
+                  (click)="saveTierlist()" 
+                  [disabled]="saving()"
+                  class="btn-publish flex align-items-center gap-2 px-4 py-2 border-round-lg font-title font-bold text-xs cursor-pointer border-none">
+            <span class="material-symbols-outlined text-sm">rocket_launch</span>
+            <span>{{ saving() ? 'Guardando...' : 'Publicar Tierlist' }}</span>
+          </button>
+
+        </div>
+      </header>
+
+      <!-- 2. THE TIER MATRIX BOARD -->
+      <section class="tier-matrix-board p-2 sm:p-3 border-round-xl flex flex-column gap-2" id="tierBoard">
+        @for (row of rows(); track row.tier; let rowIndex = $index) {
+          <div class="tier-row flex flex-column sm:flex-row align-items-stretch border-round-lg overflow-hidden">
+            
+            <!-- Tier Letter Header -->
+            <div class="tier-letter-badge flex sm:flex-column align-items-center justify-content-between sm:justify-content-center p-3 flex-shrink-0"
+                 [style.background-color]="tierColors[row.tier] || row.color || '#6366f1'">
+              <span class="font-title text-3xl sm:text-4xl font-bold leading-none select-none text-white">
                 {{ row.tier }}
+              </span>
+              <span class="tier-subtitle font-title text-white opacity-80 uppercase tracking-widest sm:mt-1" style="font-size: 9px;">
+                {{ tierDescriptions[row.tier] || 'Rango' }}
+              </span>
             </div>
 
-            <!-- CONTENEDOR DE JUEGOS DE LA FILA (CDK DROP LIST) -->
-            <div [id]="'tier-row-' + i" cdkDropList [cdkDropListData]="row.games"
-                [cdkDropListConnectedTo]="connectedDropLists()" (cdkDropListDropped)="onDrop($event)"
-                class="tier-drop-zone flex flex-wrap align-items-center gap-2 p-2 flex-1 min-h-7rem surface-800">
-
-                <!-- ITEM ARRASTRABLE (PORTADA) -->
-                <div *ngFor="let game of row.games; let gIndex = index" cdkDrag
-                    class="game-card relative border-round overflow-hidden cursor-move shadow-3 border-1 surface-border">
-
-                    <img [src]="game.game_cover" [alt]="game.game_title" class="w-5rem h-7rem object-cover block"
-                        [title]="game.game_title" />
-
-                    <button type="button"
-                        class="delete-btn absolute top-0 right-0 p-1 border-none surface-900 border-circle text-white cursor-pointer opacity-0 transition-opacity"
-                        (click)="removeGameFromTablero(row.games, gIndex)">
-                        <i class="pi pi-times text-xs"></i>
+            <!-- Tier Dropzone (CDK Drag & Drop) -->
+            <div class="tier-dropzone flex-1 p-2 flex flex-wrap align-items-center gap-2"
+                 cdkDropList
+                 [id]="'tier-row-' + rowIndex"
+                 [cdkDropListData]="row.games"
+                 [cdkDropListConnectedTo]="connectedDropLists()"
+                 (cdkDropListDropped)="onDrop($event)">
+              
+              @for (game of row.games; track game.game_id; let gameIndex = $index) {
+                <div class="tier-game-card relative border-round overflow-hidden cursor-grab flex-shrink-0 shadow-3"
+                     cdkDrag
+                     [title]="game.game_title">
+                  <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" 
+                       [alt]="game.game_title" 
+                       class="w-full h-full object-cover pointer-events-none" />
+                  
+                  <div class="card-overlay flex flex-column justify-content-between p-1">
+                    <button type="button" 
+                            (click)="removeGameFromTablero(row.games, gameIndex, $event)" 
+                            class="btn-remove-card border-none border-round-circle flex align-items-center justify-content-center self-end cursor-pointer">
+                      <span class="material-symbols-outlined text-xs">close</span>
                     </button>
+                    <span class="game-title-chip font-title truncate text-white" style="font-size: 9px;">
+                      {{ game.game_title }}
+                    </span>
+                  </div>
                 </div>
+              }
+
+              @if (row.games.length === 0) {
+                <span class="drop-hint text-xs text-muted font-title px-3 py-4 select-none">
+                  Arrastra portadas aquí para clasificar en rango {{ row.tier }}
+                </span>
+              }
 
             </div>
+
+          </div>
+        }
+      </section>
+
+      <!-- 3. UNRANKED POOL & RAWG GAME SEARCH -->
+      <section class="unranked-pool-section p-3 sm:p-4 border-round-xl flex flex-column gap-3">
+        
+        <!-- Header & Autocomplete Search Bar -->
+        <div class="flex flex-column sm:flex-row sm:align-items-center justify-content-between gap-3">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-xl">grid_view</span>
+            <h3 class="font-title text-base font-bold m-0 text-color">Banco de Videojuegos (Unranked Pool)</h3>
+          </div>
+
+          <!-- RAWG Search to add to bank -->
+          <div class="w-full sm:w-20rem">
+            <p-autocomplete [ngModel]="selectedGameSearch()" 
+                            (ngModelChange)="addGameToBank($event)"
+                            [suggestions]="gameSuggestions()"
+                            (completeMethod)="searchGames($event)" 
+                            optionLabel="name"
+                            placeholder="Buscar en RAWG y agregar al banco..." 
+                            [delay]="300" 
+                            [minQueryLength]="2"
+                            styleClass="w-full" 
+                            inputStyleClass="w-full p-inputtext-sm">
+              <ng-template let-g pTemplate="item">
+                <div class="flex align-items-center gap-2 p-1">
+                  <img [src]="g.background_image || 'assets/images/placeholder-game.png'" 
+                       [alt]="g.name" 
+                       class="w-2rem h-2rem border-round object-cover" />
+                  <span class="font-title text-xs font-semibold truncate">{{ g.name }}</span>
+                </div>
+              </ng-template>
+            </p-autocomplete>
+          </div>
+        </div>
+
+        <!-- Draggable Pool -->
+        <div class="pool-dropzone p-3 border-round-xl flex flex-wrap align-items-center gap-3"
+             cdkDropList
+             id="bank-list"
+             [cdkDropListData]="bankGames()"
+             [cdkDropListConnectedTo]="connectedDropLists()"
+             (cdkDropListDropped)="onDrop($event)">
+          
+          @for (game of bankGames(); track game.game_id; let bIndex = $index) {
+            <div class="pool-game-card relative border-round-lg overflow-hidden cursor-grab flex-shrink-0 shadow-4"
+                 cdkDrag
+                 [title]="game.game_title">
+              <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" 
+                   [alt]="game.game_title" 
+                   class="w-full h-full object-cover pointer-events-none" />
+              
+              <div class="card-overlay flex flex-column justify-content-between p-1.5">
+                <button type="button" 
+                        (click)="removeGameFromTablero(bankGames(), bIndex, $event)" 
+                        class="btn-remove-card border-none border-round-circle flex align-items-center justify-content-center self-end cursor-pointer">
+                  <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+                <div>
+                  <span class="font-title text-xs font-bold text-white block truncate">
+                    {{ game.game_title }}
+                  </span>
+                  <span class="text-secondary font-title font-semibold" style="font-size: 9px;">Arrastra al tablero</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (bankGames().length === 0) {
+            <div class="flex align-items-center justify-content-center w-full py-6 text-muted font-title text-xs gap-2">
+              <span class="material-symbols-outlined text-base">search</span>
+              <span>Utiliza el buscador superior para agregar videojuegos al banco y armar tu ranking.</span>
+            </div>
+          }
 
         </div>
+
+        <!-- Pool Footer Info -->
+        <div class="flex align-items-center justify-content-between text-xs text-muted font-title pt-1 border-top-1 surface-border">
+          <span class="flex align-items-center gap-1">
+            <span class="material-symbols-outlined text-sm text-tertiary">info</span>
+            <span>Arrastra las portadas verticalmente hacia cualquier fila del tablero.</span>
+          </span>
+          <span>{{ bankGames().length }} títulos listos para ordenar</span>
+        </div>
+
+      </section>
 
     </div>
 
-    <!-- SECCIÓN BANCO DE JUEGOS (UNRANKED POOL) -->
-    <p-card header="Banco de Juegos (Sin Clasificar)" styleClass="shadow-2">
-
-        <!-- BUSCADOR PARA AGREGAR JUEGOS AL BANCO -->
-        <div class="mb-4">
-            <label class="block font-semibold mb-2 text-sm">Buscar y agregar juegos a tu lista:</label>
-            <p-autocomplete [ngModel]="selectedGameSearch()" [suggestions]="gameSuggestions()"
-                (completeMethod)="searchGames($event)" (onSelect)="addGameToBank($event.value)" optionLabel="name"
-                placeholder="Escribe el nombre de un videojuego..." styleClass="w-full max-w-20rem"
-                inputStyleClass="w-full">
-            </p-autocomplete>
-        </div>
-
-        <!-- CONTENEDOR DEL BANCO (CDK DROP LIST) -->
-        <div id="bank-list" cdkDropList [cdkDropListData]="bankGames()" [cdkDropListConnectedTo]="connectedDropLists()"
-            (cdkDropListDropped)="onDrop($event)"
-            class="bank-drop-zone flex flex-wrap gap-2 p-3 border-round border-2 border-dashed surface-border min-h-8rem surface-900">
-
-            <div *ngIf="bankGames().length === 0" class="w-full text-center py-4 text-400">
-                Arrastra juegos aquí o usa el buscador superior para añadir portadas a tu banco.
-            </div>
-
-            <div *ngFor="let game of bankGames(); let bIndex = index" cdkDrag
-                class="game-card relative border-round overflow-hidden cursor-move shadow-3 border-1 surface-border">
-
-                <img [src]="game.game_cover" [alt]="game.game_title" class="w-5rem h-7rem object-cover block"
-                    [title]="game.game_title" />
-
-                <button type="button"
-                    class="delete-btn absolute top-0 right-0 p-1 border-none surface-900 border-circle text-white cursor-pointer opacity-0 transition-opacity"
-                    (click)="removeGameFromTablero(bankGames(), bIndex)">
-                    <i class="pi pi-times text-xs"></i>
-                </button>
-            </div>
-
-        </div>
-
-    </p-card>
+  }
 
 </div>

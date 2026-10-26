@@ -49,6 +49,42 @@ export class RawgService {
   }
 
   /**
+   * Obtiene catálogo filtrado para la vista Explorar / Vault
+   */
+  getCatalogGames(filters: {
+    ordering?: string;
+    genres?: string;
+    dates?: string;
+    metacritic?: string;
+    search?: string;
+    pageSize?: number;
+  } = {}): Observable<Game[]> {
+    let params = new HttpParams()
+      .set('key', this.apiKey)
+      .set('page_size', (filters.pageSize || 15).toString());
+
+    if (filters.ordering) {
+      params = params.set('ordering', filters.ordering);
+    }
+    if (filters.genres) {
+      params = params.set('genres', filters.genres);
+    }
+    if (filters.dates) {
+      params = params.set('dates', filters.dates);
+    }
+    if (filters.metacritic) {
+      params = params.set('metacritic', filters.metacritic);
+    }
+    if (filters.search) {
+      params = params.set('search', filters.search);
+    }
+
+    return this.http
+      .get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params })
+      .pipe(map(response => response.results));
+  }
+
+  /**
    * Obtiene la galería de capturas de pantalla de un juego
    */
   getGameScreenshots(id: number | string): Observable<string[]> {

@@ -12,12 +12,7 @@ import {
 } from '@angular/cdk/drag-drop';
 
 // PrimeNG
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { AutoCompleteModule, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
-import { CheckboxModule } from 'primeng/checkbox';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
@@ -35,14 +30,8 @@ import { AuthService } from '../../services/auth';
   imports: [
     CommonModule,
     FormsModule,
-    RouterLink,
     DragDropModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    TextareaModule,
     AutoCompleteModule,
-    CheckboxModule,
     ToastModule,
     ProgressSpinnerModule
   ],
@@ -60,7 +49,7 @@ export class TierlistEditorComponent implements OnInit {
 
   // Datos del Formulario
   tierlistId = signal<string | null>(null);
-  title = signal<string>('Mi Tierlist de Videojuegos');
+  title = signal<string>('Ranking Definitivo: Los Mejores Videojuegos');
   description = signal<string>('');
   isPublic = signal<boolean>(true);
   saving = signal<boolean>(false);
@@ -76,6 +65,31 @@ export class TierlistEditorComponent implements OnInit {
   selectedGameSearch = signal<Game | null>(null);
   gameSuggestions = signal<Game[]>([]);
 
+  // Métricas de estado
+  totalRanked = computed(() => {
+    return this.rows().reduce((sum, r) => sum + r.games.length, 0);
+  });
+
+  totalUnranked = computed(() => {
+    return this.bankGames().length;
+  });
+
+  tierDescriptions: Record<string, string> = {
+    'S': 'Obra Maestra',
+    'A': 'Excelente',
+    'B': 'Destacado',
+    'C': 'Bueno',
+    'D': 'Prescindible'
+  };
+
+  tierColors: Record<string, string> = {
+    'S': '#dc2626',
+    'A': '#ea580c',
+    'B': '#f59e0b',
+    'C': '#10b981',
+    'D': '#06b6d4'
+  };
+
   // IDs de todos los contenedores conectables para Drag and Drop
   connectedDropLists = computed(() => {
     const rowIds = this.rows().map((_, index) => `tier-row-${index}`);
@@ -86,7 +100,24 @@ export class TierlistEditorComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadTierlist(id);
+    } else {
+      // Cargar juegos sugeridos populares en el unranked pool inicial para que no esté vacío
+      this.loadInitialPool();
     }
+  }
+
+  private loadInitialPool(): void {
+    this.rawgService.getPopularGames(8).subscribe({
+      next: (popular) => {
+        const pool: TierGame[] = popular.map(g => ({
+          game_id: g.id,
+          game_title: g.name,
+          game_cover: g.background_image
+        }));
+        this.bankGames.set(pool);
+      },
+      error: () => {}
+    });
   }
 
   private async loadTierlist(id: string): Promise<void> {
@@ -139,10 +170,8 @@ export class TierlistEditorComponent implements OnInit {
    */
   onDrop(event: CdkDragDrop<TierGame[]>): void {
     if (event.previousContainer === event.container) {
-      // Reordenar dentro de la misma lista
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // Mover entre diferentes filas o hacia el banco
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -153,8 +182,34 @@ export class TierlistEditorComponent implements OnInit {
   }
 
   // Elimina una portada del tablero/banco
-  removeGameFromTablero(list: TierGame[], index: number): void {
+  removeGameFromTablero(list: TierGame[], index: number, event: Event): void {
+    event.stopPropagation();
     list.splice(index, 1);
+  }
+
+  // Vaciar tablero y mover todo al pool
+  clearBoard(): void {
+    const allGames: TierGame[] = [];
+    const currentRows = this.rows();
+    currentRows.forEach(r => {
+      allGames.push(...r.games);
+      r.games = [];
+    });
+    this.rows.set([...currentRows]);
+    this.bankGames.update(pool => [...pool, ...allGames]);
+    this.messageService.add({ severity: 'info', summary: 'Tablero Vaciado', detail: 'Todos los juegos fueron devueltos al banco' });
+  }
+
+  // Añadir nueva fila
+  addRow(): void {
+    const letters = ['E', 'F', 'G'];
+    const currentCount = this.rows().length;
+    const nextLetter = letters[currentCount - 5] || `T${currentCount + 1}`;
+    
+    this.rows.update(list => [
+      ...list,
+      { tier: nextLetter, color: '#64748b', games: [] }
+    ]);
   }
 
   // Guardar en Supabase
@@ -182,7 +237,7 @@ export class TierlistEditorComponent implements OnInit {
           rows_data: this.rows()
         });
         this.tierlistId.set(created.id || null);
-        this.messageService.add({ severity: 'success', summary: 'Creado', detail: 'Tierlist guardada exitosamente' });
+        this.messageService.add({ severity: 'success', summary: 'Publicado', detail: 'Tierlist guardada exitosamente en el Vault' });
       }
     } catch (error: any) {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
