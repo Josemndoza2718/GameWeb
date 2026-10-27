@@ -46,6 +46,13 @@
                   <span>Top Recomendado</span>
                 </div>
 
+                @if (spot.playtime) {
+                  <div class="flex align-items-center gap-1 text-sm text-muted">
+                    <span class="material-symbols-outlined text-primary text-lg">timer</span>
+                    <span>{{ spot.playtime }}h Campaña media</span>
+                  </div>
+                }
+
                 <div class="flex align-items-center gap-1 text-sm text-muted">
                   <span class="material-symbols-outlined text-primary text-lg">star</span>
                   <span>{{ spot.rating }}/5 Comunidad</span>
@@ -71,7 +78,9 @@
 
           <!-- Spotlight Artwork -->
           <div class="col-12 lg:col-5 mt-4 lg:mt-0 flex align-items-center justify-content-center">
-            <div class="spotlight-image-wrapper relative w-full h-18rem sm:h-22rem border-round-xl overflow-hidden shadow-6">
+            <div class="spotlight-image-wrapper relative w-full h-18rem sm:h-22rem border-round-xl overflow-hidden shadow-6 cursor-pointer"
+                 [routerLink]="['/game', spot.id]"
+                 title="Ver expediente de {{ spot.name }}">
               <img [src]="spot.background_image || 'assets/images/placeholder-game.png'" 
                    [alt]="spot.name" 
                    class="w-full h-full object-cover" />
@@ -215,17 +224,72 @@
         <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando catálogo" />
         <span class="text-xs font-title text-muted tracking-widest uppercase">Cargando Archivo QuestLog...</span>
       </div>
-    } @else if (games().length === 0) {
-      <div class="empty-state text-center py-8 p-4 border-round-xl border-1 surface-border">
-        <span class="material-symbols-outlined text-5xl text-muted mb-2">inventory_2</span>
-        <h3 class="font-title text-xl font-bold m-0 mb-1">Sin Registros Coincidentes</h3>
-        <p class="text-sm text-muted m-0">Prueba ajustando los filtros de género, cronología o score.</p>
-      </div>
     } @else {
+      <!-- Results Header: Showing vs Total Counter & Search Bar -->
+      <div class="catalog-results-header flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <!-- Counter Info -->
+        <div class="flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">dataset</span>
+          <span class="font-title text-sm text-color">
+            Mostrando <strong class="text-primary font-bold">{{ games().length | number }}</strong> de <strong class="text-secondary font-bold">{{ totalGamesCount() | number }}</strong> videojuegos
+          </span>
+        </div>
+
+        <!-- Integrated Search Bar -->
+        <div class="catalog-search-box relative flex align-items-center flex-1 max-w-26rem sm:max-w-30rem">
+          <span class="material-symbols-outlined search-box-icon text-muted text-base absolute left-0 ml-3 pointer-events-none">search</span>
+          <input type="text"
+                 [value]="searchQuery()"
+                 (input)="onSearchInput($event)"
+                 (keydown.enter)="onSearchEnter()"
+                 placeholder="Filtrar títulos en la grilla..."
+                 class="catalog-search-input w-full py-2 pl-6 pr-5 border-round-lg font-body text-xs text-color" />
+          @if (searchQuery()) {
+            <button type="button" 
+                    (click)="clearSearch()"
+                    class="clear-search-btn absolute right-0 mr-2 flex align-items-center justify-content-center border-none border-round-circle cursor-pointer"
+                    title="Limpiar búsqueda">
+              <span class="material-symbols-outlined text-xs">close</span>
+            </button>
+          }
+        </div>
+        
+        <!-- Pagination Page Badge -->
+        <div class="flex align-items-center gap-2 text-xs text-muted font-title">
+          <span class="catalog-page-badge px-2 py-1 border-round font-semibold">
+            Página {{ currentPage() }} de {{ totalPages() | number }}
+          </span>
+        </div>
+      </div>
+
+      @if (games().length === 0) {
+        <div class="empty-state text-center py-8 p-4 border-round-xl border-1 surface-border">
+          <span class="material-symbols-outlined text-5xl text-muted mb-2">
+            {{ searchQuery() ? 'search_off' : 'inventory_2' }}
+          </span>
+          <h3 class="font-title text-xl font-bold m-0 mb-1">
+            {{ searchQuery() ? 'Sin Títulos para esta Búsqueda' : 'Sin Registros Coincidentes' }}
+          </h3>
+          <p class="text-sm text-muted m-0">
+            {{ searchQuery() ? 'No se encontraron videojuegos que coincidan con "' + searchQuery() + '".' : 'Prueba ajustando los filtros de género, cronología o score.' }}
+          </p>
+          @if (searchQuery()) {
+            <button type="button" 
+                    (click)="clearSearch()" 
+                    class="btn-vault-action btn-primary-vault mt-3 px-3 py-2 border-round-lg border-none font-bold text-xs cursor-pointer inline-flex align-items-center gap-1">
+              <span class="material-symbols-outlined text-sm">refresh</span>
+              <span>Restablecer búsqueda</span>
+            </button>
+          }
+        </div>
+      } @else {
+
       <div class="grid catalog-grid">
         @for (game of games(); track game.id) {
           <div class="col-6 sm:col-4 md:col-3 lg:col-12-custom">
-            <div class="catalog-game-card flex flex-column h-full border-round-xl overflow-hidden relative group">
+            <div class="catalog-game-card flex flex-column h-full border-round-xl overflow-hidden relative group cursor-pointer"
+                 [routerLink]="['/game', game.id]"
+                 [title]="'Ver ficha de ' + game.name">
               
               <!-- Card Image & Overlay -->
               <div class="card-cover-wrapper relative w-full overflow-hidden">
@@ -239,6 +303,9 @@
                 <div class="absolute top-0 left-0 m-2 flex align-items-center gap-1">
                   <span class="tag-pill">{{ getPlatformNames(game) }}</span>
                   <span class="tag-pill">{{ getYear(game.released) }}</span>
+                  @if (game.playtime) {
+                    <span class="tag-pill">{{ game.playtime }}h</span>
+                  }
                 </div>
 
                 <!-- Gold Score Badge -->
@@ -247,7 +314,7 @@
                 </div>
 
                 <!-- Slide-up Instant Action Overlay -->
-                <div class="instant-action-overlay flex flex-column gap-1 p-2">
+                <div class="instant-action-overlay flex flex-column gap-1 p-2" (click)="$event.stopPropagation()">
                   <span class="action-prompt text-center font-title" style="font-size: 10px;">Registrar a tu bitácora:</span>
                   <div class="grid p-0 m-0 gap-1">
                     <button type="button" 
@@ -279,7 +346,7 @@
                   <span class="genre-text font-title font-semibold" style="font-size: 11px;">
                     {{ game.genres && game.genres[0] ? game.genres[0].name : 'Aventura' }}
                   </span>
-                  <a [routerLink]="['/game', game.id]" class="no-underline text-color">
+                  <a [routerLink]="['/game', game.id]" (click)="$event.stopPropagation()" class="no-underline text-color">
                     <h3 class="card-title font-title font-bold m-0 mt-1 truncate" [title]="game.name">
                       {{ game.name }}
                     </h3>
@@ -301,7 +368,34 @@
           </div>
         }
       </div>
+
+      <!-- 5. LOAD MORE CONTROLS -->
+      @if (hasNextPage()) {
+        <div class="load-more-container flex flex-column align-items-center justify-content-center mt-5 pt-3 gap-2">
+          <div class="text-xs text-muted font-title">
+            Has explorado <strong class="text-color">{{ games().length | number }}</strong> de <strong class="text-secondary">{{ totalGamesCount() | number }}</strong> videojuegos
+          </div>
+          <button type="button" 
+                  class="btn-load-more flex align-items-center justify-content-center gap-2 px-5 py-3 border-round-xl font-title font-bold text-sm cursor-pointer border-none"
+                  [disabled]="loadingMore()"
+                  (click)="loadMore()">
+            @if (loadingMore()) {
+              <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" styleClass="w-1rem h-1rem" />
+              <span>Cargando más videojuegos...</span>
+            } @else {
+              <span class="material-symbols-outlined text-lg">expand_more</span>
+              <span>Cargar Más Videojuegos (+20)</span>
+            }
+          </button>
+        </div>
+      } @else if (games().length > 0) {
+        <div class="text-center py-5 text-muted text-xs font-title border-top-1 surface-border mt-5">
+          <span class="material-symbols-outlined text-base vertical-align-middle mr-1 text-primary">check_circle</span>
+          <span>Has visualizado todos los registros disponibles para esta búsqueda ({{ totalGamesCount() | number }} títulos).</span>
+        </div>
+      }
     }
+  }
 
   </section>
 

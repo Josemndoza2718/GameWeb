@@ -49,7 +49,7 @@ export class RawgService {
   }
 
   /**
-   * Obtiene catálogo filtrado para la vista Explorar / Vault
+   * Obtiene catálogo filtrado para la vista Explorar / Vault con paginación
    */
   getCatalogGames(filters: {
     ordering?: string;
@@ -58,11 +58,15 @@ export class RawgService {
     metacritic?: string;
     search?: string;
     pageSize?: number;
-  } = {}): Observable<Game[]> {
+    page?: number;
+  } = {}): Observable<RawgResponse<Game>> {
     let params = new HttpParams()
       .set('key', this.apiKey)
-      .set('page_size', (filters.pageSize || 15).toString());
+      .set('page_size', (filters.pageSize || 20).toString());
 
+    if (filters.page) {
+      params = params.set('page', filters.page.toString());
+    }
     if (filters.ordering) {
       params = params.set('ordering', filters.ordering);
     }
@@ -79,9 +83,7 @@ export class RawgService {
       params = params.set('search', filters.search);
     }
 
-    return this.http
-      .get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params })
-      .pipe(map(response => response.results));
+    return this.http.get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params });
   }
 
   /**

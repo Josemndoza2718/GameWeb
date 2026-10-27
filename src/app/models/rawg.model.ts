@@ -28,6 +28,7 @@ export interface Game {
     rating: number;
     ratings_count: number;
     metacritic?: number;
+    playtime?: number;
     platforms?: PlatformInfo[];
     genres?: Genre[];
 }

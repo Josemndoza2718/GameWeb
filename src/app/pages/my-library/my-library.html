@@ -5,11 +5,13 @@
   <!-- 1. TOP PROFILE BANNER & STAGE -->
   <section class="profile-stage-section py-4 sm:py-5 border-bottom-1 surface-border">
     <div class="max-w-7xl mx-auto px-3 sm:px-4">
-      
+
       <!-- Breadcrumb & Node status -->
       <div class="flex align-items-center justify-content-between pb-3 flex-wrap gap-2">
-        <div class="flex align-items-center gap-2 text-muted font-title uppercase tracking-wider" style="font-size: 11px;">
-          <a routerLink="/dashboard" class="no-underline text-muted hover:text-primary transition-colors">Vault Node 09</a>
+        <div class="flex align-items-center gap-2 text-muted font-title uppercase tracking-wider"
+          style="font-size: 11px;">
+          <a routerLink="/dashboard" class="no-underline text-muted hover:text-primary transition-colors">Vault Node
+            09</a>
           <span>/</span>
           <span class="text-primary font-bold">Personal Backlog Matrix</span>
           <span>/</span>
@@ -23,14 +25,16 @@
 
       <!-- Bento Profile Identity Block -->
       <div class="grid align-items-stretch">
-        
+
         <!-- Player Bio & Level Progression Card -->
         <div class="col-12 lg:col-7">
-          <div class="bento-profile-card h-full p-4 border-round-xl relative overflow-hidden flex flex-column justify-content-between">
+          <div
+            class="bento-profile-card h-full p-4 border-round-xl relative overflow-hidden flex flex-column justify-content-between">
             <div class="watermark-level select-none">{{ level() }}</div>
 
             <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center gap-3 relative z-1">
-              <div class="avatar-wrapper relative flex-shrink-0">
+              <div class="avatar-wrapper relative flex-shrink-0 cursor-pointer" (click)="toggleXpModal()"
+                title="Clic para ver criterios de nivel">
                 <div class="avatar-large flex align-items-center justify-content-center border-round-xl">
                   {{ userInitial() }}
                 </div>
@@ -44,8 +48,12 @@
                   <h1 class="font-title text-2xl sm:text-3xl font-bold m-0 text-color">
                     {{ username() }}
                   </h1>
-                  <span class="pill-badge pill-primary">Chrono Archivist</span>
-                  <span class="pill-badge pill-secondary">PRO</span>
+                  <span class="pill-badge pill-primary">{{ rankTitle() }}</span>
+                  <button type="button" (click)="toggleXpModal()"
+                    class="pill-badge pill-secondary border-none cursor-pointer flex align-items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">info</span>
+                    <span>XP Info</span>
+                  </button>
                 </div>
                 <p class="text-xs sm:text-sm text-muted m-0 mt-1 line-height-2 max-w-28rem">
                   Colección privada curada y bitácora de progreso de videojuegos retro y modernos.
@@ -53,11 +61,16 @@
               </div>
             </div>
 
-            <!-- XP Gauge Bar -->
-            <div class="mt-4 relative z-1">
+            <!-- XP Gauge Bar (Clickable to view criteria) -->
+            <div class="mt-4 relative z-1 cursor-pointer" (click)="toggleXpModal()" title="Clic para ver cómo ganar XP">
               <div class="flex align-items-center justify-content-between text-xs font-title mb-1">
-                <span class="text-muted">Progreso a Nivel {{ level() + 1 }}</span>
-                <span class="text-primary font-bold">{{ xpProgress().current }} / {{ xpProgress().max }} XP ({{ xpProgress().percent }}%)</span>
+                <span class="text-muted flex align-items-center gap-1">
+                  <span>Progreso a Nivel {{ level() + 1 }}</span>
+                  <span class="material-symbols-outlined text-xs text-primary">help</span>
+                </span>
+                <span class="text-primary font-bold">
+                  {{ xpProgress().current }} / {{ xpProgress().max }} XP ({{ xpProgress().percent }}%)
+                </span>
               </div>
               <div class="xp-track w-full border-round-3xl overflow-hidden">
                 <div class="xp-bar" [style.width.%]="xpProgress().percent"></div>
@@ -79,7 +92,6 @@
             </div>
 
             <div class="my-3 flex align-items-center justify-around gap-3">
-              <!-- Radial Meter Placeholder / Stat Display -->
               <div class="circle-stat flex flex-column align-items-center justify-content-center">
                 <span class="font-title text-3xl font-bold text-tertiary line-height-1">{{ completionRatio() }}%</span>
                 <span class="text-muted font-title uppercase mt-1" style="font-size: 9px;">Ratio Platino</span>
@@ -99,12 +111,14 @@
                     <span class="dot-indicator dot-secondary"></span>
                     <span class="text-xs font-title font-semibold text-color">En Progreso / Backlog</span>
                   </div>
-                  <span class="font-title font-bold text-sm text-secondary">{{ playingGames().length + planToPlayGames().length }}</span>
+                  <span class="font-title font-bold text-sm text-secondary">{{ playingGames().length +
+                    planToPlayGames().length }}</span>
                 </div>
               </div>
             </div>
 
-            <div class="flex align-items-center justify-content-between text-xs text-muted font-title pt-1 border-top-1 surface-border">
+            <div
+              class="flex align-items-center justify-content-between text-xs text-muted font-title pt-1 border-top-1 surface-border">
               <span>{{ completedGames().length }} Victorias Registradas</span>
               <span>{{ planToPlayGames().length }} Pendientes en Bitácora</span>
             </div>
@@ -173,142 +187,215 @@
 
   <!-- 2. LIBRARY TABS & GAMES COLLECTION -->
   <section class="max-w-7xl mx-auto px-3 sm:px-4 py-5">
-    
-    @if (loading()) {
-      <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
-        <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando biblioteca" />
-        <span class="text-xs font-title text-muted tracking-widest uppercase">Consultando Bitácora Personal...</span>
-      </div>
-    } @else {
-      <!-- PRIME NG TABS -->
-      <p-tabs value="0">
-        <p-tablist>
-          <p-tab value="0">Jugando ({{ playingGames().length }})</p-tab>
-          <p-tab value="1">Completados ({{ completedGames().length }})</p-tab>
-          <p-tab value="2">Por Jugar ({{ planToPlayGames().length }})</p-tab>
-          <p-tab value="3">En Espera ({{ onHoldGames().length }})</p-tab>
-          <p-tab value="4">Abandonados ({{ droppedGames().length }})</p-tab>
-          <p-tab value="5">Todos ({{ library().length }})</p-tab>
-        </p-tablist>
 
-        <p-tabpanels class="pt-4">
-          <p-tabpanel value="0">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: playingGames() }"></ng-container>
-          </p-tabpanel>
-          <p-tabpanel value="1">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: completedGames() }"></ng-container>
-          </p-tabpanel>
-          <p-tabpanel value="2">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: planToPlayGames() }"></ng-container>
-          </p-tabpanel>
-          <p-tabpanel value="3">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: onHoldGames() }"></ng-container>
-          </p-tabpanel>
-          <p-tabpanel value="4">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: droppedGames() }"></ng-container>
-          </p-tabpanel>
-          <p-tabpanel value="5">
-            <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: library() }"></ng-container>
-          </p-tabpanel>
-        </p-tabpanels>
-      </p-tabs>
+    @if (loading()) {
+    <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
+      <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando biblioteca" />
+      <span class="text-xs font-title text-muted tracking-widest uppercase">Consultando Bitácora Personal...</span>
+    </div>
+    } @else {
+    <!-- PRIME NG TABS -->
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Jugando ({{ playingGames().length }})</p-tab>
+        <p-tab value="1">Completados ({{ completedGames().length }})</p-tab>
+        <p-tab value="2">Por Jugar ({{ planToPlayGames().length }})</p-tab>
+        <p-tab value="3">En Espera ({{ onHoldGames().length }})</p-tab>
+        <p-tab value="4">Abandonados ({{ droppedGames().length }})</p-tab>
+        <p-tab value="5">Todos ({{ library().length }})</p-tab>
+      </p-tablist>
+
+      <p-tabpanels class="pt-4">
+        <p-tabpanel value="0">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: playingGames() }"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: completedGames() }"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: planToPlayGames() }"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel value="3">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: onHoldGames() }"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel value="4">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: droppedGames() }"></ng-container>
+        </p-tabpanel>
+        <p-tabpanel value="5">
+          <ng-container *ngTemplateOutlet="gamesGrid; context: { $implicit: library() }"></ng-container>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
     }
 
     <!-- TEMPLATE DE REJILLA REUTILIZABLE -->
     <ng-template #gamesGrid let-gamesList>
       @if (gamesList.length === 0) {
-        <div class="empty-library-state text-center py-8 p-5 border-round-xl border-1 surface-border">
-          <span class="material-symbols-outlined text-5xl text-muted mb-2">inbox</span>
-          <h3 class="font-title text-xl font-bold m-0 mb-1">Sin Juegos En Esta Categoría</h3>
-          <p class="text-sm text-muted m-0 mb-4">Descubre títulos en el catálogo general y guárdalos en tu bitácora.</p>
-          <a routerLink="/dashboard" class="btn-vault-action btn-primary-vault inline-flex align-items-center gap-2 px-4 py-2 border-round-lg no-underline font-bold text-sm">
-            <span class="material-symbols-outlined text-base">explore</span>
-            <span>Explorar Catálogo</span>
-          </a>
-        </div>
+      <div class="empty-library-state text-center py-8 p-5 border-round-xl border surface-border">
+        <span class="material-symbols-outlined text-5xl text-muted mb-2">inbox</span>
+        <h3 class="font-title text-xl font-bold m-0 mb-1">Sin Juegos En Esta Categoría</h3>
+        <p class="text-sm text-muted m-0 mb-4">Descubre títulos en el catálogo general y guárdalos en tu bitácora.</p>
+        <a routerLink="/dashboard"
+          class="btn-vault-action btn-primary-vault inline-flex align-items-center gap-2 px-4 py-2 border-round-lg no-underline font-bold text-sm">
+          <span class="material-symbols-outlined text-base">explore</span>
+          <span>Explorar Catálogo</span>
+        </a>
+      </div>
       } @else {
-        <div class="grid library-grid">
-          @for (game of gamesList; track game.game_id) {
-            <div class="col-12 sm:col-6 md:col-4 lg:col-3">
-              <div class="library-card flex flex-column h-full border-round-xl overflow-hidden relative">
-                
-                <!-- Game Cover with Aspect Ratio -->
-                <div class="lib-cover-wrapper relative w-full overflow-hidden">
-                  <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" 
-                       [alt]="game.game_title" 
-                       loading="lazy"
-                       class="w-full h-full object-cover" />
-                  <div class="cover-gradient"></div>
+      <div class="grid library-grid">
+        @for (game of gamesList; track game.game_id) {
+        <div class="col-12 sm:col-6 md:col-4 lg:col-3">
+          <div class="library-card flex flex-column h-full border-round-xl overflow-hidden relative cursor-pointer"
+               [routerLink]="['/game', game.game_id]"
+               [title]="'Ver ficha de ' + game.game_title">
 
-                  <!-- Status Pill Badge -->
-                  <div class="absolute top-0 right-0 m-2">
-                    <span class="pill-badge pill-primary">{{ game.status }}</span>
-                  </div>
-                </div>
+            <!-- Game Cover with Aspect Ratio -->
+            <div class="lib-cover-wrapper relative w-full overflow-hidden">
+              <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" [alt]="game.game_title"
+                loading="lazy" class="w-full h-full object-cover" />
+              <div class="cover-gradient"></div>
 
-                <!-- Card Body -->
-                <div class="p-3 flex-1 flex flex-column justify-content-between">
-                  <div>
-                    <h3 class="font-title text-base font-bold m-0 mb-3 truncate" [title]="game.game_title">
-                      {{ game.game_title }}
-                    </h3>
-
-                    <div class="flex flex-column gap-3">
-                      <!-- Dropdown de estado -->
-                      <div class="flex flex-column gap-1">
-                        <small class="text-muted font-title uppercase font-semibold" style="font-size: 10px;">
-                          Estado en Bitácora:
-                        </small>
-                        <p-select [options]="statusOptions" 
-                                  [ngModel]="game.status"
-                                  (onChange)="onStatusChange(game, $event.value)" 
-                                  appendTo="body"
-                                  styleClass="w-full p-inputtext-sm">
-                        </p-select>
-                      </div>
-
-                      <!-- Calificación personal -->
-                      <div class="flex flex-column gap-1">
-                        <small class="text-muted font-title uppercase font-semibold" style="font-size: 10px;">
-                          Tu Puntuación (1-10):
-                        </small>
-                        <div class="flex align-items-center justify-content-between">
-                          <p-rating [ngModel]="getStars(game.user_rating)"
-                                    (onRate)="onRatingChange(game, $event.value)">
-                          </p-rating>
-                          <span class="font-title font-bold text-xs text-primary">
-                            {{ game.user_rating ? game.user_rating + '/10' : 'Sin calificar' }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Card Footer Actions -->
-                  <div class="flex align-items-center justify-content-between mt-3 pt-2 border-top-1 surface-border">
-                    <a [routerLink]="['/game', game.game_id]" 
-                       class="link-details flex align-items-center gap-1 font-title font-semibold text-xs no-underline">
-                      <span class="material-symbols-outlined text-sm">visibility</span>
-                      <span>Ver Ficha</span>
-                    </a>
-                    <button type="button" 
-                            (click)="removeGame(game.game_id)" 
-                            class="btn-delete flex align-items-center justify-content-center border-none p-1 border-round cursor-pointer"
-                            pTooltip="Eliminar de mi biblioteca"
-                            tooltipPosition="left">
-                      <span class="material-symbols-outlined text-base">delete</span>
-                    </button>
-                  </div>
-
-                </div>
-
+              <!-- Status Pill Badge -->
+              <div class="absolute top-0 right-0 m-2">
+                <span class="pill-badge pill-primary">{{ game.status }}</span>
               </div>
             </div>
-          }
+
+            <!-- Card Body -->
+            <div class="p-3 flex-1 flex flex-column justify-content-between">
+              <div>
+                <h3 class="font-title text-base font-bold m-0 mb-3 truncate" [title]="game.game_title">
+                  <a [routerLink]="['/game', game.game_id]" (click)="$event.stopPropagation()"
+                     class="no-underline text-color hover:text-primary transition-colors">
+                    {{ game.game_title }}
+                  </a>
+                </h3>
+
+                <div class="flex flex-column gap-3" (click)="$event.stopPropagation()">
+                  <!-- Dropdown de estado -->
+                  <div class="flex flex-column gap-1">
+                    <small class="text-muted font-title uppercase font-semibold" style="font-size: 10px;">
+                      Estado en Bitácora:
+                    </small>
+                    <p-select [options]="statusOptions" [ngModel]="game.status"
+                      (onChange)="onStatusChange(game, $event.value)" appendTo="body"
+                      styleClass="w-full p-inputtext-sm">
+                    </p-select>
+                  </div>
+
+                  <!-- Calificación personal -->
+                  <div class="flex flex-column gap-1">
+                    <small class="text-muted font-title uppercase font-semibold" style="font-size: 10px;">
+                      Tu Puntuación (1-10):
+                    </small>
+                    <div class="flex align-items-center justify-content-between">
+                      <p-rating [ngModel]="getStars(game.user_rating)" (onRate)="onRatingChange(game, $event.value)">
+                      </p-rating>
+                      <span class="font-title font-bold text-xs text-primary">
+                        {{ game.user_rating ? game.user_rating + '/10' : 'Sin calificar' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Footer Actions -->
+              <div class="flex align-items-center justify-content-between mt-3 pt-2 border-top-1 surface-border">
+                <a [routerLink]="['/game', game.game_id]" (click)="$event.stopPropagation()"
+                  class="link-details flex align-items-center gap-1 font-title font-semibold text-xs no-underline">
+                  <span class="material-symbols-outlined text-sm">visibility</span>
+                  <span>Ver Ficha</span>
+                </a>
+                <button type="button" (click)="removeGame(game.game_id, $event)"
+                  class="btn-delete flex align-items-center justify-content-center border-none p-1 border-round cursor-pointer"
+                  pTooltip="Eliminar de mi biblioteca" tooltipPosition="left">
+                  <span class="material-symbols-outlined text-base">delete</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
         </div>
+        }
+      </div>
       }
     </ng-template>
 
   </section>
+
+  <!-- 3. MODAL DE CRITERIOS DE NIVEL Y XP (Item 4) -->
+  @if (showXpModal()) {
+  <div class="lightbox-backdrop fixed flex align-items-center justify-content-center p-3 sm:p-4"
+    (click)="toggleXpModal()" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050;">
+    <div class="xp-modal-card w-full p-4 border-round-2xl relative shadow-8" (click)="$event.stopPropagation()">
+
+      <div class="flex align-items-center justify-content-between pb-3 border-bottom-1 surface-border mb-3">
+        <div class="flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-2xl">military_tech</span>
+          <h3 class="font-title text-lg font-bold m-0 text-color">Criterios de Nivel</h3>
+        </div>
+        <button type="button" (click)="toggleXpModal()"
+          class="btn-delete border-none p-1 border-round cursor-pointer flex align-items-center">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-muted font-title line-height-2 mb-4">
+        En QuestLog tu nivel de Archivista crece según tus aportes a la preservación y victorias de juego:
+      </p>
+
+      <div class="flex flex-column gap-2 mb-4">
+        <div class="flex align-items-center justify-content-between p-2 border-round-lg bg-surface-mid">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-base">bookmark_add</span>
+            <span class="text-xs font-title font-semibold text-color">Catalogar un Videojuego</span>
+          </div>
+          <span class="font-title font-bold text-xs text-primary">+100 XP</span>
+        </div>
+
+        <div class="flex align-items-center justify-content-between p-2 border-round-lg bg-surface-mid">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary text-base">check_circle</span>
+            <span class="text-xs font-title font-semibold text-color">Completar un Videojuego</span>
+          </div>
+          <span class="font-title font-bold text-xs text-tertiary">+400 XP</span>
+        </div>
+
+        <div class="flex align-items-center justify-content-between p-2 border-round-lg bg-surface-mid">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-base">videogame_asset</span>
+            <span class="text-xs font-title font-semibold text-color">Juego Actualmente en Curso</span>
+          </div>
+          <span class="font-title font-bold text-xs text-secondary">+150 XP</span>
+        </div>
+
+        <div class="flex align-items-center justify-content-between p-2 border-round-lg bg-surface-mid">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-warning text-base">star</span>
+            <span class="text-xs font-title font-semibold text-color">Calificar con Nota Personal</span>
+          </div>
+          <span class="font-title font-bold text-xs text-warning">+50 XP</span>
+        </div>
+      </div>
+
+      <div class="p-3 border-round-xl bg-surface-lowest border-1 surface-border">
+        <div class="flex align-items-center justify-content-between mb-1">
+          <span class="text-xs font-title text-muted">Tu Nivel Actual:</span>
+          <span class="font-title font-bold text-sm text-primary">Nivel {{ level() }} ({{ rankTitle() }})</span>
+        </div>
+        <div class="flex align-items-center justify-content-between text-xs font-title">
+          <span class="text-muted">Total XP acumulado:</span>
+          <span class="text-color font-bold">{{ totalXp() }} XP</span>
+        </div>
+        <div class="text-xs text-muted font-title mt-2 pt-2 border-top-1 surface-border" style="font-size: 10px;">
+          Cada nivel requiere 1,000 XP. ¡Sigue completando tu catálogo para alcanzar el rango de <strong>Archivist
+            Prime</strong>!
+        </div>
+      </div>
+
+    </div>
+  </div>
+  }
 
 </div>

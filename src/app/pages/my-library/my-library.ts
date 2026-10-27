@@ -21,6 +21,9 @@ import { AuthService } from '../../services/auth';
 @Component({
   selector: 'app-my-library',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.escape)': 'showXpModal() && toggleXpModal()'
+  },
   imports: [
     CommonModule,
     FormsModule,
@@ -44,6 +47,7 @@ export class MyLibraryComponent implements OnInit {
 
   library = signal<UserGame[]>([]);
   loading = signal<boolean>(true);
+  showXpModal = signal<boolean>(false);
 
   // Opciones para cambiar estado directamente desde la tarjeta
   statusOptions = [
@@ -84,19 +88,46 @@ export class MyLibraryComponent implements OnInit {
     return (this.completedGames().length * 28) + (this.playingGames().length * 14) + (this.onHoldGames().length * 8);
   });
 
+  // --- Sistema de XP y Gamificación de QuestLog ---
+  // Criterios:
+  // 1. Cada juego añadido a la biblioteca: +100 XP (Preservación)
+  // 2. Cada juego completado: +400 XP (Victoria Mayor)
+  // 3. Cada juego en curso: +150 XP (Compromiso Activo)
+  // 4. Cada juego valorado con nota personal: +50 XP (Aporte de Archivo)
+  totalXp = computed(() => {
+    const list = this.library();
+    let xp = 0;
+    for (const g of list) {
+      xp += 100; // Preservar
+      if (g.status === 'completed') xp += 400; // Completado
+      if (g.status === 'playing') xp += 150; // Jugando
+      if (g.user_rating) xp += 50; // Calificado
+    }
+    return xp;
+  });
+
   level = computed(() => {
-    const score = (this.totalGames() * 2) + (this.completedGames().length * 5);
-    return Math.max(1, Math.floor(score / 5) + 1);
+    const xp = this.totalXp();
+    return Math.floor(xp / 1000) + 1;
   });
 
   xpProgress = computed(() => {
-    const score = (this.totalGames() * 200) + (this.completedGames().length * 450);
-    const inLevel = score % 1000;
+    const xp = this.totalXp();
+    const inLevel = xp % 1000;
     return {
       current: inLevel,
       max: 1000,
       percent: Math.min(100, Math.round((inLevel / 1000) * 100))
     };
+  });
+
+  rankTitle = computed(() => {
+    const lvl = this.level();
+    if (lvl <= 5) return 'Novice Collector';
+    if (lvl <= 15) return 'Archive Seeker';
+    if (lvl <= 30) return 'Retro Vanguard';
+    if (lvl <= 50) return 'Chrono Archivist';
+    return 'Archivist Prime';
   });
 
   ngOnInit(): void {
@@ -158,7 +189,11 @@ export class MyLibraryComponent implements OnInit {
   /**
    * Elimina un juego de la biblioteca
    */
-  async removeGame(gameId: number): Promise<void> {
+  async removeGame(gameId: number, event?: Event): Promise<void> {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     try {
       await this.userGamesService.removeGame(gameId);
       this.library.update(current => current.filter(g => g.game_id !== gameId));
@@ -174,5 +209,9 @@ export class MyLibraryComponent implements OnInit {
 
   getStars(rating: number | null | undefined): number {
     return rating ? Math.round(rating / 2) : 0;
+  }
+
+  toggleXpModal(): void {
+    this.showXpModal.update(v => !v);
   }
 }

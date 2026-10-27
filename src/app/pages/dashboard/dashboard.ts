@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 // PrimeNG
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -35,11 +38,25 @@ export class DashboardComponent implements OnInit {
   public authService = inject(AuthService);
   private messageService = inject(MessageService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
-  // Estados de catálogo
+  // Estados de catálogo y paginación
   games = signal<Game[]>([]);
+  totalGamesCount = signal<number>(0);
+  currentPage = signal<number>(1);
+  hasNextPage = signal<boolean>(false);
   spotlightGame = signal<Game | null>(null);
   loading = signal<boolean>(true);
+  loadingMore = signal<boolean>(false);
+
+  // Búsqueda en la grilla del catálogo
+  searchQuery = signal<string>('');
+  private searchSubject = new Subject<string>();
+
+  totalPages = computed(() => {
+    const total = this.totalGamesCount();
+    return total > 0 ? Math.ceil(total / 20) : 1;
+  });
 
   // Filtros interactivos
   activeTab = signal<CatalogTab>('all');
@@ -67,12 +84,34 @@ export class DashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(query => {
+      this.searchQuery.set(query);
+      this.fetchCatalog();
+    });
+
     this.fetchCatalog();
   }
 
-  fetchCatalog(): void {
-    this.loading.set(true);
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchSubject.next(input.value);
+  }
 
+  onSearchEnter(): void {
+    this.fetchCatalog();
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+    this.searchSubject.next('');
+    this.fetchCatalog();
+  }
+
+  private getFilterPayload() {
     let ordering = '-rating';
     let dates: string | undefined;
     let metacritic: string | undefined;
@@ -106,19 +145,36 @@ export class DashboardComponent implements OnInit {
     }
 
     const genreFilter = this.selectedGenre() !== 'all' ? this.selectedGenre() : undefined;
+    const query = this.searchQuery().trim();
+
+    return { 
+      ordering, 
+      dates, 
+      metacritic, 
+      genres: genreFilter,
+      search: query ? query : undefined
+    };
+  }
+
+  fetchCatalog(): void {
+    this.loading.set(true);
+    this.currentPage.set(1);
+
+    const filters = this.getFilterPayload();
 
     this.rawgService.getCatalogGames({
-      ordering,
-      genres: genreFilter,
-      dates,
-      metacritic,
+      ...filters,
+      page: 1,
       pageSize: 20
     }).subscribe({
-      next: (list) => {
-        this.games.set(list);
-        if (list.length > 0 && !this.spotlightGame()) {
+      next: (response) => {
+        this.games.set(response.results);
+        this.totalGamesCount.set(response.count);
+        this.hasNextPage.set(!!response.next);
+
+        if (response.results.length > 0 && !this.spotlightGame()) {
           // Asignar primer título de excelencia como Spotlight
-          const best = list.find(g => (g.metacritic || 0) >= 90) || list[0];
+          const best = response.results.find(g => (g.metacritic || 0) >= 90) || response.results[0];
           this.spotlightGame.set(best);
         }
         this.loading.set(false);
@@ -126,6 +182,37 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         console.error('Error cargando catálogo:', err);
         this.loading.set(false);
+      }
+    });
+  }
+
+  loadMore(): void {
+    if (this.loadingMore() || !this.hasNextPage()) return;
+
+    const nextPage = this.currentPage() + 1;
+    this.loadingMore.set(true);
+    const filters = this.getFilterPayload();
+
+    this.rawgService.getCatalogGames({
+      ...filters,
+      page: nextPage,
+      pageSize: 20
+    }).subscribe({
+      next: (response) => {
+        this.games.update(prev => [...prev, ...response.results]);
+        this.currentPage.set(nextPage);
+        this.totalGamesCount.set(response.count);
+        this.hasNextPage.set(!!response.next);
+        this.loadingMore.set(false);
+      },
+      error: (err) => {
+        console.error('Error al cargar más videojuegos:', err);
+        this.loadingMore.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar más títulos del catálogo'
+        });
       }
     });
   }

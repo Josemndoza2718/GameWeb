@@ -19,6 +19,9 @@ import { AuthService } from '../../services/auth';
 @Component({
   selector: 'app-game-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.escape)': 'closeLightbox()'
+  },
   imports: [
     CommonModule,
     FormsModule,
@@ -39,7 +42,7 @@ export class GameDetailComponent implements OnInit {
   public authService = inject(AuthService);
   private messageService = inject(MessageService);
 
-  // Estados
+  // Estados de datos
   game = signal<GameDetail | null>(null);
   screenshots = signal<string[]>([]);
   userGame = signal<UserGame | null>(null);
@@ -49,6 +52,10 @@ export class GameDetailComponent implements OnInit {
   // Campos vinculados a la UI
   selectedStatus = signal<GameStatus | null>(null);
   userRating = signal<number | null>(null);
+
+  // Lightbox / Visor de Imágenes
+  activeLightboxImage = signal<string | null>(null);
+  activeLightboxIndex = signal<number>(0);
 
   statusList: { status: GameStatus; label: string; icon: string }[] = [
     { status: 'playing', label: 'Jugando', icon: 'videogame_asset' },
@@ -71,6 +78,16 @@ export class GameDetailComponent implements OnInit {
     return 'Mixed Reviews';
   });
 
+  // Duración media en horas (proporcionada por RAWG)
+  campaignHours = computed(() => {
+    const g = this.game();
+    if (!g) return null;
+    if (g.playtime && g.playtime > 0) {
+      return g.playtime;
+    }
+    return null;
+  });
+
   developersList = computed(() => {
     const g = this.game();
     if (!g?.developers?.length) return 'Desarrollador N/A';
@@ -83,11 +100,41 @@ export class GameDetailComponent implements OnInit {
     return g.publishers.map(p => p.name).join(', ');
   });
 
-  ngOnInit(): void {
-    const gameId = this.route.snapshot.paramMap.get('id');
-    if (gameId) {
-      this.loadGameData(gameId);
+  // Lista combinada de portada + screenshots para el lightbox
+  allImages = computed(() => {
+    const g = this.game();
+    const shots = this.screenshots();
+    const imgs: string[] = [];
+    if (g?.background_image) {
+      imgs.push(g.background_image);
     }
+    shots.forEach(s => {
+      if (!imgs.includes(s)) imgs.push(s);
+    });
+    return imgs;
+  });
+
+  ngOnInit(): void {
+    // Solución al Bug 1: Suscribirse reactivamente a paramMap para recargar cuando cambia el ID
+    this.route.paramMap.subscribe(params => {
+      const gameId = params.get('id');
+      if (gameId) {
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        this.resetGameState();
+        this.loadGameData(gameId);
+      }
+    });
+  }
+
+  private resetGameState(): void {
+    this.game.set(null);
+    this.screenshots.set([]);
+    this.userGame.set(null);
+    this.selectedStatus.set(null);
+    this.userRating.set(null);
+    this.activeLightboxImage.set(null);
   }
 
   private async loadGameData(id: string): Promise<void> {
@@ -122,6 +169,37 @@ export class GameDetailComponent implements OnInit {
       console.error('Error al inicializar la ficha del juego:', error);
       this.loading.set(false);
     }
+  }
+
+  // --- Funcionalidad del Lightbox de Imágenes (Item 2) ---
+  openLightbox(imageUrl: string, index?: number): void {
+    if (!imageUrl) return;
+    this.activeLightboxImage.set(imageUrl);
+    const list = this.allImages();
+    const realIdx = list.indexOf(imageUrl);
+    this.activeLightboxIndex.set(realIdx !== -1 ? realIdx : (index ?? 0));
+  }
+
+  closeLightbox(): void {
+    this.activeLightboxImage.set(null);
+  }
+
+  nextLightboxImage(event?: Event): void {
+    if (event) event.stopPropagation();
+    const list = this.allImages();
+    if (!list.length) return;
+    const nextIdx = (this.activeLightboxIndex() + 1) % list.length;
+    this.activeLightboxIndex.set(nextIdx);
+    this.activeLightboxImage.set(list[nextIdx]);
+  }
+
+  prevLightboxImage(event?: Event): void {
+    if (event) event.stopPropagation();
+    const list = this.allImages();
+    if (!list.length) return;
+    const prevIdx = (this.activeLightboxIndex() - 1 + list.length) % list.length;
+    this.activeLightboxIndex.set(prevIdx);
+    this.activeLightboxImage.set(list[prevIdx]);
   }
 
   /**

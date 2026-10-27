@@ -117,6 +117,7 @@ h1, h2, h3, h4, h5, h6, .font-title {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
+  z-index: 100;
 }
 
 /* Glow effects */
@@ -167,6 +168,13 @@ h1, h2, h3, h4, h5, h6, .font-title {
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
 }
+
+/* Surface Background Utilities */
+.bg-surface-mid   { background: var(--bg-surface-mid) !important; }
+.bg-surface-low   { background: var(--bg-surface-low) !important; }
+.bg-surface-high  { background: var(--bg-surface-high) !important; }
+.bg-surface-card  { background: var(--bg-surface-card) !important; }
+
 
 /* PrimeNG Overrides for QuestLog Dark Theme */
 .p-card {
@@ -249,4 +257,30 @@ h1, h2, h3, h4, h5, h6, .font-title {
 .p-autocomplete-option:not(.p-autocomplete-option-selected):not(.p-disabled).p-focus {
   background: var(--bg-surface-high) !important;
   color: var(--primary-light) !important;
+}
+
+/* Modal & Lightbox Backdrops */
+.lightbox-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1050 !important;
+  background: rgba(6, 8, 13, 0.88) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box;
+}
+
+.inset-0 {
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
 }
