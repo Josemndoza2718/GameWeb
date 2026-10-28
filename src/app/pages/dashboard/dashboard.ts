@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private getFilterPayload() {
-    let ordering = '-rating';
+    let ordering: string | undefined = '-rating';
     let dates: string | undefined;
     let metacritic: string | undefined;
 
@@ -146,6 +146,12 @@ export class DashboardComponent implements OnInit {
 
     const genreFilter = this.selectedGenre() !== 'all' ? this.selectedGenre() : undefined;
     const query = this.searchQuery().trim();
+
+    // Cuando el usuario ingresa un término de búsqueda, priorizamos la relevancia directa del título
+    // en lugar de imponer ordenamiento por mayor puntuación Metacritic
+    if (query) {
+      ordering = undefined;
+    }
 
     return { 
       ordering, 

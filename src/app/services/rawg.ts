@@ -81,6 +81,7 @@ export class RawgService {
     }
     if (filters.search) {
       params = params.set('search', filters.search);
+      params = params.set('search_precise', 'true');
     }
 
     return this.http.get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params });
