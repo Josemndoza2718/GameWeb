@@ -1,167 +1,924 @@
 <p-toast></p-toast>
 
-<div *ngIf="loading()" class="flex justify-content-center my-6">
-    <p-progressspinner></p-progressspinner>
+@if (loading()) {
+<div class="flex justify-content-center align-items-center py-8 my-8">
+  <p-progressspinner strokeWidth="4"></p-progressspinner>
+</div>
+} @else if (!profile()) {
+<div class="max-w-30rem mx-auto my-8 p-4 text-center">
+  <span class="material-symbols-outlined text-outline" style="font-size: 64px;">person_off</span>
+  <h2 class="font-title text-3xl font-bold mt-3 mb-2">Bóveda no encontrada</h2>
+  <p class="text-muted mb-4">El perfil que estás buscando no existe o aún no ha sido sincronizado en el nodo central.
+  </p>
+  <a routerLink="/dashboard" class="btn-profile-save no-underline">
+    <span class="material-symbols-outlined">arrow_back</span>
+    <span>Volver al Catálogo</span>
+  </a>
+</div>
+} @else {
+
+<!-- ========================================================================= -->
+<!-- HERO BANNER CON OVERLAY Y TELEMETRÍA                                      -->
+<!-- ========================================================================= -->
+<div class="profile-hero-banner">
+  <div class="profile-hero-bg"
+    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBzHxhzcZv8opUKKQ3UxGtegons9m63oupvRdhlAKxsISDHE-St0A4eLWbjkB8m-B1H-b1c52aLwyHFKWZ2AVb9EqP2uEtbzZoEmNiw9HfES5wI1LNHObH7vlDsPCFsK1ku0bYTdY6Gy1d0Lroj-BYgfZ8DX0jnStSFY87xaHMO72cwjIUtDs1Zd16XYVR0FjGw32WyN8H9c1HIzbh0TORggtQd1a1X5M5A64ksVxz5Ad9T5u0oiGE');">
+  </div>
+  <div class="profile-hero-gradient"></div>
+
+  <!-- Quick Badges Top-Right -->
+  <div class="profile-hero-badges">
+    <div class="hero-node-pill">
+      <span class="pulse-dot pulse-teal"></span>
+      <span>Nodo Activo: Madrid-01</span>
+    </div>
+    <button type="button" class="hero-share-btn" (click)="shareProfile()">
+      <span class="material-symbols-outlined text-primary" style="font-size: 16px;">share</span>
+      <span>Compartir Ficha</span>
+    </button>
+  </div>
 </div>
 
-<div *ngIf="!loading() && !profile()" class="profile-container p-4 text-center py-8">
-    <i class="pi pi-user-slash text-6xl text-400 mb-3 block"></i>
-    <h2 class="text-3xl font-bold mb-2">Usuario no encontrado</h2>
-    <p class="text-600 mb-4 max-w-25rem mx-auto">El perfil que estás buscando no existe o aún no ha sido inicializado en la base de datos.</p>
-    <p-button label="Volver a la Biblioteca" icon="pi pi-arrow-left" routerLink="/dashboard"></p-button>
-</div>
+<!-- ========================================================================= -->
+<!-- PROFILE HEADER CARD (OVERLAPPING BAR)                                     -->
+<!-- ========================================================================= -->
+<div class="profile-header-container">
+  <div class="profile-header-card">
 
-<div *ngIf="!loading() && profile()" class="profile-container p-4">
+    <!-- Avatar & Identity Details -->
+    <div class="flex flex-column sm:flex-row align-items-start sm:align-items-end gap-4">
 
-    <!-- HEADER DEL PERFIL -->
-    <p-card styleClass="mb-4 shadow-2">
-        <div class="flex flex-column md:flex-row align-items-center gap-4 text-center md:text-left">
-
-            <p-avatar [image]="profile()?.avatar_url || 'assets/images/default-avatar.png'" shape="circle"
-                styleClass="w-8rem h-8rem shadow-3 border-2 surface-border flex-shrink-0">
-            </p-avatar>
-
-            <div class="flex-1">
-                <div class="flex flex-column md:flex-row align-items-center justify-content-between gap-3 mb-2">
-                    <div>
-                        <h1 class="text-3xl font-bold m-0 mb-1">&#064;{{ profile()?.username }}</h1>
-                        <small class="text-500">Miembro desde {{ profile()?.created_at | date:'MMMM yyyy' }}</small>
-                    </div>
-
-                    <p-button *ngIf="isOwnProfile()" label="Editar Perfil" icon="pi pi-user-edit" [outlined]="true"
-                        (onClick)="openEditModal()">
-                    </p-button>
-                </div>
-
-                <p class="text-700 m-0 line-height-3 max-w-30rem">
-                    {{ profile()?.bio || 'Este usuario aún no ha escrito una biografía.' }}
-                </p>
-            </div>
-
+      <!-- Avatar Wrapper -->
+      <div class="profile-avatar-wrap" (click)="avatarInput.click()">
+        <div class="profile-avatar-box">
+          <img
+            [src]="avatarPreview() || profile()?.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBl9C4rGYcV1IL7SbYCvn32XoX4fnQnww3v7p_4VfJCgVA8ba5GNC3c7MKgNdhRGt9JZPu6Nps0Im2RLF4YrHmyOAo-xcUWOMOGaFrBrw7LWDDh-HPLlzyY-pQTktyWU-7qS0ZjoXLCVBP82DK1j9B8Do-O2VLtDSwp_3I32J9ZKSXG_kpJr_M5wZD3p1Ewt6iahJD-fLavgBr3k8MHFWoX63e7EPx4aKOlCLAftRnoUBDJO40OCO4'"
+            alt="Avatar de Archivista" class="profile-avatar-img" />
+          @if (isOwnProfile()) {
+          <div class="profile-avatar-overlay">
+            <span class="material-symbols-outlined text-primary" style="font-size: 26px;">photo_camera</span>
+            <span class="font-title text-xs font-bold text-primary uppercase">Cambiar Foto</span>
+          </div>
+          }
         </div>
-    </p-card>
+        <!-- Level Badge Attached -->
+        <div class="profile-level-badge">
+          <span class="material-symbols-outlined" style="font-size: 14px;">bolt</span>
+          <span>LV. 46</span>
+        </div>
+        <input #avatarInput type="file" accept="image/*" class="hidden" (change)="onAvatarFileSelected($event)" />
+      </div>
 
-    <!-- METRICAS / ESTADÍSTICAS -->
-    <div class="grid mb-4" *ngIf="stats()">
-        <div class="col-6 md:col-3">
-            <div class="surface-card p-3 border-round shadow-1 text-center">
-                <span class="text-500 font-semibold block mb-1">Colección</span>
-                <span class="text-3xl font-bold text-primary">{{ stats()?.totalGames }}</span>
-            </div>
+      <!-- Identity Details -->
+      <div class="profile-meta-col">
+        <div class="profile-username-row">
+          <h1 class="profile-username">&#064;{{ profile()?.username }}</h1>
+          <span class="pill-badge pill-secondary">
+            <span class="material-symbols-outlined" style="font-size: 13px;">verified</span>
+            <span>Bóveda Verificada</span>
+          </span>
+          <span class="pill-badge pill-tertiary">
+            <span>Archivista Crítico</span>
+          </span>
         </div>
-        <div class="col-6 md:col-3">
-            <div class="surface-card p-3 border-round shadow-1 text-center">
-                <span class="text-500 font-semibold block mb-1">Completados</span>
-                <span class="text-3xl font-bold text-green-500">{{ stats()?.completedGames }}</span>
-            </div>
+
+        <div class="profile-sub-meta">
+          <span class="flex align-items-center gap-1">
+            <span class="material-symbols-outlined text-subtle" style="font-size: 16px;">badge</span>
+            <span>{{ fullName() }}</span>
+          </span>
+          <span class="flex align-items-center gap-1">
+            <span class="material-symbols-outlined text-subtle" style="font-size: 16px;">calendar_month</span>
+            <span>Miembro desde {{ profile()?.created_at | date:'MMMM yyyy' }}</span>
+          </span>
+          <a href="javascript:void(0)" (click)="copyProfileLink()" class="flex align-items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size: 16px;">link</span>
+            <span>questlog.gg/u/{{ profile()?.username }}</span>
+          </a>
         </div>
-        <div class="col-6 md:col-3">
-            <div class="surface-card p-3 border-round shadow-1 text-center">
-                <span class="text-500 font-semibold block mb-1">Publicaciones</span>
-                <span class="text-3xl font-bold text-blue-500">{{ stats()?.totalPosts }}</span>
-            </div>
+
+        <!-- XP Bar Progress -->
+        <div class="profile-xp-box">
+          <div class="profile-xp-labels">
+            <span class="text-muted">Progreso al Rango <strong class="text-tertiary">Gran Curador</strong></span>
+            <span class="text-primary font-bold">8,450 / 10,000 XP (84.5%)</span>
+          </div>
+          <div class="profile-xp-track">
+            <div class="profile-xp-fill" style="width: 84.5%;"></div>
+          </div>
         </div>
-        <div class="col-6 md:col-3">
-            <div class="surface-card p-3 border-round shadow-1 text-center">
-                <span class="text-500 font-semibold block mb-1">Tierlists</span>
-                <span class="text-3xl font-bold text-purple-500">{{ stats()?.totalTierlists }}</span>
-            </div>
-        </div>
+      </div>
+
     </div>
 
-    <!-- CONTENIDO PÚBLICO TABULADO (PrimeNG 18+) -->
-    <p-tabs value="0">
-        <p-tablist>
-            <p-tab value="0">Biblioteca ({{ userGames().length }})</p-tab>
-            <p-tab value="1">Aportes ({{ userPosts().length }})</p-tab>
-            <p-tab value="2">Tierlists ({{ userTierlists().length }})</p-tab>
-        </p-tablist>
+    <!-- Quick Archive Statistics Grid -->
+    <div class="profile-stats-grid">
+      <div class="stat-metric-cell">
+        <span class="stat-metric-val">{{ stats()?.totalGames || 42 }}</span>
+        <span class="stat-metric-label">Clasificados</span>
+      </div>
+      <div class="stat-metric-cell">
+        <span class="stat-metric-val text-primary">{{ stats()?.totalTierlists || 18 }}</span>
+        <span class="stat-metric-label">Tier Lists</span>
+      </div>
+      <div class="stat-metric-cell">
+        <span class="stat-metric-val text-secondary">{{ stats()?.totalPosts || 1240 }}</span>
+        <span class="stat-metric-label">Votos / Aportes</span>
+      </div>
+      <div class="stat-metric-cell">
+        <span class="stat-metric-val text-tertiary">78.4%</span>
+        <span class="stat-metric-label">Afinidad Canon</span>
+      </div>
+    </div>
 
-        <p-tabpanels>
-            <!-- PESTAÑA BIBLIOTECA -->
-            <p-tabpanel value="0">
-                <div class="grid mt-2">
-                    <div *ngFor="let g of userGames()" class="col-6 sm:col-4 md:col-3 lg:col-2">
-                        <a [routerLink]="['/game', g.game_id]" class="no-underline">
-                            <div
-                                class="surface-card border-round overflow-hidden shadow-1 hover:shadow-3 transition-duration-200">
-                                <img [src]="g.game_cover" [alt]="g.game_title" class="w-full h-9rem object-cover block" />
-                                <div class="p-2">
-                                    <span class="font-bold text-sm text-truncate block text-900" [title]="g.game_title">{{
-                                        g.game_title }}</span>
-                                    <small class="text-500 capitalize">{{ g.status }}</small>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </p-tabpanel>
+  </div>
+</div>
 
-            <!-- PESTAÑA PUBLICACIONES -->
-            <p-tabpanel value="1">
-                <div class="flex flex-column gap-3 mt-2">
-                    <p-card *ngFor="let post of userPosts()" styleClass="shadow-1">
-                        <div class="flex align-items-center justify-content-between mb-2">
-                            <p-tag [value]="post.post_type" severity="info"></p-tag>
-                            <small class="text-500">{{ post.created_at | date:'dd/MM/yyyy' }}</small>
-                        </div>
-                        <h3 class="text-lg font-bold m-0 mb-1">{{ post.title }}</h3>
-                        <p class="text-700 text-sm line-clamp-2 m-0">{{ post.content }}</p>
-                    </p-card>
-                </div>
-            </p-tabpanel>
+<!-- ========================================================================= -->
+<!-- NAVIGATION TABS STRIP                                                     -->
+<!-- ========================================================================= -->
+<div class="profile-tabs-nav">
+  <button type="button" class="profile-tab-btn" [class.active]="activeTab() === 'personal'"
+    (click)="setActiveTab('personal')">
+    <span class="material-symbols-outlined" style="font-size: 18px;">person</span>
+    <span>Información Personal & Perfil</span>
+  </button>
 
-            <!-- PESTAÑA TIERLISTS -->
-            <p-tabpanel value="2">
-                <div class="grid mt-2">
-                    <div *ngFor="let t of userTierlists()" class="col-12 sm:col-6 md:col-4">
-                        <p-card styleClass="shadow-1">
-                            <h3 class="text-lg font-bold m-0 mb-2">{{ t.title }}</h3>
-                            <p class="text-500 text-xs mb-3">{{ t.description || 'Sin descripción' }}</p>
-                            <a [routerLink]="['/tierlist/edit', t.id]">
-                                <p-button label="Ver Tierlist" icon="pi pi-eye" size="small" [text]="true"></p-button>
-                            </a>
-                        </p-card>
-                    </div>
-                </div>
-            </p-tabpanel>
-        </p-tabpanels>
-    </p-tabs>
+  @if (isOwnProfile()) {
+  <button type="button" class="profile-tab-btn" [class.active]="activeTab() === 'security'"
+    (click)="setActiveTab('security')">
+    <span class="material-symbols-outlined" style="font-size: 18px;">shield_lock</span>
+    <span>Seguridad & Contraseña</span>
+  </button>
 
-    <!-- MODAL DE EDICIÓN DE PERFIL -->
-    <p-dialog header="Editar Perfil" [(visible)]="displayEditDialog" [modal]="true"
-        [style]="{ width: '100%', maxWidth: '500px' }">
-        <div class="flex flex-column gap-3 mt-2">
+  <button type="button" class="profile-tab-btn" [class.active]="activeTab() === 'preferences'"
+    (click)="setActiveTab('preferences')">
+    <span class="material-symbols-outlined" style="font-size: 18px;">videogame_asset</span>
+    <span>Preferencias de Archivo</span>
+  </button>
 
-            <!-- Avatar Preview e Input -->
-            <div class="flex flex-column align-items-center gap-2">
-                <p-avatar [image]="previewAvatarUrl || 'assets/images/default-avatar.png'" shape="circle"
-                    styleClass="w-6rem h-6rem shadow-2"></p-avatar>
-                <label for="avatarInput" class="p-button p-button-sm p-button-outlined cursor-pointer">
-                    <i class="pi pi-upload mr-2"></i> Cambiar Foto
-                </label>
-                <input id="avatarInput" type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
-            </div>
+  <button type="button" class="profile-tab-btn" [class.active]="activeTab() === 'connections'"
+    (click)="setActiveTab('connections')">
+    <span class="material-symbols-outlined" style="font-size: 18px;">hub</span>
+    <span>Cuentas Vinculadas</span>
+    <span class="tab-badge">4</span>
+  </button>
+  }
 
-            <!-- Username -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold text-sm">Nombre de usuario</label>
-                <input type="text" pInputText [(ngModel)]="editUsername" />
-            </div>
+  <button type="button" class="profile-tab-btn" [class.active]="activeTab() === 'collection'"
+    (click)="setActiveTab('collection')">
+    <span class="material-symbols-outlined" style="font-size: 18px;">collections_bookmark</span>
+    <span>Bóveda & Colección Pública</span>
+    <span class="tab-badge">{{ userGames().length }}</span>
+  </button>
+</div>
 
-            <!-- Bio -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold text-sm">Biografía</label>
-                <textarea pTextarea [(ngModel)]="editBio" rows="3"
-                    placeholder="Escribe algo sobre ti..."></textarea>
-            </div>
+<!-- ========================================================================= -->
+<!-- MAIN CONFIGURATION CONTENT BY TAB                                         -->
+<!-- ========================================================================= -->
+<div class="profile-content-area">
 
+  <!-- --------------------------------------------------------------------- -->
+  <!-- TAB 1: INFORMACIÓN PERSONAL & PERFIL                                  -->
+  <!-- --------------------------------------------------------------------- -->
+  @if (activeTab() === 'personal') {
+  <section class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-left">
+        <div class="card-header-icon">
+          <span class="material-symbols-outlined" style="font-size: 24px;">manage_accounts</span>
+        </div>
+        <div>
+          <h2 class="profile-card-title">Información Personal & Bóveda Pública</h2>
+          <p class="profile-card-subtitle">Datos de identificación y metadatos visibles en la comunidad de curadores.
+          </p>
+        </div>
+      </div>
+      <div>
+        <span class="pill-badge pill-surface">
+          <span class="pulse-dot pulse-amber"></span>
+          <span>Modo Edición Habilitado</span>
+        </span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="savePersonalInfo()">
+      <div class="profile-form-grid">
+
+        <!-- Nickname (read-only) -->
+        <div class="profile-field">
+          <label class="field-label">
+            <span>Nickname de Archivista</span>
+            <span class="text-secondary text-xs uppercase font-semibold">No modificable (Bóveda Verificada)</span>
+          </label>
+          <div class="field-input-wrap">
+            <span class="material-symbols-outlined field-icon">alternate_email</span>
+            <input class="field-input" type="text" [value]="profile()?.username" readonly />
+          </div>
+          <span class="field-hint">Enlace permanente: <span class="text-main">https://questlog.gg/u/{{
+              profile()?.username }}</span></span>
         </div>
 
-        <ng-template pTemplate="footer">
-            <p-button label="Cancelar" [text]="true" (onClick)="displayEditDialog = false"></p-button>
-            <p-button label="Guardar" icon="pi pi-check" [loading]="updating()" (onClick)="saveProfile()"></p-button>
-        </ng-template>
-    </p-dialog>
+        <!-- Full Name -->
+        <div class="profile-field">
+          <label class="field-label">Nombre Completo</label>
+          <div class="field-input-wrap">
+            <span class="material-symbols-outlined field-icon">person</span>
+            <input class="field-input" type="text" [ngModel]="fullName()" (ngModelChange)="fullName.set($event)"
+              name="fullName" placeholder="Tu nombre real..." />
+          </div>
+          <span class="field-hint">Se muestra en reseñas formales y artículos de curaduría.</span>
+        </div>
+
+        <!-- Primary Email -->
+        <div class="profile-field">
+          <label class="field-label">
+            <span>Correo Electrónico Primario</span>
+            <span class="text-tertiary text-xs font-semibold flex align-items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size: 14px;">verified</span>
+              <span>Correo Verificado</span>
+            </span>
+          </label>
+          <div class="field-input-wrap">
+            <span class="material-symbols-outlined field-icon">mail</span>
+            <input class="field-input" type="email" [value]="userEmail()" readonly />
+          </div>
+          <span class="field-hint">Utilizado para resúmenes semanales de tiers y alertas críticas.</span>
+        </div>
+
+        <!-- Mobile Phone -->
+        <div class="profile-field">
+          <label class="field-label">
+            <span>Teléfono Móvil (Recuperación y SMS)</span>
+            <span class="text-secondary text-xs font-semibold">Vinculado a 2FA</span>
+          </label>
+          <div class="field-input-wrap">
+            <span class="material-symbols-outlined field-icon">phone_iphone</span>
+            <input class="field-input" type="tel" [ngModel]="phoneNumber()" (ngModelChange)="phoneNumber.set($event)"
+              name="phoneNumber" placeholder="+34 600 000 000" />
+          </div>
+          <span class="field-hint">Formato E.164 internacional requerido para token por SMS.</span>
+        </div>
+
+        <!-- Pronouns -->
+        <div class="profile-field">
+          <label class="field-label">Pronombres</label>
+          <select class="field-select" [ngModel]="pronouns()" (ngModelChange)="pronouns.set($event)" name="pronouns">
+            <option value="Él / He / Him">Él / He / Him</option>
+            <option value="Ella / She / Her">Ella / She / Her</option>
+            <option value="Neutro / They / Them">Neutro / They / Them</option>
+            <option value="No especificar">No especificar</option>
+          </select>
+        </div>
+
+        <!-- Timezone -->
+        <div class="profile-field">
+          <label class="field-label">Región y Huso Horario</label>
+          <select class="field-select" [ngModel]="timezone()" (ngModelChange)="timezone.set($event)" name="timezone">
+            <option value="Europa / Madrid (UTC+01:00)">Europa / Madrid (UTC+01:00)</option>
+            <option value="América / México City (UTC-06:00)">América / México City (UTC-06:00)</option>
+            <option value="América / Buenos Aires (UTC-03:00)">América / Buenos Aires (UTC-03:00)</option>
+            <option value="América / Bogotá (UTC-05:00)">América / Bogotá (UTC-05:00)</option>
+            <option value="Europa / Londres (UTC+00:00)">Europa / Londres (UTC+00:00)</option>
+          </select>
+        </div>
+
+        <!-- Public Honor Badge -->
+        <div class="col-span-full">
+          <label class="field-label mb-2">
+            <span>Insignia de Respaldo Público</span>
+            <span class="text-tertiary text-xs font-semibold">Desbloqueado</span>
+          </label>
+          <div
+            class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex align-items-center justify-content-between gap-3">
+            <div class="flex align-items-center gap-3">
+              <div
+                class="w-2rem h-2rem border-round bg-tertiary text-black flex align-items-center justify-content-center font-bold">
+                <span class="material-symbols-outlined" style="font-size: 18px;">award_star</span>
+              </div>
+              <div class="flex flex-column">
+                <span class="font-title text-sm font-bold text-main">Archivista del Año 2024 (JRPGs Clásicos)</span>
+                <span class="text-xs text-muted">Mostrado en portada junto a tu nombre</span>
+              </div>
+            </div>
+            <input type="checkbox" class="vault-checkbox" [checked]="featuredBadge()"
+              (change)="featuredBadge.set(!featuredBadge())" />
+          </div>
+        </div>
+
+        <!-- Bio / Manifesto -->
+        <div class="col-span-full profile-field">
+          <label class="field-label">
+            <span>Biografía & Manifiesto de Jugador</span>
+            <span class="text-xs text-muted">{{ bio().length }} / 300 caracteres</span>
+          </label>
+          <textarea class="field-textarea" rows="4" maxlength="300" [ngModel]="bio()" (ngModelChange)="bio.set($event)"
+            name="bio" placeholder="Describe tu filosofía de preservación o especialidad como archivista..."></textarea>
+          <span class="field-hint">Este resumen encabeza tus Tier Lists y comparativas directas con otros miembros del
+            protocolo.</span>
+        </div>
+
+      </div>
+
+      <!-- Action Footer Bar -->
+      <div class="profile-action-bar mt-4">
+        <div class="flex align-items-center gap-2 text-xs text-muted">
+          <span class="material-symbols-outlined text-secondary" style="font-size: 16px;">cloud_done</span>
+          <span>Última sincronización guardada: Hoy a las 14:32</span>
+        </div>
+        <div class="flex align-items-center gap-3">
+          <button type="button" class="btn-profile-secondary" (click)="loadProfileData(profile()!.username)">
+            Descartar Cambios
+          </button>
+          <button type="submit" class="btn-profile-save" [disabled]="saving()">
+            @if (saving()) {
+            <span class="material-symbols-outlined pi-spin">sync</span>
+            <span>Guardando...</span>
+            } @else {
+            <span class="material-symbols-outlined">save</span>
+            <span>Guardar Información Personal</span>
+            }
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+  }
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- TAB 2: SEGURIDAD & CONTRASEÑA                                         -->
+  <!-- --------------------------------------------------------------------- -->
+  @if (activeTab() === 'security') {
+  <section class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-left">
+        <div class="card-header-icon cyan">
+          <span class="material-symbols-outlined" style="font-size: 24px;">security</span>
+        </div>
+        <div>
+          <h2 class="profile-card-title">Seguridad, Acceso & Protocolos Criptográficos</h2>
+          <p class="profile-card-subtitle">Manejo de llaves de acceso, credenciales maestras y auditoría de sesiones.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="security-split-grid">
+
+      <!-- Password Form Column -->
+      <div class="security-subcard">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size: 22px;">key</span>
+            <h3 class="font-title text-base font-bold text-main m-0">Contraseña de Acceso</h3>
+          </div>
+          <span class="pill-badge pill-secondary">Seguridad: Alta</span>
+        </div>
+
+        <div
+          class="p-3 bg-surface-lowest border-round border-1 border-subtle flex align-items-center gap-2 text-xs text-muted">
+          <span class="material-symbols-outlined text-subtle" style="font-size: 16px;">history</span>
+          <span>Último cambio realizado hace 3 meses (12 de Noviembre, 2024).</span>
+        </div>
+
+        <form (ngSubmit)="updatePassword()" class="flex flex-column gap-3">
+
+          <!-- Current Password -->
+          <div class="profile-field">
+            <label class="field-label">Contraseña Actual</label>
+            <div class="field-input-wrap">
+              <span class="material-symbols-outlined field-icon">lock</span>
+              <input class="field-input" [type]="showCurrentPassword() ? 'text' : 'password'"
+                [ngModel]="currentPassword()" (ngModelChange)="currentPassword.set($event)" name="currentPassword" />
+              <button type="button" class="vault-toggle-pwd" (click)="showCurrentPassword.set(!showCurrentPassword())">
+                <span class="material-symbols-outlined">
+                  {{ showCurrentPassword() ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- New Password -->
+          <div class="profile-field">
+            <label class="field-label">Nueva Contraseña</label>
+            <div class="field-input-wrap">
+              <span class="material-symbols-outlined field-icon">shield_lock</span>
+              <input class="field-input" [type]="showNewPassword() ? 'text' : 'password'" [ngModel]="newPassword()"
+                (ngModelChange)="newPassword.set($event)" name="newPassword"
+                placeholder="Mínimo 12 caracteres alfanuméricos..." />
+              <button type="button" class="vault-toggle-pwd" (click)="showNewPassword.set(!showNewPassword())">
+                <span class="material-symbols-outlined">
+                  {{ showNewPassword() ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+
+            <!-- Robustness Meter -->
+            <div class="robustness-meter">
+              <div class="flex justify-content-between align-items-center text-xs">
+                <span class="text-muted">Robustez de Contraseña:</span>
+                <span class="text-secondary font-bold">{{ pwdScoreLabel() }}</span>
+              </div>
+              <div class="meter-track">
+                <div class="meter-step" [class.filled]="pwdScore() >= 1"></div>
+                <div class="meter-step" [class.filled]="pwdScore() >= 2"></div>
+                <div class="meter-step" [class.filled]="pwdScore() >= 3"></div>
+                <div class="meter-step" [class.filled]="pwdScore() >= 4" [class.strong]="pwdScore() >= 4"></div>
+              </div>
+              <div class="flex flex-wrap gap-2 text-xs text-muted mt-1">
+                <span class="flex align-items-center gap-1" [class.text-secondary]="pwdHasLength()">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">{{ pwdHasLength() ? 'check' :
+                    'circle' }}</span>
+                  +12 caracteres
+                </span>
+                <span class="flex align-items-center gap-1" [class.text-secondary]="pwdHasUpper()">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">{{ pwdHasUpper() ? 'check' : 'circle'
+                    }}</span>
+                  Mayúsculas
+                </span>
+                <span class="flex align-items-center gap-1" [class.text-secondary]="pwdHasSymbols()">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">{{ pwdHasSymbols() ? 'check' :
+                    'circle' }}</span>
+                  Símbolos
+                </span>
+                <span class="flex align-items-center gap-1" [class.text-secondary]="pwdHasNumbers()">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">{{ pwdHasNumbers() ? 'check' :
+                    'circle' }}</span>
+                  Números
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm New Password -->
+          <div class="profile-field">
+            <label class="field-label">Confirmar Nueva Contraseña</label>
+            <div class="field-input-wrap">
+              <span class="material-symbols-outlined field-icon">verified_user</span>
+              <input class="field-input" [type]="showNewPassword() ? 'text' : 'password'"
+                [ngModel]="confirmNewPassword()" (ngModelChange)="confirmNewPassword.set($event)"
+                name="confirmNewPassword" placeholder="Repite la nueva contraseña..." />
+            </div>
+          </div>
+
+          <!-- Forgot Callout -->
+          <div
+            class="p-3 border-round-lg bg-surface-lowest border-1 border-subtle flex align-items-center justify-content-between gap-3 mt-1">
+            <div class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary" style="font-size: 20px;">help_center</span>
+              <span class="text-xs text-muted">¿Dudas o pérdida de acceso?</span>
+            </div>
+            <a href="javascript:void(0)" class="text-xs text-primary font-bold hover:underline">
+              Enviar enlace de recuperación
+            </a>
+          </div>
+
+          <div class="flex justify-content-end mt-2">
+            <button type="submit" class="btn-profile-save" [disabled]="saving()">
+              @if (saving()) {
+              <span class="material-symbols-outlined pi-spin">sync</span>
+              <span>Actualizando...</span>
+              } @else {
+              <span class="material-symbols-outlined">lock_reset</span>
+              <span>Actualizar Contraseña Maestra</span>
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- 2FA & Active Sessions Column -->
+      <div class="flex flex-column gap-3">
+
+        <!-- 2FA Box -->
+        <div class="security-subcard">
+          <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">phonelink_lock</span>
+              <h3 class="font-title text-base font-bold text-main m-0">Doble Factor (2FA)</h3>
+            </div>
+            <span class="pill-badge pill-secondary">ACTIVADO</span>
+          </div>
+          <p class="text-xs text-muted line-height-3 m-0">
+            Tu bóveda está protegida mediante una aplicación autenticadora TOTP (Google Authenticator / Aegis).
+          </p>
+          <div class="flex flex-column sm:flex-row gap-2 mt-2">
+            <button type="button" class="btn-profile-secondary flex-1"
+              (click)="messageService.add({ severity: 'info', summary: 'TOTP', detail: 'Escanea el código QR de vinculación' })">
+              <span class="material-symbols-outlined" style="font-size: 16px;">qr_code_scanner</span>
+              <span>Reconfigurar TOTP</span>
+            </button>
+            <button type="button" class="btn-profile-secondary flex-1"
+              (click)="messageService.add({ severity: 'info', summary: 'Códigos', detail: 'Descargando 8 claves de respaldo cifradas' })">
+              <span class="material-symbols-outlined" style="font-size: 16px;">password</span>
+              <span>Códigos de Respaldo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Sessions Monitor -->
+        <div class="security-subcard flex-1">
+          <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size: 22px;">devices</span>
+              <h3 class="font-title text-base font-bold text-main m-0">Sesiones Activas</h3>
+            </div>
+            <button type="button"
+              class="bg-transparent border-none text-danger text-xs uppercase font-bold cursor-pointer hover:underline p-0"
+              (click)="activeSessions.set([activeSessions()[0]])">
+              Cerrar Todas las Demás
+            </button>
+          </div>
+
+          <div class="flex flex-column gap-2 mt-2">
+            @for (sess of activeSessions(); track sess.id) {
+            <div class="session-item">
+              <div class="flex align-items-center gap-3">
+                <div class="session-icon-box">
+                  <span class="material-symbols-outlined">{{ sess.icon }}</span>
+                </div>
+                <div class="flex flex-column">
+                  <div class="flex align-items-center gap-2">
+                    <span class="font-title text-sm font-bold text-main">{{ sess.device }}</span>
+                    @if (sess.isCurrent) {
+                    <span class="pill-badge pill-secondary" style="font-size: 9px; padding: 1px 5px;">Actual</span>
+                    }
+                  </div>
+                  <span class="text-xs text-muted">{{ sess.location }}</span>
+                </div>
+              </div>
+
+              @if (sess.isCurrent) {
+              <span class="pulse-dot pulse-teal"></span>
+              } @else {
+              <button type="button" class="bg-transparent border-none text-muted hover:text-danger cursor-pointer p-1"
+                title="Revocar Sesión" (click)="revokeSession(sess.id)">
+                <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+              </button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  }
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- TAB 3: PREFERENCIAS DE PLATAFORMA & PRIVACIDAD                         -->
+  <!-- --------------------------------------------------------------------- -->
+  @if (activeTab() === 'preferences') {
+  <section class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-left">
+        <div class="card-header-icon amber">
+          <span class="material-symbols-outlined" style="font-size: 24px;">tune</span>
+        </div>
+        <div>
+          <h2 class="profile-card-title">Preferencias de Plataforma, Archivo & Privacidad</h2>
+          <p class="profile-card-subtitle">Personaliza la presentación de carátulas de juegos, duelos y la visibilidad
+            de tu canon.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Visibility Card -->
+      <div class="security-subcard">
+        <div class="flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-primary" style="font-size: 22px;">visibility</span>
+          <div>
+            <h3 class="font-title text-base font-bold text-main m-0">Visibilidad de la Bóveda de Perfil</h3>
+            <span class="text-xs text-muted">Quién puede inspeccionar tus colecciones y valoraciones completas.</span>
+          </div>
+        </div>
+
+        <div class="flex flex-column gap-2 mt-2">
+          <!-- Public -->
+          <label class="radio-card" [class.active]="profileVisibility() === 'public'"
+            (click)="profileVisibility.set('public')">
+            <input type="radio" name="visibility" class="radio-card-input"
+              [checked]="profileVisibility() === 'public'" />
+            <div class="flex-1 flex align-items-center justify-content-between">
+              <div class="flex flex-column">
+                <span class="font-title text-sm font-bold text-main">Público para toda la Comunidad</span>
+                <span class="text-xs text-muted">Visible en directorios, búsquedas y ránkings globales.</span>
+              </div>
+              <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">public</span>
+            </div>
+          </label>
+
+          <!-- Accredited -->
+          <label class="radio-card" [class.active]="profileVisibility() === 'accredited'"
+            (click)="profileVisibility.set('accredited')">
+            <input type="radio" name="visibility" class="radio-card-input"
+              [checked]="profileVisibility() === 'accredited'" />
+            <div class="flex-1 flex align-items-center justify-content-between">
+              <div class="flex flex-column">
+                <span class="font-title text-sm font-bold text-main">Solo Archivistas Acreditados (Nivel 20+)</span>
+                <span class="text-xs text-muted">Acceso restringido a miembros con reputación verificada.</span>
+              </div>
+              <span class="material-symbols-outlined text-tertiary" style="font-size: 20px;">military_tech</span>
+            </div>
+          </label>
+
+          <!-- Private -->
+          <label class="radio-card" [class.active]="profileVisibility() === 'private'"
+            (click)="profileVisibility.set('private')">
+            <input type="radio" name="visibility" class="radio-card-input"
+              [checked]="profileVisibility() === 'private'" />
+            <div class="flex-1 flex align-items-center justify-content-between">
+              <div class="flex flex-column">
+                <span class="font-title text-sm font-bold text-main">Privado / Bóveda Criptográfica</span>
+                <span class="text-xs text-muted">Solo visible por ti. No genera estadísticas de canon.</span>
+              </div>
+              <span class="material-symbols-outlined text-muted" style="font-size: 20px;">lock</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Duelos Dialécticos Toggle -->
+      <div class="security-subcard justify-content-between">
+        <div class="flex flex-column gap-2">
+          <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary" style="font-size: 22px;">swords</span>
+              <h3 class="font-title text-base font-bold text-main m-0">Duelos Dialécticos y Herejías</h3>
+            </div>
+            <span class="pill-badge pill-tertiary">CANON ACTIVO</span>
+          </div>
+          <p class="text-xs text-muted line-height-3 m-0">
+            Permite que otros archivistas superpongan sus Tier Lists directamente sobre las tuyas para refutar tus
+            ubicaciones de juegos ('Tier S Hereje') y debatir discrepancias en vivo.
+          </p>
+        </div>
+
+        <div
+          class="p-3 border-round-lg bg-surface-lowest border-1 border-subtle flex align-items-center justify-content-between mt-3">
+          <div class="flex flex-column">
+            <span class="font-title text-sm font-bold text-main">Aceptar Desafíos de Tier Lists</span>
+            <span class="text-xs text-secondary">Recibirás alertas cuando alguien abra un debate sobre tu canon</span>
+          </div>
+          <label class="switch-label">
+            <input type="checkbox" class="switch-input" [checked]="acceptTierChallenges()"
+              (change)="acceptTierChallenges.set(!acceptTierChallenges())" />
+            <div class="switch-track">
+              <div class="switch-thumb"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Box Art Render Mode -->
+      <div class="security-subcard">
+        <div class="flex align-items-center gap-2">
+          <span class="material-symbols-outlined text-secondary" style="font-size: 22px;">collections_bookmark</span>
+          <div>
+            <h3 class="font-title text-base font-bold text-main m-0">Visualización de Carátulas & Box Art</h3>
+            <span class="text-xs text-muted">Modo de renderizado para los listados de biblioteca y tiers.</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <label class="radio-card" [class.active]="boxartMode() === 'retro_hd'" (click)="boxartMode.set('retro_hd')">
+            <div class="flex flex-column gap-1 flex-1">
+              <div class="flex align-items-center justify-content-between">
+                <span class="font-title text-xs font-bold text-main">Carátulas Retro HD</span>
+                <input type="radio" name="boxart" class="radio-card-input" [checked]="boxartMode() === 'retro_hd'" />
+              </div>
+              <span class="text-xs text-muted">Escaneos modernos remasterizados en 2:3 vertical sin bordes de
+                plástico.</span>
+            </div>
+          </label>
+
+          <label class="radio-card" [class.active]="boxartMode() === 'original_1to1'"
+            (click)="boxartMode.set('original_1to1')">
+            <div class="flex flex-column gap-1 flex-1">
+              <div class="flex align-items-center justify-content-between">
+                <span class="font-title text-xs font-bold text-main">Original Box Art 1:1</span>
+                <input type="radio" name="boxart" class="radio-card-input"
+                  [checked]="boxartMode() === 'original_1to1'" />
+              </div>
+              <span class="text-xs text-muted">Cajas físicas auténticas con banners de consola originales (SNES, PS1,
+                Saturn).</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Regional & Language Settings -->
+      <div class="security-subcard justify-content-between">
+        <div class="flex flex-column gap-2">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size: 22px;">translate</span>
+            <h3 class="font-title text-base font-bold text-main m-0">Idioma de la Interfaz & Terminología</h3>
+          </div>
+          <p class="text-xs text-muted line-height-3 m-0">
+            Afecta a las etiquetas taxonómicas (ej. 'Backlog' vs 'Pendiente', 'Dropped' vs 'Abandonado').
+          </p>
+        </div>
+
+        <div class="flex flex-column sm:flex-row align-items-center gap-2 mt-3">
+          <select class="field-select flex-1" [ngModel]="interfaceLanguage()"
+            (ngModelChange)="interfaceLanguage.set($event)">
+            <option value="es_es">Español (Castellano - Bóveda Europea)</option>
+            <option value="es_latam">Español (Latinoamérica)</option>
+            <option value="en_us">English (US - Master Vault)</option>
+            <option value="ja_jp">日本語 (Japanese Archive)</option>
+          </select>
+          <button type="button" class="btn-profile-secondary w-full sm:w-auto" (click)="savePreferences()">
+            Aplicar Región
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="profile-action-bar mt-4">
+      <span class="text-xs text-muted flex align-items-center gap-2">
+        <span class="material-symbols-outlined text-primary" style="font-size: 16px;">verified_user</span>
+        <span>Tus preferencias se sincronizan automáticamente con la API de clientes autorizados.</span>
+      </span>
+      <button type="button" class="btn-profile-save" (click)="savePreferences()">
+        <span class="material-symbols-outlined">save</span>
+        <span>Guardar Configuración General</span>
+      </button>
+    </div>
+  </section>
+  }
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- TAB 4: CUENTAS VINCULADAS & ECOSISTEMAS                               -->
+  <!-- --------------------------------------------------------------------- -->
+  @if (activeTab() === 'connections') {
+  <section class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-left">
+        <div class="card-header-icon cyan">
+          <span class="material-symbols-outlined" style="font-size: 24px;">sports_esports</span>
+        </div>
+        <div>
+          <h2 class="profile-card-title">Ecosistemas & Sincronización Automática</h2>
+          <p class="profile-card-subtitle">Importación de tiempo de juego, logros y listas de títulos jugados.</p>
+        </div>
+      </div>
+      <button type="button" class="hero-share-btn"
+        (click)="messageService.add({ severity: 'info', summary: 'Conexiones', detail: 'Explorando nuevos adaptadores de API de consolas' })">
+        <span>Gestionar Conexiones</span>
+        <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+      </button>
+    </div>
+
+    <div class="connections-grid">
+      @for (acc of ecosystems(); track acc.id) {
+      <div class="connection-card">
+        <div class="flex align-items-center gap-3">
+          <div class="connection-icon-box" [class]="acc.bgClass">
+            <span class="material-symbols-outlined" style="font-size: 22px;">{{ acc.icon }}</span>
+          </div>
+          <div class="flex flex-column">
+            <span class="font-title text-sm font-bold text-main">{{ acc.name }}</span>
+            <span class="text-xs" [class.text-secondary]="acc.connected" [class.text-muted]="!acc.connected">
+              {{ acc.detail }}
+            </span>
+          </div>
+        </div>
+        <button type="button" class="bg-transparent border-none cursor-pointer p-1" (click)="toggleEcosystem(acc)"
+          [title]="acc.connected ? 'Desconectar' : 'Conectar'">
+          @if (acc.connected) {
+          <span class="pulse-dot pulse-teal"></span>
+          } @else {
+          <span class="pulse-dot" style="background-color: var(--text-subtle);"></span>
+          }
+        </button>
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- TAB 5: BÓVEDA PÚBLICA (BIBLIOTECA, APORTES, TIERLISTS)                 -->
+  <!-- --------------------------------------------------------------------- -->
+  @if (activeTab() === 'collection') {
+  <section class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-header-left">
+        <div class="card-header-icon">
+          <span class="material-symbols-outlined" style="font-size: 24px;">inventory_2</span>
+        </div>
+        <div>
+          <h2 class="profile-card-title">Catálogo Público & Curaduría de Archivista</h2>
+          <p class="profile-card-subtitle">Inspección de juegos preservados, aportes analíticos y matrices de tier
+            lists.</p>
+        </div>
+      </div>
+      <!-- Sub-tab pill selector -->
+      <div class="flex align-items-center gap-2">
+        <button type="button" class="hero-share-btn" [class.active]="collectionSubTab() === 'library'"
+          (click)="setCollectionSubTab('library')">
+          <span>Biblioteca ({{ userGames().length }})</span>
+        </button>
+        <button type="button" class="hero-share-btn" [class.active]="collectionSubTab() === 'tierlists'"
+          (click)="setCollectionSubTab('tierlists')">
+          <span>Tier Lists ({{ userTierlists().length }})</span>
+        </button>
+        <button type="button" class="hero-share-btn" [class.active]="collectionSubTab() === 'posts'"
+          (click)="setCollectionSubTab('posts')">
+          <span>Aportes ({{ userPosts().length }})</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-view 1: Biblioteca de Juegos -->
+    @if (collectionSubTab() === 'library') {
+    @if (userGames().length === 0) {
+    <div class="p-4 text-center text-muted">
+      <span class="material-symbols-outlined text-outline" style="font-size: 48px;">sports_esports</span>
+      <p class="mt-2">Esta bóveda aún no contiene títulos registrados.</p>
+    </div>
+    } @else {
+    <div class="game-vault-grid">
+      @for (g of userGames(); track g.id) {
+      <a [routerLink]="['/game', g.game_id]" class="game-vault-card">
+        @if (g.game_cover) {
+          <img [src]="g.game_cover" [alt]="g.game_title"
+            class="game-vault-thumb" />
+        } @else {
+          <div class="game-vault-thumb flex flex-column align-items-center justify-content-center p-2 text-center">
+            <span class="material-symbols-outlined text-3xl text-muted opacity-40">hide_image</span>
+            <span class="text-xs font-title text-muted opacity-60 mt-1" style="font-size: 10px;">Sin carátula</span>
+          </div>
+        }
+        <div class="game-vault-info">
+          <span class="game-vault-title" [title]="g.game_title">{{ g.game_title }}</span>
+          <span class="game-vault-status">{{ g.status }}</span>
+        </div>
+      </a>
+      }
+    </div>
+    }
+    }
+
+    <!-- Sub-view 2: Tier Lists -->
+    @if (collectionSubTab() === 'tierlists') {
+    @if (userTierlists().length === 0) {
+    <div class="p-4 text-center text-muted">
+      <span class="material-symbols-outlined text-outline" style="font-size: 48px;">bar_chart</span>
+      <p class="mt-2">No hay matrices de tier lists publicadas por este archivista.</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+      @for (t of userTierlists(); track t.id) {
+      <div class="security-subcard">
+        <div class="flex align-items-center justify-content-between">
+          <h3 class="font-title text-base font-bold text-main m-0">{{ t.title }}</h3>
+          <span class="pill-badge pill-secondary">Canon</span>
+        </div>
+        <p class="text-xs text-muted line-clamp-2 m-0">{{ t.description || 'Sin descripción de matriz.' }}</p>
+        <a [routerLink]="['/tierlist/edit', t.id]"
+          class="btn-profile-secondary text-xs no-underline justify-content-center mt-2">
+          <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span>
+          <span>Inspeccionar Matriz</span>
+        </a>
+      </div>
+      }
+    </div>
+    }
+    }
+
+    <!-- Sub-view 3: Aportes y Debates -->
+    @if (collectionSubTab() === 'posts') {
+    @if (userPosts().length === 0) {
+    <div class="p-4 text-center text-muted">
+      <span class="material-symbols-outlined text-outline" style="font-size: 48px;">forum</span>
+      <p class="mt-2">No se registran intervenciones en el Ágora hasta la fecha.</p>
+    </div>
+    } @else {
+    <div class="flex flex-column gap-3">
+      @for (post of userPosts(); track post.id) {
+      <div class="security-subcard">
+        <div class="flex align-items-center justify-content-between">
+          <span class="pill-badge pill-tertiary">{{ post.post_type }}</span>
+          <span class="text-xs text-muted">{{ post.created_at | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <h3 class="font-title text-base font-bold text-main m-0">{{ post.title }}</h3>
+        <p class="text-xs text-muted line-clamp-2 m-0">{{ post.content }}</p>
+      </div>
+      }
+    </div>
+    }
+    }
+
+  </section>
+  }
 
 </div>
+
+}

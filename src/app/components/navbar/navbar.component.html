@@ -1,6 +1,6 @@
 <header class="vault-navbar glass-nav sticky top-0 z-5">
   <div class="max-w-7xl mx-auto px-3 sm:px-4 flex align-items-center justify-content-between h-4rem gap-2 sm:gap-4">
-    
+
     <!-- BRAND / LOGO -->
     <a routerLink="/dashboard" class="flex align-items-center gap-2 no-underline text-color select-none flex-shrink-0">
       <div class="logo-emblem flex align-items-center justify-content-center">
@@ -10,7 +10,8 @@
         <span class="font-title font-bold text-xl tracking-tight line-height-1">
           Quest<span class="text-primary">Log</span>
         </span>
-        <span class="text-xs text-secondary font-title font-semibold tracking-widest uppercase opacity-80" style="font-size: 9px;">
+        <span class="text-xs text-secondary font-title font-semibold tracking-widest uppercase opacity-80"
+          style="font-size: 9px;">
           Vault Protocol
         </span>
       </div>
@@ -18,23 +19,25 @@
 
     <!-- DESKTOP NAV LINKS -->
     <nav class="hidden md:flex align-items-center gap-1 nav-pill-container p-1 border-round-xl">
-      <a routerLink="/dashboard" 
-         routerLinkActive="active" 
-         class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
+      <a routerLink="/dashboard" routerLinkActive="active"
+        class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
         <span class="material-symbols-outlined text-lg">explore</span>
         <span>Explorar</span>
       </a>
-      <a routerLink="/my-library" 
-         routerLinkActive="active" 
-         class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
+      <a routerLink="/my-library" routerLinkActive="active"
+        class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
         <span class="material-symbols-outlined text-lg">inventory_2</span>
         <span>Mi Biblioteca</span>
       </a>
-      <a routerLink="/tierlist/create" 
-         routerLinkActive="active" 
-         class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
+      <a routerLink="/tierlist/create" routerLinkActive="active"
+        class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
         <span class="material-symbols-outlined text-lg">view_timeline</span>
         <span>Tier Lists</span>
+      </a>
+      <a routerLink="/community" routerLinkActive="active"
+        class="nav-item flex align-items-center gap-2 px-3 py-2 border-round-lg text-sm font-semibold no-underline">
+        <span class="material-symbols-outlined text-lg">groups</span>
+        <span>Comunidad</span>
       </a>
     </nav>
 
@@ -46,32 +49,33 @@
     <!-- USER CONTROLS & PROFILE -->
     <div class="flex align-items-center gap-2 sm:gap-3 flex-shrink-0">
       @if (currentUser()) {
-        <!-- User Pill -->
-        <div class="user-pill flex align-items-center gap-2 p-1 pr-3 border-round-3xl">
-          <div class="avatar-circle flex align-items-center justify-content-center border-round-circle">
-            {{ userInitial() }}
-          </div>
-          <div class="hidden lg:flex flex-column text-left">
-            <span class="font-bold text-xs line-height-1 text-color truncate max-w-8rem">
-              {{ username() }}
-            </span>
-            <span class="text-secondary font-semibold" style="font-size: 10px;">
-              Archivist Prime
-            </span>
-          </div>
+      <!-- User Pill with clickable profile link -->
+      <a [routerLink]="['/profile', username()]"
+        class="user-pill flex align-items-center gap-2 p-1 pr-3 border-round-3xl no-underline cursor-pointer"
+        title="Ver mi perfil y configuración">
+        <div class="avatar-circle flex align-items-center justify-content-center border-round-circle">
+          {{ userInitial() }}
         </div>
+        <div class="hidden lg:flex flex-column text-left">
+          <span class="font-bold text-xs line-height-1 text-color truncate max-w-8rem">
+            {{ username() }}
+          </span>
+          <span class="text-secondary font-semibold" style="font-size: 10px;">
+            Archivist Prime
+          </span>
+        </div>
+      </a>
 
-        <!-- Logout Action -->
-        <button type="button" 
-                (click)="logout()" 
-                class="logout-btn flex align-items-center justify-content-center border-round-lg p-2 cursor-pointer border-none bg-transparent"
-                title="Cerrar Sesión">
-          <span class="material-symbols-outlined text-xl">logout</span>
-        </button>
+      <!-- Logout Action -->
+      <button type="button" (click)="logout()"
+        class="logout-btn flex align-items-center justify-content-center border-round-lg p-2 cursor-pointer border-none bg-transparent"
+        title="Cerrar Sesión">
+        <span class="material-symbols-outlined text-xl">logout</span>
+      </button>
       } @else {
-        <a routerLink="/auth" class="btn-login-pill no-underline px-4 py-2 border-round-lg font-semibold text-sm">
-          Iniciar Sesión
-        </a>
+      <a routerLink="/auth" class="btn-login-pill no-underline px-4 py-2 border-round-lg font-semibold text-sm">
+        Iniciar Sesión
+      </a>
       }
     </div>
 
@@ -79,23 +83,32 @@
 
   <!-- MOBILE BOTTOM BAR OR NAV EXTENSION -->
   <div class="md:hidden flex align-items-center justify-around py-2 border-top-1 surface-border bg-black-alpha-40">
-    <a routerLink="/dashboard" 
-       routerLinkActive="active" 
-       class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
+    <a routerLink="/dashboard" routerLinkActive="active"
+      class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
       <span class="material-symbols-outlined text-xl">explore</span>
       <span>Explorar</span>
     </a>
-    <a routerLink="/my-library" 
-       routerLinkActive="active" 
-       class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
+    <a routerLink="/my-library" routerLinkActive="active"
+      class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
       <span class="material-symbols-outlined text-xl">inventory_2</span>
       <span>Biblioteca</span>
     </a>
-    <a routerLink="/tierlist/create" 
-       routerLinkActive="active" 
-       class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
+    <a routerLink="/tierlist/create" routerLinkActive="active"
+      class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
       <span class="material-symbols-outlined text-xl">view_timeline</span>
       <span>Tier List</span>
     </a>
+    <a routerLink="/community" routerLinkActive="active"
+      class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
+      <span class="material-symbols-outlined text-xl">groups</span>
+      <span>Comunidad</span>
+    </a>
+    @if (currentUser()) {
+    <a [routerLink]="['/profile', username()]" routerLinkActive="active"
+      class="mobile-nav-item flex flex-column align-items-center gap-1 text-xs no-underline font-semibold">
+      <span class="material-symbols-outlined text-xl">account_circle</span>
+      <span>Perfil</span>
+    </a>
+    }
   </div>
 </header>

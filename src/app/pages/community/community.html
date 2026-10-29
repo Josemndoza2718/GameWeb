@@ -1,183 +1,1017 @@
 <p-toast></p-toast>
 
-<div class="community-container p-4">
+<!-- Atmospheric Glowing Orbs -->
+<div class="agora-orb-primary"></div>
+<div class="agora-orb-secondary"></div>
 
-    <!-- HEADER Y BOTÓN PUBLICAR -->
+<!-- Main Agora Shell -->
+<div class="agora-shell">
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 1: Master Hero Header & Live Ticker                               -->
+  <!-- ========================================================================= -->
+  <section class="flex flex-column gap-3">
+    <!-- Breadcrumb & Status Pill -->
+    <div class="agora-header-top">
+      <div class="agora-breadcrumb">
+        <span class="text-primary font-bold">QuestLog</span>
+        <span class="text-outline">/</span>
+        <span class="text-secondary font-bold">Curaduría Colectiva</span>
+        <span class="text-outline">/</span>
+        <span class="text-main">El Ágora</span>
+      </div>
+
+      <div class="agora-status-pill">
+        <span class="pulse-dot pulse-teal"></span>
+        <span class="text-secondary font-bold tracking-widest uppercase">Canal Dialéctico Abierto</span>
+        <span class="text-outline">|</span>
+        <span>Ciclo Sincronizado #419</span>
+      </div>
+    </div>
+
+    <!-- Title & Primary Action -->
+    <div class="agora-title-block">
+      <div>
+        <h1 class="agora-title">
+          El Ágora de los <span class="text-primary">Archivistas</span>: Debates Canónicos y Herejías
+        </h1>
+        <p class="agora-subtitle">
+          Discute clasificaciones de Tier Lists, vota argumentos críticos de preservación retro y contemporánea, y descubre veredictos colectivos de más de <strong class="text-main">45,000 jugadores</strong> y curadores certificados.
+        </p>
+      </div>
+
+      <button type="button" class="btn-agora-cta" (click)="openNewDebateModal('heresy')">
+        <span class="material-symbols-outlined" style="font-size: 20px;">local_fire_department</span>
+        <span>+ Iniciar Debate o Herejía</span>
+      </button>
+    </div>
+
+    <!-- 4-Bento Metrics Bar -->
+    <div class="agora-metrics-grid">
+      <div class="metric-bento-card">
+        <div class="metric-bento-icon text-tertiary">
+          <span class="material-symbols-outlined" style="font-size: 22px;">local_fire_department</span>
+        </div>
+        <div class="flex flex-column min-w-0">
+          <span class="text-xs uppercase font-bold text-subtle tracking-wider">Actividad Hoy</span>
+          <span class="font-title text-xl font-bold text-main truncate">142 Debates</span>
+        </div>
+      </div>
+
+      <div class="metric-bento-card">
+        <div class="metric-bento-icon text-primary">
+          <span class="material-symbols-outlined" style="font-size: 22px;">swords</span>
+        </div>
+        <div class="flex flex-column min-w-0">
+          <span class="text-xs uppercase font-bold text-subtle tracking-wider">Duelos de Veredicto</span>
+          <span class="font-title text-xl font-bold text-main truncate">{{ totalDuelVotes() + 2070 | number }} Votos</span>
+        </div>
+      </div>
+
+      <div class="metric-bento-card">
+        <div class="metric-bento-icon text-secondary">
+          <span class="material-symbols-outlined" style="font-size: 22px;">gavel</span>
+        </div>
+        <div class="flex flex-column min-w-0">
+          <span class="text-xs uppercase font-bold text-subtle tracking-wider">Argumentación Civil</span>
+          <span class="font-title text-xl font-bold text-main truncate">98.4% Tasa</span>
+        </div>
+      </div>
+
+      <div class="metric-bento-card">
+        <div class="metric-bento-icon text-tertiary">
+          <span class="material-symbols-outlined" style="font-size: 22px;">bolt</span>
+        </div>
+        <div class="flex flex-column min-w-0">
+          <span class="text-xs uppercase font-bold text-tertiary tracking-wider">Evento en Curso</span>
+          <span class="font-title text-sm font-bold text-main truncate">Golden Era JRPG (SNES vs PS1)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Tab Selector -->
+    <div class="agora-filter-bar">
+      <button
+        type="button"
+        class="agora-tab-pill"
+        [class.active]="selectedFilter() === 'trending'"
+        (click)="setFilter('trending')"
+      >
+        <span>🔥 En Tendencia</span>
+      </button>
+
+      <button
+        type="button"
+        class="agora-tab-pill"
+        [class.active]="selectedFilter() === 'heresies'"
+        (click)="setFilter('heresies')"
+      >
+        <span>⚡ Debates Polarizados (Herejías)</span>
+      </button>
+
+      <button
+        type="button"
+        class="agora-tab-pill"
+        [class.active]="selectedFilter() === 'verdicts'"
+        (click)="setFilter('verdicts')"
+      >
+        <span>📜 Nuevos Veredictos</span>
+      </button>
+
+      <button
+        type="button"
+        class="agora-tab-pill"
+        [class.active]="selectedFilter() === 'duels'"
+        (click)="setFilter('duels')"
+      >
+        <span>⚔️ Duelos de Curadores</span>
+      </button>
+
+      <button
+        type="button"
+        class="agora-tab-pill"
+        [class.active]="selectedFilter() === 'unresolved'"
+        (click)="setFilter('unresolved')"
+      >
+        <span>⏳ Canónicos Sin Resolver</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 2: Featured Dialectic Arena (Duelo Argumental de la Semana)        -->
+  <!-- ========================================================================= -->
+  <section class="flex flex-column gap-3">
+    <div class="flex align-items-center justify-content-between">
+      <div class="flex align-items-center gap-2">
+        <span class="material-symbols-outlined text-tertiary" style="font-size: 24px;">workspace_premium</span>
+        <h2 class="font-title text-lg font-bold text-main m-0 uppercase tracking-wide">
+          Duelo Argumental de la Semana
+        </h2>
+      </div>
+      <span class="pill-badge pill-tertiary font-bold tracking-widest uppercase">
+        Cierra en 18h 42m
+      </span>
+    </div>
+
+    <div class="duel-arena-card">
+      <div class="duel-glow-left"></div>
+      <div class="duel-glow-right"></div>
+
+      <!-- Topic Title & Header -->
+      <div class="flex flex-column md:flex-row md:align-items-center justify-content-between gap-3">
+        <div class="flex align-items-center gap-3">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLRNSMwpFnBsTbf8bukIHru1o7PKBeWTC1g118GxO8HQnjqdTmseJuX4tp087E2eupZs3h-WmLIE65C7A0M3v3O8yTsETA5IfLWqiBa9JwydpcUau2IW7caA-5A5yVjza00MUO8t7KKWXcrgyo2YTl8Rzvb0RJxSOhILpYc10yiSkMlxYGfA-K5VePVUCwi8_JcDBHNqThuhKFMSkfcGpnJFK0H2V5-zW_bn9yayUJiHTt-RZSZyE"
+            alt="Castlevania Symphony of the Night"
+            class="duel-game-thumb"
+          />
+          <div class="flex flex-column">
+            <div class="flex align-items-center gap-2 mb-1">
+              <span class="pill-badge pill-secondary">PS1 / Saturn</span>
+              <span class="text-xs text-muted">1997 • Konami</span>
+              <span class="pill-badge pill-primary">Disputa de Tier</span>
+            </div>
+            <h3 class="font-title text-xl font-bold text-main line-height-2 m-0">
+              Castlevania: Symphony of the Night — ¿Obra Maestra Intocable (Tier S) o Víctima del Castillo Invertido (Tier B)?
+            </h3>
+          </div>
+        </div>
+
+        <div class="flex flex-column align-items-start md:align-items-end shrink-0">
+          <span class="text-xs text-subtle uppercase tracking-wider font-title">Censo de Jurado</span>
+          <span class="font-title text-lg font-bold text-main">{{ totalDuelVotes() | number }} votos emitidos</span>
+        </div>
+      </div>
+
+      <!-- Face to Face Dialectic Postures -->
+      <div class="duel-postures-grid">
+        <!-- Posture A: Canon S -->
+        <div class="dialectic-card" [class.voted]="userDuelVote() === 'A'">
+          <div class="flex flex-column gap-2">
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-2">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJZnTXnqL6KDJluJqBoSTDYnfIm9EdCs_FNSx8yNW04iBvb4iaawdRvq4ewTheS0jw0PR0Z7gyGvEcc7duJc2IbuqGtX14G0IUw9yshUIQh9uOYuILMrzoesA3T1VPG1dUREtZPCP65DySvvoIMJ8Uui7am9IgvDg9OlXJ4oG_4EEHUhxPmc8iX6i2ys42k6JfqenF6Du2Rf0vPa5yyZ9vYwGpMv6gjqtXco-tQhH3pLfWPIXqNE"
+                  alt="Valen_Mage"
+                  class="w-2rem h-2rem border-round-circle object-cover"
+                />
+                <div class="flex flex-column">
+                  <div class="flex align-items-center gap-1">
+                    <span class="font-title text-sm font-bold text-main">Valen_Mage</span>
+                    <span class="pill-badge pill-primary" style="font-size: 9px; padding: 1px 4px;">Lv. 58</span>
+                  </div>
+                  <span class="text-xs text-muted">Archimago Canónico</span>
+                </div>
+              </div>
+              <span class="tier-badge-giant tier-s-glow">TIER S</span>
+            </div>
+            <p class="text-sm text-main font-italic line-height-3 m-0">
+              "La arquitectura de Michiru Yamane y el diseño de mapas de Igarashi revolucionaron el medio para siempre. El castillo invertido no es padding: es una deconstrucción geométrica y una recompensa de maestría que ningún metroidvania posterior ha replicado con tal elegancia gótica."
+            </p>
+          </div>
+
+          <div class="flex align-items-center justify-content-between pt-2 border-top-1 border-subtle">
+            <span class="font-title text-sm font-bold text-primary">{{ percentA() }}% de respaldo</span>
+            <span class="text-xs text-muted">{{ duelVotesA() | number }} votos</span>
+          </div>
+        </div>
+
+        <!-- Posture B: Heresy B -->
+        <div class="dialectic-card" [class.voted]="userDuelVote() === 'B'">
+          <div class="flex flex-column gap-2">
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-2">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB07rUlWu5HvOEeCGXNKo1appAkIil5vBXuJauj8h4ebJ7upgNKKzyCVe497Wy-kQi_-ruIPGK4OsPU7WNIPUTeBNeX3Y4DeFO4erblpQ05YdZnQo-kU_p1IHv-9V0WeoNZcCyUYsUEuFNcPA-6v9ssVAsLo0uWLBKfyJ9U3dTGfU_A2RteL0098PO7cEBU5m3_jH8ioZDa1PwDzWJLKvEg6aOT8w_Pg6wh5-j1tWPTmLKsxxo_8kg"
+                  alt="AlexVance"
+                  class="w-2rem h-2rem border-round-circle object-cover"
+                />
+                <div class="flex flex-column">
+                  <div class="flex align-items-center gap-1">
+                    <span class="font-title text-sm font-bold text-main">AlexVance</span>
+                    <span class="pill-badge pill-secondary" style="font-size: 9px; padding: 1px 4px;">Lv. 46</span>
+                  </div>
+                  <span class="text-xs text-muted">Archivista Crítico</span>
+                </div>
+              </div>
+              <span class="tier-badge-giant tier-b-glow">TIER B</span>
+            </div>
+            <p class="text-sm text-main font-italic line-height-3 m-0">
+              "El castillo invertido rompe la curva de dificultad por completo: Alucard se vuelve un dios trivial con la Crissaegrim o el Escudo Alucard, los techos se vuelven pisos incómodos sin rediseño visual real y los jefes tardíos mueren en 3 segundos. Es monumental, pero no impecable."
+            </p>
+          </div>
+
+          <div class="flex align-items-center justify-content-between pt-2 border-top-1 border-subtle">
+            <span class="font-title text-sm font-bold text-secondary">{{ percentB() }}% de respaldo</span>
+            <span class="text-xs text-muted">{{ duelVotesB() | number }} votos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Polarization Bar -->
+      <div class="polarization-box">
+        <div class="polarization-track">
+          <div class="polarization-bar-a" [style.width.%]="percentA()"></div>
+          <div class="polarization-bar-b" [style.width.%]="percentB()"></div>
+        </div>
+        <div class="flex justify-content-between text-xs text-subtle">
+          <span class="flex align-items-center gap-1">
+            <span class="pulse-dot pulse-amber"></span>
+            Tesis de Perfección Canónica (Tier S: {{ percentA() }}%)
+          </span>
+          <span class="flex align-items-center gap-1">
+            <span class="pulse-dot pulse-teal"></span>
+            Crítica de Desbalance Mecánico (Tier B: {{ percentB() }}%)
+          </span>
+        </div>
+      </div>
+
+      <!-- Interactive Voting Bottom Bar -->
+      <div class="flex flex-wrap align-items-center justify-content-between gap-3 pt-2">
+        <div class="flex align-items-center gap-2 text-xs text-muted">
+          <span class="material-symbols-outlined text-tertiary" style="font-size: 18px;">info</span>
+          <span>Tu voto otorgará <strong>+50 XP</strong> a tu Reputación de Curador de Metroidvanias.</span>
+        </div>
+
+        <div class="flex align-items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            class="debate-action-btn"
+            [class.voted]="userDuelVote() === 'A'"
+            (click)="voteDuel('A')"
+          >
+            <span>Votar Tier S (Valen_Mage)</span>
+          </button>
+          <button
+            type="button"
+            class="debate-action-btn"
+            [class.voted]="userDuelVote() === 'B'"
+            (click)="voteDuel('B')"
+          >
+            <span>Votar Tier B (AlexVance)</span>
+          </button>
+          <button
+            type="button"
+            class="btn-agora-cta"
+            style="padding: 0.6rem 1.25rem; font-size: 13px;"
+            (click)="openNewDebateModal('heresy')"
+          >
+            <span class="material-symbols-outlined" style="font-size: 18px;">forum</span>
+            <span>Unirse al Debate y Emitir Voto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- SECTION 3: 2-Column Main Arena Layout (8 Cols Feed / 4 Cols Widgets)      -->
+  <!-- ========================================================================= -->
+  <section class="agora-main-grid">
+
+    <!-- LEFT COLUMN: Community Feed (8 Cols) -->
+    <div class="flex flex-column gap-3">
+
+      <!-- Tag Taxonomy Filter Pill Bar -->
+      <div class="agora-tags-row">
+        <span class="text-xs text-subtle uppercase tracking-wider font-title mr-1">Filtros:</span>
+        @for (tag of ['Todos', 'JRPG', 'RetroPreservation', 'Metroidvania', 'FromSoftware', 'TierLists', 'EmulationAccuracy']; track tag) {
+          <button
+            type="button"
+            class="agora-tag-chip"
+            [class.active]="selectedTag() === tag"
+            (click)="setTag(tag)"
+          >
+            #{{ tag }}
+          </button>
+        }
+      </div>
+
+      <!-- Real Posts from Supabase -->
+      @for (post of posts(); track post.id) {
+        <article class="debate-card">
+          <div class="flex align-items-start justify-content-between gap-3">
+            <div class="flex align-items-center gap-2">
+              <div class="w-2rem h-2rem border-round-circle bg-primary text-black font-bold flex align-items-center justify-content-center text-xs">
+                {{ post.profiles?.username?.charAt(0)?.toUpperCase() || 'A' }}
+              </div>
+              <div class="flex flex-column">
+                <div class="flex align-items-center gap-1">
+                  <span class="font-title text-sm font-bold text-main">&#064;{{ post.profiles?.username || 'Archivista' }}</span>
+                  <span class="pill-badge pill-secondary" style="font-size: 9px; padding: 1px 4px;">Lv. 30</span>
+                  <span class="text-subtle text-xs">•</span>
+                  <span class="text-xs text-subtle">{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <span class="text-xs text-muted">Aporte del Ágora</span>
+              </div>
+            </div>
+
+            <span class="pill-badge pill-primary">{{ post.post_type }}</span>
+          </div>
+
+          <div class="flex gap-3">
+            @if (post.game_cover) {
+              <a [routerLink]="['/game', post.game_id]" class="hidden sm:block">
+                <img [src]="post.game_cover" [alt]="post.game_title" class="debate-game-thumb" />
+              </a>
+            }
+            <div class="flex flex-column gap-1 flex-1 min-w-0">
+              <div class="flex align-items-center gap-1">
+                <span class="pill-badge pill-surface">#{{ post.game_title }}</span>
+              </div>
+              <h4 class="debate-card-title">{{ post.title }}</h4>
+              <p class="text-sm text-muted line-height-3 m-0 line-clamp-2">{{ post.content }}</p>
+            </div>
+          </div>
+
+          <div class="flex align-items-center justify-content-between pt-2 border-top-1 border-subtle">
+            <div class="flex align-items-center gap-2">
+              <button type="button" class="debate-action-btn" (click)="upvoteDebate(post.id!)">
+                <span class="material-symbols-outlined text-primary" style="font-size: 16px;">arrow_upward</span>
+                <span>Apoyar Veredicto</span>
+              </button>
+            </div>
+            <a [routerLink]="['/game', post.game_id]" class="text-xs text-secondary font-bold hover:underline">
+              Ver Ficha del Juego →
+            </a>
+          </div>
+        </article>
+      }
+
+      <!-- Seed Debates (Dialectic Canon & Heresies) -->
+      @for (debate of seedDebates(); track debate.id) {
+        <article class="debate-card">
+          <div class="flex align-items-start justify-content-between gap-3">
+            <div class="flex align-items-center gap-2">
+              <img [src]="debate.authorAvatar" [alt]="debate.authorHandle" class="w-2rem h-2rem border-round-circle object-cover" />
+              <div class="flex flex-column">
+                <div class="flex align-items-center gap-1">
+                  <span class="font-title text-sm font-bold text-main">&#064;{{ debate.authorHandle }}</span>
+                  <span class="pill-badge pill-tertiary" style="font-size: 9px; padding: 1px 4px;">Lv. {{ debate.authorLevel }}</span>
+                  <span class="text-subtle text-xs">•</span>
+                  <span class="text-xs text-subtle">{{ debate.timeAgo }}</span>
+                </div>
+                <span class="text-xs text-muted">{{ debate.authorTitle }}</span>
+              </div>
+            </div>
+
+            @if (debate.isHot) {
+              <div class="flex align-items-center gap-1 pill-badge font-bold" style="background: rgba(248, 113, 113, 0.18); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.35);">
+                <span class="material-symbols-outlined" style="font-size: 14px;">local_fire_department</span>
+                <span>DEBATE CALIENTE</span>
+              </div>
+            } @else {
+              <span class="pill-badge pill-secondary">{{ debate.disputeTag }}</span>
+            }
+          </div>
+
+          <div class="flex gap-3">
+            <div class="hidden sm:block">
+              <img [src]="debate.gameCover" [alt]="debate.gameTitle" class="debate-game-thumb" />
+            </div>
+            <div class="flex flex-column gap-1 flex-1 min-w-0">
+              <div class="flex align-items-center gap-1 flex-wrap">
+                @for (t of debate.tags; track t) {
+                  <span class="pill-badge pill-surface">{{ t }}</span>
+                }
+              </div>
+              <h4 class="debate-card-title">{{ debate.title }}</h4>
+              <p class="text-sm text-muted line-height-3 m-0">{{ debate.summary }}</p>
+
+              <!-- Optional Consensus Micro Chart -->
+              @if (debate.consensusPercent) {
+                <div class="p-2 border-round-md bg-surface-mid border-1 border-subtle flex align-items-center justify-content-between mt-2">
+                  <div class="flex align-items-center gap-2">
+                    <svg class="w-2rem h-2rem -rotate-90 text-tertiary" viewBox="0 0 36 36">
+                      <circle cx="18" cy="18" r="14" fill="none" stroke="var(--bg-surface-highest)" stroke-width="4"></circle>
+                      <circle cx="18" cy="18" r="14" fill="none" stroke="var(--tertiary)" stroke-width="4" stroke-dasharray="87.9 100" stroke-linecap="round"></circle>
+                    </svg>
+                    <div class="flex flex-column">
+                      <span class="font-title text-xs font-bold text-main">{{ debate.consensusLabel }}</span>
+                      <span class="text-xs text-muted">Concilio de Jurados Verificado</span>
+                    </div>
+                  </div>
+                  <span class="pill-badge pill-secondary font-mono">Índice Herejía: {{ debate.heresyIndex }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="flex align-items-center justify-content-between pt-2 border-top-1 border-subtle">
+            <div class="flex align-items-center gap-2">
+              <button
+                type="button"
+                class="debate-action-btn"
+                [class.voted]="votedPosts().has(debate.id)"
+                (click)="upvoteDebate(debate.id)"
+              >
+                <span class="material-symbols-outlined text-primary" style="font-size: 16px;">arrow_upward</span>
+                <span class="font-bold">{{ debate.upvotes }}</span>
+                <span class="hidden sm:inline text-muted">Apoyar Veredicto</span>
+              </button>
+
+              <button type="button" class="debate-action-btn" (click)="messageService.add({ severity: 'info', summary: 'Argumentos', detail: 'Abriendo hilo de réplicas críticas...' })">
+                <span class="material-symbols-outlined text-secondary" style="font-size: 16px;">chat_bubble</span>
+                <span class="font-bold">{{ debate.argumentsCount }}</span>
+                <span class="hidden sm:inline text-muted">Argumentos</span>
+              </button>
+            </div>
+
+            <div class="flex align-items-center gap-2">
+              <button type="button" class="debate-action-btn" (click)="messageService.add({ severity: 'info', summary: 'Tier List', detail: 'Cargando matriz canónica del autor...' })">
+                <span class="material-symbols-outlined" style="font-size: 16px;">view_column</span>
+                <span class="hidden md:inline">Tier List del autor</span>
+              </button>
+              <button type="button" class="debate-action-btn" (click)="messageService.add({ severity: 'info', summary: 'Enlace copiado', detail: 'Debate listo para compartir en Discord o redes.' })">
+                <span class="material-symbols-outlined" style="font-size: 16px;">share</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+
+    </div>
+
+    <!-- RIGHT COLUMN: Ecosystem & Curation Widgets (4 Cols) -->
+    <div class="agora-sidebar">
+
+      <!-- WIDGET 1: Top Archivists of the Month -->
+      <div class="sidebar-widget-card">
+        <div class="widget-title-row">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary" style="font-size: 20px;">military_tech</span>
+            <h3 class="font-title text-sm font-bold text-main m-0">Curadores Más Influyentes</h3>
+          </div>
+          <span class="text-xs text-muted">Mes de Octubre</span>
+        </div>
+
+        <div class="flex flex-column gap-2">
+          @for (c of curators; track c.handle) {
+            <div class="widget-curator-row">
+              <div class="flex align-items-center gap-2 min-w-0">
+                <span class="w-1.5rem h-1.5rem border-round-circle bg-surface-highest text-tertiary font-bold text-xs flex align-items-center justify-content-center shrink-0">
+                  {{ c.rank }}
+                </span>
+                <img [src]="c.avatar" [alt]="c.handle" class="w-2rem h-2rem border-round-circle object-cover shrink-0" />
+                <div class="flex flex-column min-w-0">
+                  <span class="font-title text-xs font-bold text-main truncate">&#064;{{ c.handle }}</span>
+                  <span class="text-xs text-secondary truncate">{{ c.reputation }}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn-follow-curator"
+                [class.following]="followedCurators().has(c.handle)"
+                (click)="toggleFollowCurator(c.handle)"
+              >
+                {{ followedCurators().has(c.handle) ? 'Siguiendo' : '+ Seguir' }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- WIDGET 2: Most Voted Heresies -->
+      <div class="sidebar-widget-card">
+        <div class="widget-title-row">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">troubleshoot</span>
+            <h3 class="font-title text-sm font-bold text-main m-0">Herejías de la Bóveda</h3>
+          </div>
+          <span class="text-xs text-muted">Discrepancias</span>
+        </div>
+
+        <div class="flex flex-column gap-3">
+          <!-- Item 1 -->
+          <div class="flex flex-column gap-1 p-2 border-round bg-surface-mid border-1 border-subtle">
+            <div class="flex align-items-center justify-content-between text-xs">
+              <span class="font-title font-bold text-main">Elden Ring en Tier A</span>
+              <span class="font-bold text-danger">88% Rechazo</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 6px;">
+              <div class="bg-danger h-full" style="width: 88%;"></div>
+            </div>
+            <span class="text-xs text-muted">Tesis: Mundo abierto sobredimensionado</span>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="flex flex-column gap-1 p-2 border-round bg-surface-mid border-1 border-subtle">
+            <div class="flex align-items-center justify-content-between text-xs">
+              <span class="font-title font-bold text-main">Silent Hill 2 en Tier S+</span>
+              <span class="font-bold text-tertiary">98% Consenso</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 6px;">
+              <div class="bg-tertiary h-full" style="width: 98%;"></div>
+            </div>
+            <span class="text-xs text-muted">Tesis: Cúspide del horror psicológico</span>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="flex flex-column gap-1 p-2 border-round bg-surface-mid border-1 border-subtle">
+            <div class="flex align-items-center justify-content-between text-xs">
+              <span class="font-title font-bold text-main">Kingdom Hearts en Tier C</span>
+              <span class="font-bold text-secondary">50 / 50 Empate</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 6px;">
+              <div class="bg-secondary h-full" style="width: 50%;"></div>
+            </div>
+            <span class="text-xs text-muted">Tesis: Guion ininteligible vs combate ágil</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIDGET 3: Community Quests -->
+      <div class="sidebar-widget-card">
+        <div class="widget-title-row">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size: 20px;">assignment_turned_in</span>
+            <h3 class="font-title text-sm font-bold text-main m-0">Misiones Comunitarias</h3>
+          </div>
+          <span class="pill-badge pill-primary">+450 XP Posible</span>
+        </div>
+
+        <div class="flex flex-column gap-2">
+          <div class="p-2 border-round bg-surface-mid border-1 border-subtle flex flex-column gap-1">
+            <div class="flex align-items-start justify-content-between gap-1 text-xs">
+              <div>
+                <div class="font-title font-semibold text-main">Vota en 5 duelos de Tier List</div>
+                <span class="text-muted">Progreso: 3 de 5 votos</span>
+              </div>
+              <span class="pill-badge pill-primary">+150 XP</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 5px;">
+              <div class="bg-primary h-full" style="width: 60%;"></div>
+            </div>
+          </div>
+
+          <div class="p-2 border-round bg-surface-mid border-1 border-subtle flex flex-column gap-1">
+            <div class="flex align-items-start justify-content-between gap-1 text-xs">
+              <div>
+                <div class="font-title font-semibold text-main">Defiende una postura con cita</div>
+                <span class="text-muted">Progreso: 0 de 1 citas</span>
+              </div>
+              <span class="pill-badge pill-tertiary">+300 XP</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 5px;">
+              <div class="bg-tertiary h-full" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIDGET 4: Discord & Live Broadcast -->
+      <div class="sidebar-widget-card" style="background: linear-gradient(135deg, rgba(22, 26, 36, 0.9) 0%, rgba(160, 120, 255, 0.1) 100%);">
+        <div class="flex align-items-center gap-2">
+          <div class="w-2rem h-2rem border-round bg-primary-container text-black flex align-items-center justify-content-center">
+            <span class="material-symbols-outlined" style="font-size: 18px;">podcasts</span>
+          </div>
+          <div>
+            <span class="text-xs uppercase font-bold text-primary tracking-wider">Transmisión Semanal</span>
+            <h4 class="font-title text-sm font-bold text-main m-0">Veredictos de la Bóveda</h4>
+          </div>
+        </div>
+        <p class="text-xs text-muted line-height-3 m-0">
+          Únete a la sala de Discord oficial de QuestLog hoy a las 21:00 UTC. Analizaremos en directo las Tier Lists enviadas por la comunidad.
+        </p>
+        <button
+          type="button"
+          class="btn-agora-cta text-xs justify-content-center"
+          (click)="messageService.add({ severity: 'info', summary: 'Discord', detail: 'Conectando con el servidor oficial QuestLog...' })"
+        >
+          <span class="material-symbols-outlined" style="font-size: 18px;">forum</span>
+          <span>Sincronizar con Discord</span>
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- DIALECTIC PROTOCOL CREATION MODAL (Stitch f0a8c239)                       -->
+<!-- ========================================================================= -->
+@if (isModalOpen()) {
+  <div class="agora-modal-backdrop" (click)="closeModal()">
+
+    <!-- Aura Glow Blob -->
     <div
-        class="flex flex-column sm:flex-row justify-content-between align-items-start sm:align-items-center mb-4 gap-3">
-        <div>
-            <h1 class="text-3xl font-bold m-0 mb-1">Comunidad Gamer</h1>
-            <p class="text-600 m-0">Explora reseñas, dudas, guías y conversaciones sobre cualquier videojuego.</p>
+      class="agora-modal-aura"
+      [class.aura-heresy]="modalMode() === 'heresy'"
+      [class.aura-canonical]="modalMode() === 'canonical'"
+    ></div>
+
+    <div class="agora-modal-card" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="agora-modal-header">
+        <div class="flex align-items-start justify-content-between gap-3">
+          <div class="flex flex-column gap-1">
+            <div class="flex flex-wrap align-items-center gap-2">
+              <span class="pill-badge pill-secondary">
+                <span class="material-symbols-outlined" style="font-size: 14px;">account_balance</span>
+                <span>CÁMARA DE ARCHIVISTAS</span>
+              </span>
+              <span class="pill-badge pill-surface">CICLO #419 • CONCILIO MAYOR</span>
+              @if (modalMode() === 'heresy') {
+                <span class="pill-badge font-bold" style="background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.4);">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">warning</span>
+                  <span>ALTO RIESGO DOGMÁTICO</span>
+                </span>
+              }
+            </div>
+            <h2 class="font-title text-xl font-bold text-main m-0 mt-1">
+              Protocolo Dialéctico: Iniciar Debate o Proclamar Herejía
+            </h2>
+            <p class="text-xs text-muted m-0">
+              Inicia una disputa con valor de preservación histórico o somete al tribunal un dogma establecido de la bóveda.
+            </p>
+          </div>
+
+          <div class="flex align-items-center gap-2">
+            <span class="hidden sm:inline-block text-xs text-muted px-2 py-1 border-round bg-surface-highest">ESC</span>
+            <button
+              type="button"
+              class="w-2rem h-2rem border-round bg-surface-high border-none text-muted hover:text-white cursor-pointer flex align-items-center justify-content-center"
+              (click)="closeModal()"
+            >
+              <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Dual Switch -->
+        <div class="agora-mode-switch">
+          <!-- Canonical Mode -->
+          <button
+            type="button"
+            class="mode-switch-btn"
+            [class.active]="modalMode() === 'canonical'"
+            [class.canonical]="modalMode() === 'canonical'"
+            (click)="setModalMode('canonical')"
+          >
+            <div class="w-2.5rem h-2.5rem border-round bg-surface-high flex align-items-center justify-content-center shrink-0 text-secondary">
+              <span class="material-symbols-outlined" style="font-size: 20px;">balance</span>
+            </div>
+            <div class="flex flex-column min-w-0">
+              <span class="font-title text-sm font-bold text-main">Debate Canónico Tradicional</span>
+              <span class="text-xs text-muted line-clamp-1">Análisis preservativo y síntesis archivística serena.</span>
+            </div>
+          </button>
+
+          <!-- Heresy Mode -->
+          <button
+            type="button"
+            class="mode-switch-btn"
+            [class.active]="modalMode() === 'heresy'"
+            [class.heresy]="modalMode() === 'heresy'"
+            (click)="setModalMode('heresy')"
+          >
+            <div class="w-2.5rem h-2.5rem border-round bg-surface-high flex align-items-center justify-content-center shrink-0 text-tertiary">
+              <span class="material-symbols-outlined" style="font-size: 20px;">local_fire_department</span>
+            </div>
+            <div class="flex flex-column min-w-0">
+              <div class="flex align-items-center gap-1">
+                <span class="font-title text-sm font-bold text-tertiary">Proclamación de Herejía</span>
+                <span class="pulse-dot pulse-amber"></span>
+              </div>
+              <span class="text-xs text-muted line-clamp-1">Desafía el consenso sacrosanto. Requiere pruebas.</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="agora-modal-body">
+
+        <!-- 1. Game Selection & Title -->
+        <div class="flex flex-column gap-2">
+          <label class="field-label">
+            <span class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">sports_esports</span>
+              <span>Título / Obra en Disputa</span>
+            </span>
+            <span class="text-xs text-muted">Requerido por protocolo</span>
+          </label>
+
+          <p-autocomplete
+            [ngModel]="selectedGame()"
+            (ngModelChange)="selectedGame.set($event)"
+            [suggestions]="gameSuggestions()"
+            (completeMethod)="searchGames($event)"
+            optionLabel="name"
+            placeholder="Buscar título en la Bóveda (ej. Castlevania, Chrono Trigger, Elden Ring)..."
+            styleClass="w-full"
+            inputStyleClass="field-input w-full"
+          ></p-autocomplete>
+
+          <!-- Selected Game Preview Card -->
+          @if (selectedGame()) {
+            <div class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex flex-column sm:flex-row align-items-start sm:align-items-center justify-content-between gap-3">
+              <div class="flex align-items-center gap-3 min-w-0">
+                <img
+                  [src]="selectedGame()?.background_image || 'assets/images/placeholder-game.png'"
+                  [alt]="selectedGame()?.name"
+                  class="w-3rem h-4rem border-round object-cover shrink-0 shadow-md"
+                />
+                <div class="flex flex-column min-w-0">
+                  <span class="font-title text-sm font-bold text-main truncate">{{ selectedGame()?.name }}</span>
+                  <span class="text-xs text-muted">Título vinculado a la disputa del concilio</span>
+                </div>
+              </div>
+
+              <div class="flex align-items-center gap-2 bg-surface-lowest p-2 border-round shrink-0">
+                <div class="flex flex-column align-items-end">
+                  <span class="text-xs text-muted uppercase">Consenso de la Bóveda</span>
+                  <span class="text-xs font-bold text-tertiary">89.4% Concilio Favorable</span>
+                </div>
+                <div class="w-2rem h-2rem border-round bg-tertiary text-black font-title font-bold flex align-items-center justify-content-center text-sm">
+                  S
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- 2. Central Thesis Input -->
+        <div class="flex flex-column gap-2">
+          <label class="field-label">
+            <span class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-danger" style="font-size: 18px;">gavel</span>
+              <span>Tesis Central / Declaración Polémica</span>
+            </span>
+            <span class="text-xs text-muted">Máx 140 caracteres</span>
+          </label>
+          <input
+            type="text"
+            class="field-input font-title font-bold text-main"
+            maxlength="140"
+            [ngModel]="thesisTitle()"
+            (ngModelChange)="thesisTitle.set($event)"
+            placeholder="Ej: Por qué la física inercial de Sonic 2 supera a Super Mario World..."
+          />
+        </div>
+
+        <!-- 3. Asymmetric Dispute Matrix (Tu Rango vs Canon) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 align-items-center" style="display: grid; grid-template-columns: repeat(12, 1fr);">
+          <!-- Defender Tier Badge -->
+          <div class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex flex-column gap-2" style="grid-column: span 5;">
+            <span class="text-xs uppercase font-bold text-primary tracking-wider">Tu Rango Defendido</span>
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-1">
+                @for (tier of ['S', 'A', 'B', 'C', 'D']; track tier) {
+                  <button
+                    type="button"
+                    class="modal-tier-btn"
+                    [class.active]="selectedTier() === tier"
+                    (click)="selectTier($any(tier))"
+                  >
+                    {{ tier }}
+                  </button>
+                }
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-muted">Veredicto</div>
+                <div class="font-title text-sm font-bold text-primary">Tier {{ selectedTier() }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VS Graphic -->
+          <div class="flex flex-column align-items-center justify-content-center gap-1" style="grid-column: span 2;">
+            <div class="w-2.5rem h-2.5rem border-round-circle bg-surface-high flex align-items-center justify-content-center text-danger font-title font-bold text-sm">
+              VS
+            </div>
+            <span class="text-xs text-subtle uppercase tracking-widest font-bold">Colisión</span>
+          </div>
+
+          <!-- Target Canon -->
+          <div class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex flex-column gap-2" style="grid-column: span 5;">
+            <span class="text-xs uppercase font-bold text-tertiary tracking-wider">Consenso Oficial Desafiado</span>
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-2">
+                <div class="w-2rem h-2rem border-round bg-tertiary text-black font-title font-bold flex align-items-center justify-content-center text-sm">
+                  S
+                </div>
+                <div class="flex flex-column">
+                  <span class="font-title text-xs font-semibold text-main">Canon Histórico</span>
+                  <span class="text-xs text-muted">8,420 Votos</span>
+                </div>
+              </div>
+              <span class="font-title text-base font-bold text-tertiary">9.8</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Real-time Plebiscite Toggle -->
+        <div class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex align-items-center justify-content-between gap-3">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">how_to_vote</span>
+            <div class="flex flex-column">
+              <span class="font-title text-sm font-bold text-main">Habilitar Plebiscito de Herejía en Tiempo Real</span>
+              <span class="text-xs text-muted">Somete tu postura a votación comunitaria directa con balanza interactiva.</span>
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            class="vault-checkbox"
+            [checked]="enableLiveDuel()"
+            (change)="enableLiveDuel.set(!enableLiveDuel())"
+          />
+        </div>
+
+        <!-- 5. Argumentation & Evidence Editor -->
+        <div class="flex flex-column gap-2">
+          <label class="field-label">
+            <span class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size: 18px;">history_edu</span>
+              <span>Argumentación, Evidencias & Citas Técnicas</span>
+            </span>
+            <span class="text-xs text-muted">Formato Markdown Habilitado</span>
+          </label>
+
+          <!-- Snippet Toolbar -->
+          <div class="flex flex-wrap align-items-center gap-2 p-2 bg-surface-lowest border-round-top border-1 border-subtle">
+            <button
+              type="button"
+              class="debate-action-btn"
+              (click)="insertSnippet('\n> Cita: «Fuente histórica o revista retro»\n')"
+            >
+              <span class="material-symbols-outlined" style="font-size: 14px;">format_quote</span>
+              <span>Citar Crítica</span>
+            </button>
+            <button
+              type="button"
+              class="debate-action-btn"
+              (click)="insertSnippet('\n- Desglose Mecánico: Curva de daño y tiempo de reacción\n')"
+            >
+              <span class="material-symbols-outlined" style="font-size: 14px;">code_blocks</span>
+              <span>Desglose Mecánico</span>
+            </button>
+            <button
+              type="button"
+              class="agora-tag-chip"
+              (click)="insertSnippet(' #LevelDesign')"
+            >
+              #LevelDesign
+            </button>
+            <button
+              type="button"
+              class="agora-tag-chip"
+              (click)="insertSnippet(' #Backtracking')"
+            >
+              #Backtracking
+            </button>
+          </div>
+
+          <textarea
+            class="field-textarea border-round-bottom border-1 border-subtle p-3"
+            rows="6"
+            [ngModel]="argumentContent()"
+            (ngModelChange)="argumentContent.set($event)"
+            placeholder="Desarrolla tu análisis crítico riguroso..."
+          ></textarea>
+
+          <!-- Rigor Argumental Meter -->
+          <div class="p-3 border-round-lg bg-surface-low border-1 border-subtle flex flex-column gap-2">
+            <div class="flex align-items-center justify-content-between text-xs">
+              <span class="font-title font-bold text-main flex align-items-center gap-1">
+                <span class="material-symbols-outlined text-secondary" style="font-size: 16px;">verified</span>
+                <span>Índice de Rigor Argumental</span>
+              </span>
+              <span class="font-bold text-secondary">{{ rigorLabel() }}</span>
+            </div>
+            <div class="w-full bg-surface-highest border-round overflow-hidden" style="height: 6px;">
+              <div class="bg-gradient-to-r from-secondary to-primary h-full" [style.width.%]="rigorScore()"></div>
+            </div>
+            <p class="text-xs text-muted m-0">
+              Al proclamar una <strong class="text-tertiary">Herejía</strong>, se otorgarán <strong class="text-primary">+150 XP</strong> si la comunidad valida tu postura o un <strong class="text-secondary">30%+</strong> del concilio respalda tu tesis en las primeras 48 horas.
+            </p>
+          </div>
+        </div>
+
+        <!-- 6. Jury Scope -->
+        <div class="flex flex-column gap-2">
+          <span class="field-label">
+            <span class="flex align-items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary" style="font-size: 18px;">psychology_alt</span>
+              <span>Alcance del Jurado & Canales del Tribunal</span>
+            </span>
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" style="display: grid; grid-template-columns: repeat(3, 1fr);">
+            <label class="radio-card" [class.active]="juryScope() === 'all'" (click)="juryScope.set('all')">
+              <input type="radio" name="scope" class="radio-card-input" [checked]="juryScope() === 'all'" />
+              <div class="flex flex-column gap-1 flex-1">
+                <span class="font-title text-xs font-bold text-main">Abierto a Todos</span>
+                <span class="text-xs text-muted">14,000+ Archivistas de la Bóveda.</span>
+              </div>
+            </label>
+
+            <label class="radio-card" [class.active]="juryScope() === 'curators'" (click)="juryScope.set('curators')">
+              <input type="radio" name="scope" class="radio-card-input" [checked]="juryScope() === 'curators'" />
+              <div class="flex flex-column gap-1 flex-1">
+                <span class="font-title text-xs font-bold text-main">Curadores Lv. 30+</span>
+                <span class="text-xs text-muted">Filtro para Master Archivists.</span>
+              </div>
+            </label>
+
+            <label class="radio-card" [class.active]="juryScope() === 'express'" (click)="juryScope.set('express')">
+              <input type="radio" name="scope" class="radio-card-input" [checked]="juryScope() === 'express'" />
+              <div class="flex flex-column gap-1 flex-1">
+                <span class="font-title text-xs font-bold text-main">Veredicto Express</span>
+                <span class="text-xs text-muted">Resolución rápida en 24 horas.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="agora-modal-footer">
+        <div class="flex align-items-center gap-2">
+          <div class="w-2.5rem h-2.5rem border-round bg-surface-high text-tertiary flex align-items-center justify-content-center">
+            <span class="material-symbols-outlined" style="font-size: 20px;">workspace_premium</span>
+          </div>
+          <div class="flex flex-column">
+            <span class="text-xs uppercase text-muted font-title">Recompensa Archivística</span>
+            <div class="flex align-items-center gap-2">
+              <span class="font-title text-sm font-bold text-tertiary">+100 XP Base</span>
+              @if (modalMode() === 'heresy') {
+                <span class="pill-badge pill-tertiary" style="font-size: 10px;">+200 XP Herejía Polarizada</span>
+              }
+            </div>
+          </div>
         </div>
 
         <div class="flex align-items-center gap-2">
-            <p-button 
-                label="Mi Biblioteca" 
-                icon="pi pi-th-large" 
-                severity="secondary" 
-                [outlined]="true" 
-                routerLink="/dashboard">
-            </p-button>
-
-            <p-button 
-                label="Crear Tierlist" 
-                icon="pi pi-sort-amount-down" 
-                severity="help" 
-                [outlined]="true" 
-                routerLink="/tierlist/create">
-            </p-button>
-
-            <p-button 
-                *ngIf="currentUsername()"
-                label="Mi Perfil" 
-                icon="pi pi-user" 
-                severity="secondary" 
-                [outlined]="true" 
-                [routerLink]="['/profile', currentUsername()]">
-            </p-button>
-
-            <p-button *ngIf="authService.currentUser()" label="Crear Publicación" icon="pi pi-plus"
-                (onClick)="openNewPostModal()">
-            </p-button>
+          <button type="button" class="btn-profile-secondary" (click)="closeModal()">
+            <span>Cancelar</span>
+          </button>
+          <button
+            type="button"
+            class="btn-submit-dialectic"
+            [class.heresy]="modalMode() === 'heresy'"
+            [class.canonical]="modalMode() === 'canonical'"
+            [disabled]="submitting()"
+            (click)="submitDialecticPost()"
+          >
+            @if (submitting()) {
+              <span class="material-symbols-outlined pi-spin" style="font-size: 20px;">sync</span>
+              <span>Procesando Veredicto...</span>
+            } @else {
+              <span class="material-symbols-outlined" style="font-size: 20px;">
+                {{ modalMode() === 'heresy' ? 'local_fire_department' : 'balance' }}
+              </span>
+              <span>{{ modalMode() === 'heresy' ? 'Proclamar Herejía Canónica' : 'Abrir Debate Dialéctico' }}</span>
+            }
+          </button>
         </div>
-    </div>
-
-    <!-- BARRA DE FILTROS -->
-    <div class="mb-4 overflow-x-auto">
-        <p-selectbutton [options]="filterOptions" [ngModel]="selectedFilter()" (onChange)="onFilterChange($event.value)"
-            optionLabel="label" optionValue="value">
-        </p-selectbutton>
-    </div>
-
-    <!-- SPINNER CARGA -->
-    <div *ngIf="loading()" class="flex justify-content-center my-6">
-        <p-progressspinner></p-progressspinner>
-    </div>
-
-    <!-- FEED DE PUBLICACIONES -->
-    <div *ngIf="!loading()" class="flex flex-column gap-3">
-
-        <div *ngIf="posts().length === 0" class="text-center py-6 text-500">
-            <i class="pi pi-comments text-5xl mb-3 block"></i>
-            <p class="text-xl">No hay publicaciones disponibles en esta categoría.</p>
-        </div>
-
-        <p-card *ngFor="let post of posts()" styleClass="post-card shadow-1">
-            <div class="flex flex-column md:flex-row gap-4">
-
-                <!-- PORTADA DEL JUEGO -->
-                <div class="shrink-0 align-self-start">
-                    <a [routerLink]="['/game', post.game_id]">
-                        <img [src]="post.game_cover || 'assets/images/placeholder-game.png'" [alt]="post.game_title"
-                            class="w-full md:w-7rem h-9rem border-round object-cover block shadow-2 hover:opacity-90 transition-opacity" />
-                    </a>
-                </div>
-
-                <!-- CONTENIDO DE LA PUBLICACIÓN -->
-                <div class="flex-1 flex flex-column justify-content-between">
-
-                    <div>
-                        <!-- ENCABEZADO: TIPO, AUTOR Y FECHA -->
-                        <div class="flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                            <div class="flex align-items-center gap-2">
-                                <p-tag [value]="getLabelInfo(post.post_type).label"
-                                    [severity]="getLabelInfo(post.post_type).severity"></p-tag>
-                                <a [routerLink]="['/game', post.game_id]"
-                                    class="text-secondary font-semibold no-underline hover:underline text-sm">
-                                    {{ post.game_title }}
-                                </a>
-                            </div>
-
-                            <div class="flex align-items-center gap-2 text-500 text-xs">
-                                <span>Publicado por 
-                                    @if (post.profiles?.username) {
-                                        <a [routerLink]="['/profile', post.profiles?.username]" class="font-bold text-primary no-underline hover:underline cursor-pointer">
-                                            &#064;{{ post.profiles?.username }}
-                                        </a>
-                                    } @else {
-                                        <strong>&#064;Usuario</strong>
-                                    }
-                                </span>
-                                <span>•</span>
-                                <span>{{ post.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
-                            </div>
-                        </div>
-
-                        <!-- TÍTULO Y CONTENIDO -->
-                        <h2 class="text-xl font-bold m-0 mb-2">{{ post.title }}</h2>
-                        <p class="text-700 line-height-3 m-0 white-space-pre-line">{{ post.content }}</p>
-                    </div>
-
-                    <!-- PIE: PUNTUACIÓN Y ACCIONES -->
-                    <div class="flex justify-content-between align-items-center mt-3 pt-2 border-top-1 surface-border">
-                        <div>
-                            <span *ngIf="post.score" class="font-bold text-yellow-500 text-sm">
-                                ★ Valoración: {{ post.score }} / 10
-                            </span>
-                        </div>
-
-                        <p-button *ngIf="post.user_id === authService.currentUser()?.id" icon="pi pi-trash"
-                            severity="danger" [text]="true" size="small" (onClick)="deletePost(post.id!)"
-                            pTooltip="Eliminar publicación">
-                        </p-button>
-                    </div>
-
-                </div>
-
-            </div>
-        </p-card>
+      </div>
 
     </div>
-
-    <!-- MODAL PARA CREAR NUEVA PUBLICACIÓN -->
-    <p-dialog header="Crear Nueva Publicación" [(visible)]="displayNewPostDialog" [modal]="true"
-        [style]="{ width: '100%', maxWidth: '600px' }">
-
-        <div class="flex flex-column gap-3 mt-2">
-
-            <!-- Seleccionar Juego -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold">Selecciona el Juego (*)</label>
-                <p-autocomplete [ngModel]="selectedGame()" (ngModelChange)="selectedGame.set($event)"
-                    [suggestions]="gameSuggestions()" (completeMethod)="searchGames($event)" optionLabel="name"
-                    placeholder="Buscar videojuego..." styleClass="w-full" inputStyleClass="w-full">
-                </p-autocomplete>
-            </div>
-
-            <!-- Tipo de Publicación -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold">Tipo de Contenido</label>
-                <p-select [options]="postTypeOptions" [(ngModel)]="formPostType" styleClass="w-full">
-                </p-select>
-            </div>
-
-            <!-- Puntuación si es reseña -->
-            <div class="flex flex-column gap-1" *ngIf="formPostType === 'review'">
-                <label class="font-semibold">Tu Nota (1 a 5 Estrellas)</label>
-                <p-rating [(ngModel)]="formRating"></p-rating>
-            </div>
-
-            <!-- Título -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold">Título (*)</label>
-                <input type="text" pInputText [(ngModel)]="formTitle"
-                    placeholder="Ej: ¿Alguien sabe cómo vencer al jefe del Nivel 3?" />
-            </div>
-
-            <!-- Contenido -->
-            <div class="flex flex-column gap-1">
-                <label class="font-semibold">Detalle / Texto (*)</label>
-                <textarea pTextarea [(ngModel)]="formContent" rows="5"
-                    placeholder="Escribe tu opinión, duda o consejo aquí..."></textarea>
-            </div>
-
-        </div>
-
-        <ng-template pTemplate="footer">
-            <p-button label="Cancelar" [text]="true" (onClick)="displayNewPostDialog = false"></p-button>
-            <p-button label="Publicar" icon="pi pi-send" [loading]="submitting()" (onClick)="submitPost()"></p-button>
-        </ng-template>
-
-    </p-dialog>
-
-</div>
+  </div>
+}

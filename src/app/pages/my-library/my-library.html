@@ -251,8 +251,15 @@
 
             <!-- Game Cover with Aspect Ratio -->
             <div class="lib-cover-wrapper relative w-full overflow-hidden">
-              <img [src]="game.game_cover || 'assets/images/placeholder-game.png'" [alt]="game.game_title"
-                loading="lazy" class="w-full h-full object-cover" />
+              @if (game.game_cover) {
+                <img [src]="game.game_cover" [alt]="game.game_title"
+                  loading="lazy" class="w-full h-full object-cover" />
+              } @else {
+                <div class="flex flex-column align-items-center justify-content-center w-full h-full p-2 text-center" style="background: #0a0e14;">
+                  <span class="material-symbols-outlined text-3xl text-muted opacity-40">hide_image</span>
+                  <span class="text-xs font-title text-muted opacity-60 mt-1" style="font-size: 10px;">Sin carátula</span>
+                </div>
+              }
               <div class="cover-gradient"></div>
 
               <!-- Status Pill Badge -->

@@ -81,9 +81,17 @@
             <div class="spotlight-image-wrapper relative w-full h-18rem sm:h-22rem border-round-xl overflow-hidden shadow-6 cursor-pointer"
                  [routerLink]="['/game', spot.id]"
                  title="Ver expediente de {{ spot.name }}">
-              <img [src]="spot.background_image || 'assets/images/placeholder-game.png'" 
-                   [alt]="spot.name" 
-                   class="w-full h-full object-cover" />
+              @if (spot.background_image) {
+                <img [src]="spot.background_image" 
+                     [alt]="spot.name" 
+                     (error)="onImageError($event)"
+                     class="w-full h-full object-cover" />
+              } @else {
+                <div class="no-image-placeholder flex flex-column align-items-center justify-content-center w-full h-full p-4 text-center">
+                  <span class="material-symbols-outlined text-5xl text-muted opacity-40">hide_image</span>
+                  <span class="font-title font-bold text-muted opacity-60 mt-2">Imagen no disponible</span>
+                </div>
+              }
               <div class="image-gradient-overlay"></div>
               <div class="absolute top-0 right-0 m-3 pill-badge pill-secondary">
                 <span class="material-symbols-outlined text-xs">history_edu</span>
@@ -153,7 +161,53 @@
 
     <!-- 3. FACETED FILTER TOOLBAR -->
     <div class="filter-toolbar p-3 sm:p-4 border-round-xl mb-5 flex flex-column gap-3">
-      <!-- Row: Genres -->
+      
+      <!-- Row 1: Platforms (Ecosystems) -->
+      <div class="flex flex-column md:flex-row md:align-items-center gap-2">
+        <span class="filter-label flex align-items-center gap-1 text-xs text-muted font-title uppercase font-semibold">
+          <span class="material-symbols-outlined text-sm">sports_esports</span>
+          Plataforma:
+        </span>
+        <div class="flex flex-wrap align-items-center gap-1 sm:gap-2">
+          @for (fam of platformFamilies; track fam.id) {
+            <button type="button" 
+                    class="filter-chip text-xs" 
+                    [class.active]="selectedPlatformFamily() === fam.id"
+                    (click)="setPlatformFamily(fam.id)">
+              <span class="material-symbols-outlined text-sm">{{ fam.icon }}</span>
+              <span>{{ fam.name }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Row 1.1: Sub-menú de Consolas por Plataforma -->
+      @if (selectedPlatformFamily() !== 'all' && activeConsoles().length > 0) {
+        <div class="subfilter-row flex flex-column sm:flex-row sm:align-items-center gap-2">
+          <span class="text-xs font-title font-semibold text-secondary uppercase tracking-wider flex align-items-center gap-1 flex-shrink-0">
+            <span class="material-symbols-outlined text-sm">subdirectory_arrow_right</span>
+            Consolas Disponibles:
+          </span>
+          <div class="flex flex-wrap align-items-center gap-1 sm:gap-2">
+            <button type="button" 
+                    class="console-chip font-title"
+                    [class.active]="selectedConsoleId() === null"
+                    (click)="setConsole(null)">
+              Todas de {{ selectedPlatformFamily() }}
+            </button>
+            @for (con of activeConsoles(); track con.id) {
+              <button type="button" 
+                      class="console-chip font-title"
+                      [class.active]="selectedConsoleId() === con.id"
+                      (click)="setConsole(con.id)">
+                {{ con.badge }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Row 2: Genres -->
       <div class="flex flex-column md:flex-row md:align-items-center gap-2">
         <span class="filter-label flex align-items-center gap-1 text-xs text-muted font-title uppercase font-semibold">
           <span class="material-symbols-outlined text-sm">category</span>
@@ -171,7 +225,7 @@
         </div>
       </div>
 
-      <!-- Row: Chrono Decades -->
+      <!-- Row 3: Chrono Decades -->
       <div class="flex flex-column md:flex-row md:align-items-center gap-2">
         <span class="filter-label flex align-items-center gap-1 text-xs text-muted font-title uppercase font-semibold">
           <span class="material-symbols-outlined text-sm">calendar_today</span>
@@ -189,33 +243,141 @@
         </div>
       </div>
 
-      <!-- Row: Score Floor -->
+      <!-- Row 4: Score Metacritic (Rango 0 - 100 o Puntuación Específica) -->
       <div class="flex flex-column md:flex-row md:align-items-center gap-2">
         <span class="filter-label flex align-items-center gap-1 text-xs text-muted font-title uppercase font-semibold">
           <span class="material-symbols-outlined text-sm">grade</span>
-          Score Mínimo:
+          Score Metacritic:
         </span>
         <div class="flex flex-wrap align-items-center gap-1 sm:gap-2">
           <button type="button" 
                   class="filter-chip text-xs" 
-                  [class.active]="minScore() === null"
-                  (click)="setMinScore(null)">
-            Cualquiera
+                  [class.active]="scoreFilterMode() === 'preset' && selectedScorePreset() === 'all'"
+                  (click)="setScorePreset('all')">
+            Todos
           </button>
           <button type="button" 
                   class="filter-chip text-xs" 
-                  [class.active]="minScore() === 80"
-                  (click)="setMinScore(80)">
-            80+ Crítica
+                  [class.active]="scoreFilterMode() === 'preset' && selectedScorePreset() === '90-100'"
+                  (click)="setScorePreset('90-100')">
+            90 - 100 Élite
           </button>
           <button type="button" 
                   class="filter-chip text-xs" 
-                  [class.active]="minScore() === 90"
-                  (click)="setMinScore(90)">
-            90+ Elite
+                  [class.active]="scoreFilterMode() === 'preset' && selectedScorePreset() === '80-100'"
+                  (click)="setScorePreset('80-100')">
+            80 - 100 Excelente
           </button>
+          <button type="button" 
+                  class="filter-chip text-xs" 
+                  [class.active]="scoreFilterMode() === 'preset' && selectedScorePreset() === '70-79'"
+                  (click)="setScorePreset('70-79')">
+            70 - 79 Notable
+          </button>
+          <button type="button" 
+                  class="filter-chip text-xs" 
+                  [class.active]="scoreFilterMode() === 'preset' && selectedScorePreset() === '50-69'"
+                  (click)="setScorePreset('50-69')">
+            50 - 69 Aceptable
+          </button>
+          
+          <!-- Botón Custom: Rango o Específica -->
+          <button type="button" 
+                  class="filter-chip text-xs"
+                  [class.active]="scoreFilterMode() !== 'preset' || showCustomScorePanel()"
+                  (click)="toggleCustomScorePanel()"
+                  title="Configurar rango de 0 a 100 o puntuación exacta">
+            <span class="material-symbols-outlined text-xs">tune</span>
+            <span>Rango / Específica</span>
+          </button>
+
+          <!-- Active score badge if custom -->
+          @if (activeScoreDescription()) {
+            <span class="pill-badge pill-tertiary ml-1 flex align-items-center gap-1">
+              <span>{{ activeScoreDescription() }}</span>
+              <button type="button" 
+                      (click)="resetScoreFilter()" 
+                      class="bg-transparent border-none text-tertiary cursor-pointer p-0 line-height-1"
+                      title="Quitar filtro de score">
+                <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
+              </button>
+            </span>
+          }
         </div>
       </div>
+
+      <!-- Row 4.1: Panel Desplegable de Score Personalizado (Rango 0 - 100 o Específico) -->
+      @if (showCustomScorePanel()) {
+        <div class="custom-score-box flex flex-column gap-3">
+          <div class="flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="flex align-items-center gap-2">
+              <span class="text-xs font-title font-bold text-main uppercase">Modo de Puntuación:</span>
+              <button type="button" 
+                      class="score-mode-pill"
+                      [class.active]="customScoreMode() === 'range'"
+                      (click)="setCustomScoreMode('range')">
+                Rango (0 - 100)
+              </button>
+              <button type="button" 
+                      class="score-mode-pill"
+                      [class.active]="customScoreMode() === 'exact'"
+                      (click)="setCustomScoreMode('exact')">
+                Puntuación Específica
+              </button>
+            </div>
+            
+            <button type="button" 
+                    (click)="showCustomScorePanel.set(false)" 
+                    class="bg-transparent border-none text-muted hover:text-main cursor-pointer p-1">
+              <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+          </div>
+
+          <!-- Modo Rango -->
+          @if (customScoreMode() === 'range') {
+            <div class="flex align-items-center gap-2 flex-wrap">
+              <span class="text-xs text-muted font-title">Desde:</span>
+              <input type="number" 
+                     min="0" 
+                     max="100" 
+                     [ngModel]="scoreRangeMin()" 
+                     (ngModelChange)="scoreRangeMin.set($event)"
+                     class="score-num-input" />
+              <span class="text-xs text-muted font-title">Hasta:</span>
+              <input type="number" 
+                     min="0" 
+                     max="100" 
+                     [ngModel]="scoreRangeMax()" 
+                     (ngModelChange)="scoreRangeMax.set($event)"
+                     class="score-num-input" />
+              <button type="button" 
+                      class="btn-score-apply"
+                      (click)="applyScoreRange()">
+                Aplicar Rango
+              </button>
+            </div>
+          }
+
+          <!-- Modo Específico -->
+          @if (customScoreMode() === 'exact') {
+            <div class="flex align-items-center gap-2 flex-wrap">
+              <span class="text-xs text-muted font-title">Puntuación Exacta Metacritic:</span>
+              <input type="number" 
+                     min="0" 
+                     max="100" 
+                     [ngModel]="scoreExact()" 
+                     (ngModelChange)="scoreExact.set($event)"
+                     class="score-num-input" />
+              <button type="button" 
+                      class="btn-score-apply"
+                      (click)="applyScoreExact()">
+                Aplicar Score Exacto
+              </button>
+            </div>
+          }
+        </div>
+      }
+
     </div>
 
     <!-- 4. VISUAL GAME GRID -->
@@ -233,6 +395,11 @@
           <span class="font-title text-sm text-color">
             Mostrando <strong class="text-primary font-bold">{{ games().length | number }}</strong> de <strong class="text-secondary font-bold">{{ totalGamesCount() | number }}</strong> videojuegos
           </span>
+          @if (selectedConsoleName()) {
+            <span class="pill-badge pill-secondary ml-1" style="font-size: 10px;">
+              {{ selectedConsoleName() }}
+            </span>
+          }
         </div>
 
         <!-- Integrated Search Bar -->
@@ -271,7 +438,7 @@
             {{ searchQuery() ? 'Sin Títulos para esta Búsqueda' : 'Sin Registros Coincidentes' }}
           </h3>
           <p class="text-sm text-muted m-0">
-            {{ searchQuery() ? 'No se encontraron videojuegos que coincidan con "' + searchQuery() + '".' : 'Prueba ajustando los filtros de género, cronología o score.' }}
+            {{ searchQuery() ? 'No se encontraron videojuegos que coincidan con "' + searchQuery() + '".' : 'Prueba ajustando los filtros de plataforma, género, cronología o score.' }}
           </p>
           @if (searchQuery()) {
             <button type="button" 
@@ -284,87 +451,91 @@
         </div>
       } @else {
 
-      <div class="grid catalog-grid">
+      <!-- GRILLA ESTILO BÓVEDA PÚBLICA (IDÉNTICA EN TAMAÑO Y PROPORCIÓN AL PERFIL) -->
+      <div class="catalog-grid">
         @for (game of games(); track game.id) {
-          <div class="col-6 sm:col-4 md:col-3 lg:col-12-custom">
-            <div class="catalog-game-card flex flex-column h-full border-round-xl overflow-hidden relative group cursor-pointer"
-                 [routerLink]="['/game', game.id]"
-                 [title]="'Ver ficha de ' + game.name">
-              
-              <!-- Card Image & Overlay -->
-              <div class="card-cover-wrapper relative w-full overflow-hidden">
-                <img [src]="game.background_image || 'assets/images/placeholder-game.png'" 
+          <div class="catalog-game-card flex flex-column h-full border-round-md overflow-hidden relative group cursor-pointer"
+               [routerLink]="['/game', game.id]"
+               [title]="'Ver ficha de ' + game.name">
+            
+            <!-- Card Image & Overlay -->
+            <div class="card-cover-wrapper relative w-full overflow-hidden">
+              @if (game.background_image) {
+                <img [src]="game.background_image" 
                      [alt]="game.name" 
                      loading="lazy"
+                     (error)="onImageError($event)"
                      class="w-full h-full object-cover transition-transform" />
-                <div class="cover-gradient"></div>
-
-                <!-- Top Badges -->
-                <div class="absolute top-0 left-0 m-2 flex align-items-center gap-1">
-                  <span class="tag-pill">{{ getPlatformNames(game) }}</span>
-                  <span class="tag-pill">{{ getYear(game.released) }}</span>
-                  @if (game.playtime) {
-                    <span class="tag-pill">{{ game.playtime }}h</span>
-                  }
+              } @else {
+                <div class="no-image-placeholder flex flex-column align-items-center justify-content-center w-full h-full p-2 text-center">
+                  <span class="material-symbols-outlined text-3xl text-muted opacity-40">hide_image</span>
+                  <span class="font-title font-semibold text-muted opacity-60 mt-1" style="font-size: 10px;">Sin imagen</span>
                 </div>
+              }
+              <div class="cover-gradient"></div>
 
-                <!-- Gold Score Badge -->
-                <div class="absolute top-0 right-0 m-2 score-badge font-title font-bold">
-                  {{ getScore(game) }}
-                </div>
-
-                <!-- Slide-up Instant Action Overlay -->
-                <div class="instant-action-overlay flex flex-column gap-1 p-2" (click)="$event.stopPropagation()">
-                  <span class="action-prompt text-center font-title" style="font-size: 10px;">Registrar a tu bitácora:</span>
-                  <div class="grid p-0 m-0 gap-1">
-                    <button type="button" 
-                            (click)="quickAdd(game, 'playing', $event)" 
-                            class="col quick-btn playing font-title" 
-                            title="Jugando">
-                      Jugando
-                    </button>
-                    <button type="button" 
-                            (click)="quickAdd(game, 'plan_to_play', $event)" 
-                            class="col quick-btn backlog font-title" 
-                            title="Backlog">
-                      Backlog
-                    </button>
-                    <button type="button" 
-                            (click)="quickAdd(game, 'completed', $event)" 
-                            class="col quick-btn done font-title" 
-                            title="Completado">
-                      Hecho
-                    </button>
-                  </div>
-                </div>
-
+              <!-- Top Badges -->
+              <div class="absolute top-0 left-0 m-2 flex align-items-center gap-1">
+                <span class="tag-pill">{{ getPlatformNames(game) }}</span>
+                <span class="tag-pill">{{ getYear(game.released) }}</span>
               </div>
 
-              <!-- Card Body -->
-              <div class="p-3 flex-1 flex flex-column justify-content-between">
-                <div>
-                  <span class="genre-text font-title font-semibold" style="font-size: 11px;">
-                    {{ game.genres && game.genres[0] ? game.genres[0].name : 'Aventura' }}
-                  </span>
-                  <a [routerLink]="['/game', game.id]" (click)="$event.stopPropagation()" class="no-underline text-color">
-                    <h3 class="card-title font-title font-bold m-0 mt-1 truncate" [title]="game.name">
-                      {{ game.name }}
-                    </h3>
-                  </a>
-                </div>
+              <!-- Gold Score Badge -->
+              <div class="absolute top-0 right-0 m-2 score-badge font-title font-bold">
+                {{ getScore(game) }}
+              </div>
 
-                <div class="flex align-items-center justify-content-between text-muted text-xs mt-3 pt-2 border-top-1 surface-border">
-                  <span class="text-truncate" style="max-width: 60%;">
-                    {{ getYear(game.released) }}
-                  </span>
-                  <span class="flex align-items-center gap-1 text-tertiary font-bold">
-                    <span class="material-symbols-outlined text-sm">star</span>
-                    {{ game.rating ? game.rating : '4.5' }}
-                  </span>
+              <!-- Slide-up Instant Action Overlay -->
+              <div class="instant-action-overlay flex flex-column gap-1 p-2" (click)="$event.stopPropagation()">
+                <span class="action-prompt text-center font-title" style="font-size: 9.5px;">Registrar en bitácora:</span>
+                <div class="grid p-0 m-0 gap-1">
+                  <button type="button" 
+                          (click)="quickAdd(game, 'playing', $event)" 
+                          class="col quick-btn playing font-title" 
+                          title="Jugando">
+                    Jugando
+                  </button>
+                  <button type="button" 
+                          (click)="quickAdd(game, 'plan_to_play', $event)" 
+                          class="col quick-btn backlog font-title" 
+                          title="Backlog">
+                    Backlog
+                  </button>
+                  <button type="button" 
+                          (click)="quickAdd(game, 'completed', $event)" 
+                          class="col quick-btn done font-title" 
+                          title="Completado">
+                    Hecho
+                  </button>
                 </div>
               </div>
 
             </div>
+
+            <!-- Card Body -->
+            <div class="catalog-card-body flex-1 flex flex-column justify-content-between">
+              <div>
+                <span class="genre-text font-title font-semibold" style="font-size: 10px;">
+                  {{ game.genres && game.genres[0] ? game.genres[0].name : 'Aventura' }}
+                </span>
+                <a [routerLink]="['/game', game.id]" (click)="$event.stopPropagation()" class="no-underline text-color">
+                  <h3 class="card-title font-title font-bold m-0 mt-1 truncate" [title]="game.name">
+                    {{ game.name }}
+                  </h3>
+                </a>
+              </div>
+
+              <div class="flex align-items-center justify-content-between text-muted text-xs mt-2 pt-1 border-top-1 surface-border">
+                <span class="text-truncate" style="max-width: 55%; font-size: 11px;">
+                  {{ getYear(game.released) }}
+                </span>
+                <span class="flex align-items-center gap-1 text-tertiary font-bold" style="font-size: 11px;">
+                  <span class="material-symbols-outlined text-xs">star</span>
+                  {{ game.rating ? game.rating : '4.5' }}
+                </span>
+              </div>
+            </div>
+
           </div>
         }
       </div>

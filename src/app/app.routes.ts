@@ -46,10 +46,15 @@ export const routes: Routes = [
     title: 'Editar Tierlist - Game Web'
   },
   {
+    path: 'profile',
+    pathMatch: 'full',
+    redirectTo: 'profile/me'
+  },
+  {
     path: 'profile/:username',
     loadComponent: () =>
       import('./pages/profile/profile').then((m) => m.ProfileComponent),
-    title: 'Perfil - Game Web'
+    title: 'Perfil de Archivista · QuestLog'
   },
   {
     path: 'game/:id',

@@ -57,6 +57,8 @@ export class RawgService {
     dates?: string;
     metacritic?: string;
     search?: string;
+    parent_platforms?: string;
+    platforms?: string;
     pageSize?: number;
     page?: number;
   } = {}): Observable<RawgResponse<Game>> {
@@ -78,6 +80,12 @@ export class RawgService {
     }
     if (filters.metacritic) {
       params = params.set('metacritic', filters.metacritic);
+    }
+    if (filters.parent_platforms) {
+      params = params.set('parent_platforms', filters.parent_platforms);
+    }
+    if (filters.platforms) {
+      params = params.set('platforms', filters.platforms);
     }
     if (filters.search) {
       params = params.set('search', filters.search);
