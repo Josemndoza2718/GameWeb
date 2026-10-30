@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Game, GameDetail, GameScreenshot, RawgResponse } from '../models/rawg.model';
+import { Game, GameAchievement, GameDetail, GameScreenshot, RawgResponse } from '../models/rawg.model';
 import { environment } from '../../env/environment';
 
 @Injectable({
@@ -96,6 +96,30 @@ export class RawgService {
   }
 
   /**
+   * Obtiene los juegos de la misma saga/franquicia (secuelas, precuelas, spin-offs)
+   */
+  getGameSeries(id: number | string, pageSize: number = 12): Observable<Game[]> {
+    const params = new HttpParams()
+      .set('key', this.apiKey)
+      .set('page_size', pageSize.toString());
+    return this.http
+      .get<RawgResponse<Game>>(`${this.baseUrl}/games/${id}/game-series`, { params })
+      .pipe(map(res => res.results));
+  }
+
+  /**
+   * Obtiene DLCs y expansiones de un juego
+   */
+  getGameAdditions(id: number | string, pageSize: number = 8): Observable<Game[]> {
+    const params = new HttpParams()
+      .set('key', this.apiKey)
+      .set('page_size', pageSize.toString());
+    return this.http
+      .get<RawgResponse<Game>>(`${this.baseUrl}/games/${id}/additions`, { params })
+      .pipe(map(res => res.results));
+  }
+
+  /**
    * Obtiene la galería de capturas de pantalla de un juego
    */
   getGameScreenshots(id: number | string): Observable<string[]> {
@@ -103,5 +127,17 @@ export class RawgService {
     return this.http
       .get<RawgResponse<GameScreenshot>>(`${this.baseUrl}/games/${id}/screenshots`, { params })
       .pipe(map(res => res.results.map(item => item.image)));
+  }
+
+  /**
+   * Obtiene los logros canónicos / trofeos oficiales de un juego
+   */
+  getGameAchievements(id: number | string, pageSize: number = 24): Observable<GameAchievement[]> {
+    const params = new HttpParams()
+      .set('key', this.apiKey)
+      .set('page_size', pageSize.toString());
+    return this.http
+      .get<RawgResponse<GameAchievement>>(`${this.baseUrl}/games/${id}/achievements`, { params })
+      .pipe(map(res => res.results || []));
   }
 }

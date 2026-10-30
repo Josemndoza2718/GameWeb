@@ -1,0 +1,546 @@
+﻿<!DOCTYPE html><html class="dark" lang="es"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>QuestLog</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-container":"#3e2400","inverse-primary":"#6d3bd7","primary-fixed-dim":"#d0bcff","on-surface":"#dfe2eb","surface-bright":"#353940","primary":"#d0bcff","outline":"#958ea0","tertiary-fixed":"#ffddb8","background":"#10141a","primary-container":"#a078ff","on-tertiary-fixed-variant":"#653e00","on-primary-fixed":"#23005c","surface-container-lowest":"#0a0e14","on-tertiary-fixed":"#2a1700","surface-dim":"#10141a","inverse-on-surface":"#2d3137","on-tertiary":"#472a00","surface-variant":"#31353c","surface-container-highest":"#31353c","on-surface-variant":"#cbc3d7","on-secondary-fixed-variant":"#004e5c","surface-container-low":"#181c22","secondary":"#4cd7f6","on-primary-container":"#340080","on-secondary-fixed":"#001f26","error-container":"#93000a","tertiary-container":"#ca8100","tertiary":"#ffb95f","inverse-surface":"#dfe2eb","primary-fixed":"#e9ddff","surface-container":"#1c2026","outline-variant":"#494454","surface":"#10141a","tertiary-fixed-dim":"#ffb95f","on-secondary-container":"#00424e","on-primary-fixed-variant":"#5516be","secondary-fixed-dim":"#4cd7f6","secondary-container":"#03b5d3","error":"#ffb4ab","on-error-container":"#ffdad6","on-primary":"#3c0091","on-background":"#dfe2eb","on-error":"#690005","surface-tint":"#d0bcff","secondary-fixed":"#acedff","surface-container-high":"#262a31","on-secondary":"#003640"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xs":"0.25rem","space-md":"1rem","gutter":"1.25rem","margin-mobile":"1rem","space-xl":"2.5rem","space-sm":"0.5rem","gutter-mobile":"0.75rem","space-lg":"1.5rem","margin":"2rem"},fontFamily:{"label-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"body-sm":["Plus Jakarta Sans"],"headline-sm":["Space Grotesk"],"headline-md":["Space Grotesk"],"label-md":["Space Grotesk"],"headline-lg-mobile":["Space Grotesk"],"label-xs":["Space Grotesk"],"title-md":["Plus Jakarta Sans"],"headline-lg":["Space Grotesk"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Space Grotesk"],"body-lg":["Plus Jakarta Sans"]},fontSize:{"label-lg":["14px",{lineHeight:"18px",letterSpacing:"0.02em",fontWeight:"600"}],"display-hero":["48px",{lineHeight:"56px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-sm":["13px",{lineHeight:"18px",fontWeight:"400"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"600"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"700"}],"label-xs":["10px",{lineHeight:"12px",letterSpacing:"0.06em",fontWeight:"700"}],"title-md":["16px",{lineHeight:"24px",fontWeight:"600"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.015em",fontWeight:"700"}],"body-md":["15px",{lineHeight:"22px",fontWeight:"400"}],"display-hero-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"700"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-20 w-full px-gutter lg:px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg shrink-0"><a class="flex items-center gap-space-sm group" data-path="explorar" href="#"><img alt="QuestLog Emblem" class="h-8 w-auto object-contain transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_aE250lH_Fhddw0d2lmMzlNRAKvcvV5LHzWCPmGc0LquqR7sqPOjcBAjYE96pan19SYi0KJijDogua8rRabehr463kRkJK3XW9bQ-NcnJnimfMafC3FaSkCwa0oFS4XU--FVuka3k7_nSY7ooeYEt5YjBnMvbvaFwoIXmlNvUoBgBXN7F16GI2SelVwpoOHM6xefgPNXVX0RSIdUzmG9k0pTNozrJ7z0kMrpw4PdhTEEWNoINMTM"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface font-bold">Quest<span class="text-primary">Log</span></span><span class="font-label-xs text-label-xs text-secondary uppercase tracking-widest">Vault Protocol</span></div></a><nav class="hidden xl:flex items-center gap-space-xs p-1 bg-surface-container-lowest/60 rounded-xl" data-active-classes="bg-surface-container-high text-primary font-bold rounded-lg shadow-[0_0_16px_-2px_rgba(139,92,246,0.35)]"><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="explorar" href="#">Explorar</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="mi-biblioteca" href="#">Mi Biblioteca</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="tier-lists" href="#">Tier Lists</a><a class="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="comunidad-and-qa" href="#">Comunidad &amp; Q&amp;A</a></nav></div><div class="flex-1 max-w-xl mx-space-sm hidden md:block"><div class="relative flex items-center group"><span class="material-symbols-outlined absolute left-space-md text-outline group-focus-within:text-primary transition-colors pointer-events-none text-[20px]">search</span><input class="w-full bg-surface-container-lowest/80 text-on-surface placeholder:text-outline font-body-sm text-body-sm pl-11 pr-16 py-2.5 rounded-xl outline-none transition-all focus:bg-surface-container-low focus:shadow-[0_0_16px_-2px_rgba(139,92,246,0.25)]" placeholder="Buscar por título, consola, desarrollador..." type="text"><div class="absolute right-space-sm flex items-center gap-0.5 px-space-xs py-0.5 bg-surface-container rounded font-label-xs text-label-xs text-on-surface-variant pointer-events-none"><kbd class="font-label-xs">⌘</kbd><kbd class="font-label-xs">K</kbd></div></div></div><div class="flex items-center gap-space-md shrink-0"><button class="hidden sm:inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-[0_0_16px_rgba(139,92,246,0.4)] hover:brightness-110 active:scale-95 transition-all" type="button"><span class="material-symbols-outlined text-[18px]">add_circle</span><span class="">Registrar Juego</span></button><button aria-label="Notificaciones" class="relative p-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-secondary rounded-full shadow-[0_0_8px_rgba(6,182,212,0.6)]"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><div class="relative group cursor-pointer"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40 group-hover:ring-primary transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEgi97fQzuyQNxRL6uvxWgCnmVNCbGbDWWlMkifR48FjpLC0m3z39Zvnex2RyqmFYdOoVh_l6wvMnUmfpF9nxPw_xBnQ0yluknkwRm4SY3b8gvCePdiuOEKaG5joYOJcRHP36U6xeqCGO1D6RLFzvcQZt3_moe4Ax5DG8OxelB9ltG0ugyC8BS71hScJzx1dOFJyIhNMfT1Q0fc3NSZ4dAKQbIjC_skgmV1wiyz_87hVW7TxrQw0Q"><span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-tertiary rounded-full ring-2 ring-surface"></span></div><div class="hidden 2xl:flex flex-col text-left"><div class="flex items-center gap-1.5"><span class="font-label-sm text-on-surface font-bold leading-tight">KaelenV</span><span class="px-1.5 py-0.2 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold">Lv. 42</span></div><span class="font-label-xs text-label-xs text-outline leading-tight">Master Archivist</span></div></div></div></div></header><main class="w-full pt-20 bg-background flex-1"><div class="flex flex-col w-full">
+<!-- Immersive Cinematic Hero Banner (Negative margin pulls behind blurred navbar) -->
+<section class="relative w-full -mt-20 overflow-hidden bg-surface-container-lowest">
+<!-- Atmospheric Visual Backing -->
+<div class="w-full min-h-[580px] lg:h-[680px] bg-cover bg-center relative flex items-end" data-alt="Epic cinematic anime style landscape of Chrono Trigger's Kingdom of Guardia across timeless epochs. A swirling cosmic blue and violet portal tear dominates the stormy sky above medieval rolling hills, lush prehistoric jungles, and a distant futuristic neon ruined skyline. Akira Toriyama iconic art style with luminous glowing magical sparks and deep obsidian shadows." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAZEC8MkcHN8AM_dbTC7xr_XUDpp_u_P32Q1UH-nf-73lKkEVy7iLjq4fGrbNelNR8o5MNkPe9bV4LRXitKymOljA07dZcTrJJ9x8uk4uRVDGF8oYDKZyhCC_TdcP1gRrUNwtax_dxoa3PFISBNuMjm5F_kP3y5ssJujXUja22vHstFGqxdOFJ3P7xOrK2_chEzH9-SeTN_wyH7gG1TNoQrrsm5cgtOZLuuz57U9P0p3hm0PeWrMjY')">
+<!-- Gradient Scrim for Legibility & Deep Obsidian Bleed -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-surface-container-lowest/80 to-surface-container-lowest/40"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent"></div>
+<!-- Ambient Epoch Glow Accent -->
+<div class="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/15 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-10 left-1/3 w-80 h-80 bg-secondary/15 rounded-full blur-[100px] pointer-events-none"></div>
+<!-- Content Pod inside Hero -->
+<div class="relative z-10 w-full px-gutter lg:px-margin max-w-7xl mx-auto pt-36 pb-12 flex flex-col lg:flex-row items-end gap-space-xl">
+<!-- Game Box Art Floating Foil Container -->
+<div class="shrink-0 group relative hidden md:block">
+<div class="w-56 h-[336px] rounded-xl overflow-hidden bg-surface-container-low shadow-[0_16px_40px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:-translate-y-2">
+<img class="w-full h-full object-cover" data-alt="Classic Super Nintendo video game cover art of Chrono Trigger featuring Crono wielding a gleaming katana with fire magic, Marle with a crossbow, and Robo against a swirling vortex of temporal clock gears, rich 16-bit Akira Toriyama character illustration with vivid saturated colors on dark canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz6EkqgALgVMP5LPy-yPZ8Ns34dyUE-mre126eeystAu5CqKuX1gk2TOcWQ0xrbUhMdhKDMd5ojcc55NZ_Fai_AR51PGNfzBI8CQ4NtM33FDd8GBqp6wKSiERxwUlB9c2zSP1-0mRrCDfjFyv61pnHTG-0pzpjJjI8feeX3UDvrGF3RjWg-Wqi5-GZWP_m79Yl94LWbA9GygOvFBqsUCVc_VfKC3DYpaQMRuQHbqVyHLOnrlEn72M">
+</div>
+<span class="absolute top-3 left-3 px-2 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded text-secondary font-label-xs text-label-xs uppercase tracking-wider font-bold shadow-md">
+            SFC / SNES
+          </span>
+</div>
+<!-- Metadata & Game Identity -->
+<section class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md border border-outline-variant/20"><div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-2 border-b border-outline-variant/20"><div class="flex items-center gap-space-sm"><div class="w-12 h-12 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary shadow-[0_0_16px_rgba(255,185,95,0.25)] shrink-0"><span class="material-symbols-outlined text-[28px]">military_tech</span></div><div class="flex flex-col"><div class="flex items-center gap-2 flex-wrap"><h3 class="font-headline-md text-headline-md text-on-surface font-bold">Logros &amp; Trofeos Canónicos</h3><span class="px-2 py-0.5 bg-primary-container/20 text-primary font-label-xs text-label-xs rounded font-bold uppercase tracking-wider">RetroAchievements • Steam • PSN</span></div><p class="font-body-sm text-body-sm text-outline">Progreso global sincronizado del Vault Protocol y registro canónico de hazañas</p></div></div><div class="flex items-center gap-space-xs shrink-0"><button class="px-space-sm py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded flex items-center gap-1.5 transition-colors" type="button"><span class="material-symbols-outlined text-[16px] text-secondary">sync</span><span class="hidden sm:inline">Sincronizar Cuentas</span></button><button class="px-space-sm py-1.5 bg-primary-container text-on-primary font-label-md text-label-md rounded flex items-center gap-1.5 shadow-md hover:brightness-110 transition-all" type="button"><span class="material-symbols-outlined text-[16px]">menu_book</span><span class="">Guía de Trofeos</span></button></div></div><div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-md"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm font-bold text-on-surface">39 de 48 desbloqueados</span><span class="text-secondary font-headline-sm text-headline-sm font-bold">(81%)</span><span class="px-2 py-0.5 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold ml-1">Rango Maestro</span></div><div class="flex items-center gap-2 text-label-xs text-outline"><span class="material-symbols-outlined text-[16px] text-tertiary">token</span><span class="text-on-surface font-bold">1,250 Puntos de Preservación</span></div></div><div class="w-full h-2.5 bg-surface-container-highest rounded-full overflow-hidden flex"><div class="h-full bg-gradient-to-r from-primary via-secondary to-tertiary rounded-full shadow-[0_0_12px_rgba(160,120,255,0.4)]" style="width: 81%"></div></div><div class="flex flex-wrap items-center justify-between gap-space-sm text-label-xs text-on-surface-variant pt-1"><div class="flex flex-wrap items-center gap-space-md"><span class=""><strong class="text-primary">1</strong> Platino</span><span class=""><strong class="text-tertiary">8</strong> Oro</span><span class=""><strong class="text-outline">15</strong> Plata</span><span class=""><strong class="text-on-surface">24</strong> Bronce</span></div><div class="flex items-center gap-1.5 text-secondary font-semibold"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="">Modo Hardcore Activo (Sin Save-States)</span></div></div></div><div class="flex flex-wrap items-center justify-between gap-2 pt-1"><div class="flex flex-wrap items-center gap-1.5"><button class="px-space-sm py-1 bg-surface-container-high text-primary font-label-md text-label-md rounded font-bold shadow-sm" type="button">Todos (48)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors" type="button">Desbloqueados (39)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors" type="button">Bloqueados (9)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[14px] text-outline">visibility_off</span><span class="">Secretos (3)</span></button></div><div class="flex items-center gap-1 text-label-xs text-outline"><span class="material-symbols-outlined text-[16px]">filter_list</span><span class="">Orden: Relevancia Canónica</span></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm"><div class="p-space-sm bg-surface-container rounded-lg border border-tertiary/30 flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors col-span-1 md:col-span-2"><div class="w-12 h-12 rounded-lg bg-tertiary-container/30 flex items-center justify-center text-tertiary shrink-0 shadow-[0_0_12px_rgba(255,185,95,0.4)]"><span class="material-symbols-outlined text-[26px]">workspace_premium</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-2 flex-wrap"><div class="flex items-center gap-2"><h4 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-tertiary transition-colors">Más Allá del Tiempo</h4><span class="px-1.5 py-0.2 bg-primary/20 text-primary font-label-xs text-label-xs rounded font-bold">Platino / Maestría</span></div><span class="text-label-xs font-label-xs text-tertiary font-bold">Rareza: 4.2% (Ultra Raro)</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Derrota a Lavos y descubre los 13 finales alternativos canónicos.</p><div class="flex items-center gap-2 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado el 12/03/2024</span><span class="text-outline">•</span><span class="text-outline">100 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary shrink-0"><span class="material-symbols-outlined text-[22px]">hardware</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">El Regalo de Melchior</h4><span class="text-label-xs font-label-xs text-outline shrink-0">18.5%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Forja la legendaria espada Rainbow en el castillo de Guardia.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 25 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary shrink-0"><span class="material-symbols-outlined text-[22px]">timelapse</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Viajero Dimensional</h4><span class="text-label-xs font-label-xs text-outline shrink-0">32.1%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Activa todas las Puertas del Tiempo y visita todas las eras cronológicas.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 20 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined text-[22px]">balance</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Juicio Implacable</h4><span class="text-label-xs font-label-xs text-outline shrink-0">21.0%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Sé absuelto de todos los cargos por decisión unánime del jurado en el Reino de Guardia.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 15 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors border border-outline-variant/30"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline shrink-0"><span class="material-symbols-outlined text-[22px]">flash_on</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate">Maestro de Dobles y Triples</h4><span class="text-label-xs font-label-xs text-tertiary font-bold shrink-0">8.7%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Ejecuta los 15 combos triples de técnicas canónicas.</p><div class="flex items-center justify-between pt-1 text-label-xs"><span class="text-outline font-semibold">Bloqueado (Progreso: 12/15)</span><span class="text-outline">30 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">person_add</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">El Despertar de Magus</h4><span class="text-label-xs font-label-xs text-outline shrink-0">41.2%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Recluta a Magus en el Cabo Norte sin entablar combate mortal.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 25 pts</span></div></div></div><div class="p-space-sm bg-surface-container-highest/60 rounded-lg border border-outline-variant/30 flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors col-span-1 md:col-span-2"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline shrink-0"><span class="material-symbols-outlined text-[22px]">lock</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1 flex-wrap"><div class="flex items-center gap-2"><h4 class="font-label-md text-label-md font-bold text-outline">Devorador del Espacio-Tiempo</h4><span class="px-1.5 py-0.2 bg-surface-container text-outline font-label-xs text-label-xs rounded font-bold">Logro Oculto</span></div><span class="text-label-xs font-label-xs text-tertiary font-bold">Rareza: 1.8% (Mítico)</span></div><p class="font-body-sm text-body-sm text-outline text-[13px]">Supera el Vórtice Dimensional sin utilizar objetos consumibles.</p><div class="flex items-center gap-2 pt-1 text-label-xs text-outline"><span class="material-symbols-outlined text-[14px]">visibility_off</span><span class="">Bloqueado • 50 pts de bonificación</span></div></div></div></div></section><div class="flex-1 flex flex-col gap-space-md">
+<!-- Badges & Taxonomy -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="px-space-sm py-1 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">military_tech</span> Masterpiece
+            </span>
+<span class="px-space-sm py-1 bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs rounded uppercase tracking-wider font-semibold">
+              Retro Classic
+            </span>
+<span class="px-space-sm py-1 bg-secondary-container/20 text-secondary font-label-xs text-label-xs rounded font-semibold">
+              JRPG
+            </span>
+<span class="px-space-sm py-1 bg-surface-container text-on-surface-variant font-label-xs text-label-xs rounded">
+              Viajes en el Tiempo
+            </span>
+<span class="px-space-sm py-1 bg-surface-container text-on-surface-variant font-label-xs text-label-xs rounded">
+              Active Time Battle 2.0
+            </span>
+</div>
+<!-- Title & Editorial Overline -->
+<div>
+<div class="flex items-center gap-2 text-outline font-label-md text-label-md tracking-widest uppercase">
+<span class="">Square Co., Ltd.</span>
+<span class="">•</span>
+<span class="">11 de Marzo, 1995</span>
+</div>
+<h1 class="font-display-hero text-display-hero text-on-surface tracking-tight mt-1 leading-none font-bold">
+              Chrono Trigger
+            </h1>
+</div>
+<!-- Dream Team Credits & Release Spec Bar -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-y-2 gap-x-space-lg pt-2 text-body-sm font-body-sm text-on-surface-variant border-t border-outline-variant/30">
+<div>
+<p class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Dream Project Designers</p>
+<p class="text-on-surface font-semibold truncate">Hironobu Sakaguchi, Yuji Horii</p>
+</div>
+<div>
+<p class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Arte de Personajes</p>
+<p class="text-on-surface font-semibold truncate">Akira Toriyama</p>
+</div>
+<div>
+<p class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Banda Sonora Original</p>
+<p class="text-on-surface font-semibold truncate">Yasunori Mitsuda, Nobuo Uematsu</p>
+</div>
+</div>
+<!-- Platforms Pill Row -->
+<div class="flex flex-wrap items-center gap-1.5 pt-1">
+<span class="text-outline font-label-xs text-label-xs uppercase tracking-wider mr-1">Versiones Canónicas:</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-on-surface font-label-xs text-label-xs">SNES</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-on-surface font-label-xs text-label-xs">PlayStation</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-on-surface font-label-xs text-label-xs">Nintendo DS</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-on-surface font-label-xs text-label-xs">PC Steam</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-on-surface font-label-xs text-label-xs">iOS / Android</span>
+</div>
+</div>
+<!-- Large Acclaim Score Badge -->
+<div class="shrink-0 flex items-center lg:flex-col justify-between lg:justify-center p-space-md rounded-xl bg-surface-container-low/90 backdrop-blur-md shadow-xl gap-space-md self-stretch lg:self-auto min-w-[210px]">
+<div class="flex items-center gap-space-md">
+<div class="w-16 h-16 rounded-xl bg-tertiary-container/20 flex flex-col items-center justify-center text-tertiary shadow-[0_0_16px_rgba(255,185,95,0.25)]">
+<span class="font-display-hero text-headline-lg font-bold leading-none">97</span>
+<span class="font-label-xs text-label-xs uppercase">/ 100</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface leading-tight">Universal Acclaim</span>
+<span class="font-body-sm text-body-sm text-outline">14,820 archivistas</span>
+</div>
+</div>
+<!-- Sparkline Distribution Preview -->
+<div class="w-full flex items-center justify-between gap-1 pt-2 lg:pt-0">
+<div class="h-6 w-full flex items-end gap-1">
+<div class="w-1/5 h-[15%] bg-outline-variant rounded-sm" title="1-2 pts (1%)"></div>
+<div class="w-1/5 h-[18%] bg-outline-variant rounded-sm" title="3-4 pts (2%)"></div>
+<div class="w-1/5 h-[30%] bg-secondary/50 rounded-sm" title="5-6 pts (6%)"></div>
+<div class="w-1/5 h-[65%] bg-secondary rounded-sm" title="7-8 pts (18%)"></div>
+<div class="w-1/5 h-[100%] bg-tertiary rounded-sm shadow-[0_0_8px_rgba(255,185,95,0.4)]" title="9-10 pts (73%)"></div>
+</div>
+<span class="font-label-xs text-label-xs text-tertiary font-bold ml-1">#1 JRPG</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Workspace Layout: 12-Column Responsive Body -->
+<div class="w-full px-gutter lg:px-margin max-w-7xl mx-auto -mt-6 z-20 pb-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+<!-- Primary Column (8 Cols on Desktop) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- User Quick-Log & State Dashboard Card -->
+<section class="bg-surface-container-low rounded-xl p-space-md shadow-xl flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[24px]">bookmark_manager</span>
+<h2 class="font-title-md text-title-md text-on-surface font-bold">Tu Bitácora Personal</h2>
+</div>
+<div class="flex items-center gap-1.5 text-body-sm font-body-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-secondary">sync</span>
+<span class="">Sincronizado con Steam Cloud &amp; RetroArch</span>
+</div>
+</div>
+<!-- Backlog Status Pill Selectors -->
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-surface-container-lowest p-1.5 rounded-lg">
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" type="button">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="">Jugando</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded font-label-md text-label-md bg-primary-container text-on-primary font-bold shadow-[0_0_12px_rgba(160,120,255,0.4)] transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="">Completado</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">hourglass_empty</span>
+<span class="">Backlog</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">block</span>
+<span class="">Abandonado</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all col-span-2 sm:col-span-1" type="button">
+<span class="material-symbols-outlined text-[16px] text-error">favorite_border</span>
+<span class="">Deseos</span>
+</button>
+</div>
+<!-- Personal Rating, Hours & Notes Entry -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md pt-2">
+<!-- Star Rating Control -->
+<div class="flex flex-col gap-1 p-space-sm bg-surface-container rounded-lg">
+<span class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Tu Calificación</span>
+<div class="flex items-center gap-1 text-tertiary pt-1">
+<button class="hover:scale-125 transition-transform" type="button"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<button class="hover:scale-125 transition-transform" type="button"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<button class="hover:scale-125 transition-transform" type="button"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<button class="hover:scale-125 transition-transform" type="button"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<button class="hover:scale-125 transition-transform" type="button"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">star</span></button>
+<span class="font-headline-sm text-headline-sm font-bold ml-1 text-on-surface">5.0</span>
+</div>
+</div>
+<!-- Hours Counter with interactive micro-step -->
+<div class="flex flex-col gap-1 p-space-sm bg-surface-container rounded-lg">
+<span class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Tiempo Invertido</span>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface" id="player-hours">43.5</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">horas</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-7 h-7 rounded bg-surface-container-high hover:bg-surface-bright flex items-center justify-center text-on-surface active:scale-95 transition-all" onclick="document.getElementById('player-hours').innerText = (parseFloat(document.getElementById('player-hours').innerText) + 1.0).toFixed(1)" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+<button class="w-7 h-7 rounded bg-surface-container-high hover:bg-surface-bright flex items-center justify-center text-on-surface active:scale-95 transition-all" onclick="document.getElementById('player-hours').innerText = Math.max(0, (parseFloat(document.getElementById('player-hours').innerText) - 1.0)).toFixed(1)" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Completion Tracker / Finales -->
+<div class="flex flex-col gap-1 p-space-sm bg-surface-container rounded-lg">
+<span class="font-label-xs text-label-xs text-outline uppercase tracking-wider">Progreso de Finales</span>
+<div class="flex items-center justify-between pt-1">
+<span class="font-headline-sm text-headline-sm font-bold text-secondary">8 / 13</span>
+<span class="px-2 py-0.5 bg-secondary-container/20 text-secondary font-label-xs text-label-xs rounded font-bold">New Game+</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Segmented Navigation Hub (Tabs) -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 border-b border-outline-variant/30">
+<button class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg whitespace-nowrap" type="button">
+            General &amp; Sinopsis
+          </button>
+<button class="px-space-md py-space-sm text-primary font-label-lg text-label-lg whitespace-nowrap bg-surface-container-high rounded-t-lg shadow-[0_-2px_10px_rgba(208,188,255,0.15)] flex items-center gap-2" type="button">
+<span class="">Reseñas de la Comunidad</span>
+<span class="px-1.5 py-0.2 bg-primary/20 text-primary font-label-xs text-label-xs rounded-full">4.8k</span>
+</button>
+<button class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg whitespace-nowrap" type="button">
+            Guías &amp; Secretos (28)
+          </button><button class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg whitespace-nowrap flex items-center gap-2 group transition-colors" type="button"><span class="material-symbols-outlined text-[18px] text-tertiary group-hover:scale-110 transition-transform">emoji_events</span><span class="">Logros &amp; Trofeos</span><span class="px-1.5 py-0.2 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded-full font-bold">48 (81%)</span></button>
+<button class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface font-label-lg text-label-lg whitespace-nowrap flex items-center gap-2" type="button">
+<span class="">Foro Q&amp;A</span>
+<span class="px-1.5 py-0.2 bg-secondary/20 text-secondary font-label-xs text-label-xs rounded-full">312</span>
+</button>
+</div>
+<!-- ACTIVE TAB VIEW: Reseñas & Módulo Q&A Activo -->
+<div class="flex flex-col gap-space-xl">
+<!-- Section 1: Reseñas Destacadas -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Crítica &amp; Reseñas de Jugadores</h3>
+<p class="font-body-sm text-body-sm text-outline">Análisis profundos filtrados por relevancia y horas de dedicación</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-space-sm py-1.5 bg-surface-container rounded text-body-sm font-body-sm text-on-surface flex items-center gap-1 hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">sort</span>
+<span class="">Más útiles</span>
+</button>
+<button class="px-space-md py-1.5 bg-primary-container text-on-primary font-label-md text-label-md rounded flex items-center gap-1 shadow-md hover:brightness-110 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">rate_review</span>
+<span class="hidden sm:inline">Escribir Reseña</span>
+</button>
+</div>
+</div>
+<!-- Review Card 1 (In-depth analysis by Master Archivist) -->
+<article class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<img class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30" data-alt="Square retro pixel avatar portrait of a masked tech archivist wearing cybernetic goggles with purple lens glow, deep blue background, stylized game forum user icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr46kXZOaxXFsPqYq2qPWAsmvprgNHANQBBot7ml4MFbWS6fgih4Plr20T8xd8RzDQptBZou1k3IJrxFFRhV8LOyDu7RnR_sAQE4AsGq3qlKR1xBo50jCzDiGm4ihVuXnRxbsANQMfq0E9JKFO1e-tgCRnkjUZFCT3z5e5Upky8hGuUQHlJtlH2ObFmfyA_lIJRfDKUPj1YMLVroQMMTjA67MbrXG7c6fLl70uoFfwg5G8p-xppA0">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">ValenChronos</span>
+<span class="px-1.5 py-0.5 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold">Veterano 90s</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<span class="text-secondary font-semibold">68.2 hrs registradas</span>
+<span class="">•</span>
+<span class="">Completó la versión Nintendo DS</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1 px-space-sm py-1 bg-surface-container-high rounded text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">10 / 10</span>
+</div>
+</div>
+<!-- Review Body -->
+<div class="space-y-space-sm text-body-md font-body-md text-on-surface">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                  La cumbre insuperable del JRPG: Cuando el ritmo narrativo y la melodía rozan la perfección.
+                </h4>
+<p class="text-on-surface-variant leading-relaxed">
+                  Lo que diferencia a Chrono Trigger de cualquier contemporáneo de 16 bits no es solo el cartel irrepetible del “Dream Project”, sino la valentía de desechar los encuentros aleatorios absurdos e instaurar combates con posicionamiento dinámico sobre el mismo mapa. Cada viaje interdimensional —desde el místico Reino de Zeal en el 12,000 A.C. hasta el lúgubre futuro diezmado de 2300 D.C.— tiene un peso emocional palpable, realzado por las texturas orquestales de Yasunori Mitsuda.
+                </p>
+<p class="text-on-surface-variant leading-relaxed">
+                  El sistema de combos dobles y triples sigue sintiéndose fresco, y la mecánica de New Game+ (término que ellos mismos acuñaron para el medio) continúa siendo el estándar dorado para recompensar al jugador completionista. No hay una sola hora de relleno en sus 25-30 horas iniciales.
+                </p>
+</div>
+<!-- Review Footer / Actions -->
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/20 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-space-md">
+<button class="flex items-center gap-1 px-space-sm py-1 bg-surface-container hover:bg-surface-container-high rounded text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">thumb_up</span>
+<span class="font-label-md text-label-md">Útil (1,429)</span>
+</button>
+<button class="flex items-center gap-1 hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+<span class="">84 comentarios</span>
+</button>
+</div>
+<span class="text-label-xs font-label-xs">Publicada el 14 Oct, 2024</span>
+</div>
+</article>
+<!-- Review Card 2 (Critical Perspective / Modern PC/Steam Port) -->
+<article class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-center gap-space-sm">
+<img class="w-12 h-12 rounded-full object-cover ring-2 ring-outline/30" data-alt="Digital painted avatar of a gamer critic with headphones, dramatic ambient orange and teal lighting on a dark background, minimal modern illustration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWNvs2jPEkpWY3kEGq_o7bgg78ZFGu8cWZE81OmzUoEEi3b-z4LaePhGdFiTLn-gcV9nxv06-oEV4FrY-O9uFGZzuJmbH6ngH-bMmTZ3luChCAShLt1bTTq9S_nj8rai-fPUKoboI1hyUY8X6oh0fOJo07W8ELtM6Jy5-puY7EJ4qrN1GQzCfEfRiQUCtxzGruAjPHs6drhb--nm2--lUoD4fwEM5rjJUhZjhQjESFU5CSd0_ssPk">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">ElenaGamerBit</span>
+<span class="px-1.5 py-0.5 bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs rounded font-bold">Crítica Verificada</span>
+</div>
+<div class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<span class="text-secondary font-semibold">32.4 hrs</span>
+<span class="">•</span>
+<span class="">Jugado en PC (Steam Deck)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-1 px-space-sm py-1 bg-surface-container-high rounded text-tertiary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="">9.5 / 10</span>
+</div>
+</div>
+<div class="space-y-space-sm text-body-md font-body-md text-on-surface">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                  Jugándolo por primera vez en pleno 2025: Cero nostalgia, 100% admiración
+                </h4>
+<p class="text-on-surface-variant leading-relaxed">
+                  Temía que la idolatría colectiva fuera puro sesgo retrospectivo, pero me equivoqué de lleno. Magus es uno de los personajes mejor escritos de la época dorada, y el hecho de que puedas o no reclutarlo según tus elecciones morales me dejó boquiabierta. Una obra que no le falta ni le sobra un solo pixel.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-outline-variant/20 text-body-sm font-body-sm text-outline">
+<div class="flex items-center gap-space-md">
+<button class="flex items-center gap-1 px-space-sm py-1 bg-surface-container hover:bg-surface-container-high rounded text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">thumb_up</span>
+<span class="font-label-md text-label-md">Útil (892)</span>
+</button>
+<button class="flex items-center gap-1 hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+<span class="">31 comentarios</span>
+</button>
+</div>
+<span class="text-label-xs font-label-xs">Publicada hace 3 semanas</span>
+</div>
+</article>
+</div>
+<!-- Section 2: Q&A / Preguntas Frecuentes de la Comunidad -->
+<section class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md border border-outline-variant/20"><div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-2 border-b border-outline-variant/20"><div class="flex items-center gap-space-sm"><div class="w-12 h-12 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary shadow-[0_0_16px_rgba(255,185,95,0.25)] shrink-0"><span class="material-symbols-outlined text-[28px]">military_tech</span></div><div class="flex flex-col"><div class="flex items-center gap-2 flex-wrap"><h3 class="font-headline-md text-headline-md text-on-surface font-bold">Logros &amp; Trofeos Canónicos</h3><span class="px-2 py-0.5 bg-primary-container/20 text-primary font-label-xs text-label-xs rounded font-bold uppercase tracking-wider">RetroAchievements • Steam • PSN</span></div><p class="font-body-sm text-body-sm text-outline">Progreso global sincronizado del Vault Protocol y registro canónico de hazañas</p></div></div><div class="flex items-center gap-space-xs shrink-0"><button class="px-space-sm py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded flex items-center gap-1.5 transition-colors" type="button"><span class="material-symbols-outlined text-[16px] text-secondary">sync</span><span class="hidden sm:inline">Sincronizar Cuentas</span></button><button class="px-space-sm py-1.5 bg-primary-container text-on-primary font-label-md text-label-md rounded flex items-center gap-1.5 shadow-md hover:brightness-110 transition-all" type="button"><span class="material-symbols-outlined text-[16px]">menu_book</span><span class="">Guía de Trofeos</span></button></div></div><div class="p-space-md bg-surface-container rounded-xl flex flex-col gap-space-md"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm font-bold text-on-surface">39 de 48 desbloqueados</span><span class="text-secondary font-headline-sm text-headline-sm font-bold">(81%)</span><span class="px-2 py-0.5 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold ml-1">Rango Maestro</span></div><div class="flex items-center gap-2 text-label-xs text-outline"><span class="material-symbols-outlined text-[16px] text-tertiary">token</span><span class="text-on-surface font-bold">1,250 Puntos de Preservación</span></div></div><div class="w-full h-2.5 bg-surface-container-highest rounded-full overflow-hidden flex"><div class="h-full bg-gradient-to-r from-primary via-secondary to-tertiary rounded-full shadow-[0_0_12px_rgba(160,120,255,0.4)]" style="width: 81%"></div></div><div class="flex flex-wrap items-center justify-between gap-space-sm text-label-xs text-on-surface-variant pt-1"><div class="flex flex-wrap items-center gap-space-md"><span class=""><strong class="text-primary">1</strong> Platino</span><span class=""><strong class="text-tertiary">8</strong> Oro</span><span class=""><strong class="text-outline">15</strong> Plata</span><span class=""><strong class="text-on-surface">24</strong> Bronce</span></div><div class="flex items-center gap-1.5 text-secondary font-semibold"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="">Modo Hardcore Activo (Sin Save-States)</span></div></div></div><div class="flex flex-wrap items-center justify-between gap-2 pt-1"><div class="flex flex-wrap items-center gap-1.5"><button class="px-space-sm py-1 bg-surface-container-high text-primary font-label-md text-label-md rounded font-bold shadow-sm" type="button">Todos (48)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors" type="button">Desbloqueados (39)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors" type="button">Bloqueados (9)</button><button class="px-space-sm py-1 bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded transition-colors flex items-center gap-1" type="button"><span class="material-symbols-outlined text-[14px] text-outline">visibility_off</span><span class="">Secretos (3)</span></button></div><div class="flex items-center gap-1 text-label-xs text-outline"><span class="material-symbols-outlined text-[16px]">filter_list</span><span class="">Orden: Relevancia Canónica</span></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm"><div class="p-space-sm bg-surface-container rounded-lg border border-tertiary/30 flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors col-span-1 md:col-span-2"><div class="w-12 h-12 rounded-lg bg-tertiary-container/30 flex items-center justify-center text-tertiary shrink-0 shadow-[0_0_12px_rgba(255,185,95,0.4)]"><span class="material-symbols-outlined text-[26px]">workspace_premium</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-2 flex-wrap"><div class="flex items-center gap-2"><h4 class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-tertiary transition-colors">Más Allá del Tiempo</h4><span class="px-1.5 py-0.2 bg-primary/20 text-primary font-label-xs text-label-xs rounded font-bold">Platino / Maestría</span></div><span class="text-label-xs font-label-xs text-tertiary font-bold">Rareza: 4.2% (Ultra Raro)</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Derrota a Lavos y descubre los 13 finales alternativos canónicos.</p><div class="flex items-center gap-2 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado el 12/03/2024</span><span class="text-outline">•</span><span class="text-outline">100 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary shrink-0"><span class="material-symbols-outlined text-[22px]">hardware</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">El Regalo de Melchior</h4><span class="text-label-xs font-label-xs text-outline shrink-0">18.5%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Forja la legendaria espada Rainbow en el castillo de Guardia.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 25 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary shrink-0"><span class="material-symbols-outlined text-[22px]">timelapse</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Viajero Dimensional</h4><span class="text-label-xs font-label-xs text-outline shrink-0">32.1%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Activa todas las Puertas del Tiempo y visita todas las eras cronológicas.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 20 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined text-[22px]">balance</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Juicio Implacable</h4><span class="text-label-xs font-label-xs text-outline shrink-0">21.0%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Sé absuelto de todos los cargos por decisión unánime del jurado en el Reino de Guardia.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 15 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors border border-outline-variant/30"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline shrink-0"><span class="material-symbols-outlined text-[22px]">flash_on</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate">Maestro de Dobles y Triples</h4><span class="text-label-xs font-label-xs text-tertiary font-bold shrink-0">8.7%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Ejecuta los 15 combos triples de técnicas canónicas.</p><div class="flex items-center justify-between pt-1 text-label-xs"><span class="text-outline font-semibold">Bloqueado (Progreso: 12/15)</span><span class="text-outline">30 pts</span></div></div></div><div class="p-space-sm bg-surface-container rounded-lg flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors"><div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">person_add</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1"><h4 class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">El Despertar de Magus</h4><span class="text-label-xs font-label-xs text-outline shrink-0">41.2%</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-[13px]">Recluta a Magus en el Cabo Norte sin entablar combate mortal.</p><div class="flex items-center gap-1.5 pt-1 text-label-xs text-secondary font-semibold"><span class="material-symbols-outlined text-[14px]">check_circle</span><span class="">Desbloqueado • 25 pts</span></div></div></div><div class="p-space-sm bg-surface-container-highest/60 rounded-lg border border-outline-variant/30 flex items-start gap-space-sm group hover:bg-surface-container-high transition-colors col-span-1 md:col-span-2"><div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline shrink-0"><span class="material-symbols-outlined text-[22px]">lock</span></div><div class="flex-1 min-w-0 flex flex-col gap-0.5"><div class="flex items-center justify-between gap-1 flex-wrap"><div class="flex items-center gap-2"><h4 class="font-label-md text-label-md font-bold text-outline">Devorador del Espacio-Tiempo</h4><span class="px-1.5 py-0.2 bg-surface-container text-outline font-label-xs text-label-xs rounded font-bold">Logro Oculto</span></div><span class="text-label-xs font-label-xs text-tertiary font-bold">Rareza: 1.8% (Mítico)</span></div><p class="font-body-sm text-body-sm text-outline text-[13px]">Supera el Vórtice Dimensional sin utilizar objetos consumibles.</p><div class="flex items-center gap-2 pt-1 text-label-xs text-outline"><span class="material-symbols-outlined text-[14px]">visibility_off</span><span class="">Bloqueado • 50 pts de bonificación</span></div></div></div></div></section><div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[24px]">contact_support</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Q&amp;A y Consultas de Jugadores</h3>
+</div>
+<p class="font-body-sm text-body-sm text-outline">Respuestas comunitarias verificadas sobre secretos, finales alternativos y builds</p>
+</div>
+<button class="px-space-md py-1.5 bg-surface-container-high text-on-surface hover:bg-surface-bright font-label-md text-label-md rounded flex items-center gap-1 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">add_comment</span>
+<span class="">Hacer una Pregunta</span>
+</button>
+</div>
+<!-- Q&A Item 1 -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-primary-container/20 text-primary font-label-xs text-label-xs rounded font-bold">Ruta / Endings</span>
+<h4 class="font-title-md text-title-md text-on-surface font-bold hover:text-primary transition-colors cursor-pointer">
+                    ¿Cuál es el mejor orden para derrotar a Lavos y ver los 13 finales sin arruinar la partida?
+                  </h4>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md font-bold shrink-0">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="">Solucionado</span>
+</div>
+</div>
+<!-- Top Voted Community Answer Box -->
+<div class="mt-2 bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-bold text-on-surface">Respuesta de Lucca_Tech (Top Contributor):</span>
+<span class="px-1.5 py-0.2 bg-secondary-container/20 text-secondary font-label-xs text-label-xs rounded">342 votos a favor</span>
+</div>
+<span class="text-outline font-label-xs text-label-xs">Verificada por 12 archivistas</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Para no frustrarte, lo óptimo es completar la historia normal a través del Black Omen para conseguir el <strong>Ending 1: Beyond Time</strong>. Luego, guarda la partida limpia y activa <strong>New Game+</strong>. 
+                  Desde ahí, utiliza el portal derecho en la Feria Milenaria (Leene Square) en distintos puntos narrativos específicos: 
+                  (1) Nada más empezar solo con Crono (Final del Programador), (2) Justo tras rescatar a Marle, (3) Tras derrotar a Magus en 600 D.C., y (4) Tras presenciar el despertar de Lavos. ¡Así no pierdes equipo crucial!
+                </p>
+<div class="flex items-center gap-space-md pt-1 text-label-xs font-label-xs text-outline">
+<button class="text-secondary hover:underline flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> Votar positivo (+342)
+                  </button>
+<button class="hover:text-on-surface transition-colors" type="button">Ver las otras 9 respuestas</button>
+</div>
+</div>
+</div>
+<!-- Q&A Item 2 -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-sm">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-tertiary-container/20 text-tertiary font-label-xs text-label-xs rounded font-bold">Armas &amp; Forja</span>
+<h4 class="font-title-md text-title-md text-on-surface font-bold hover:text-primary transition-colors cursor-pointer">
+                    ¿Cómo desbloquear la espada Rainbow (Arcoíris) de Crono y qué materiales requiere Melchior?
+                  </h4>
+</div>
+<div class="flex items-center gap-1 text-secondary font-label-md text-label-md font-bold shrink-0">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="">Solucionado</span>
+</div>
+</div>
+<!-- Verified Answer Mini -->
+<div class="mt-2 bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm">
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  Necesitas cumplir dos sidequests en la era del Fin de los Tiempos: 
+                  1. Recuperar la <strong>Rainbow Shell</strong> en la Cueva de los Gigantes (año 600 D.C.) y llevarla a la tesorería de Guardia. 
+                  2. Obtener el <strong>Sun Stone</strong> cargando la Moon Stone en el Santuario del Sol por 65 millones de años.
+                  Con ambos elementos en tu inventario, visita a Melchior en el castillo de Guardia (1000 D.C.). Te forjará la espada <em>Rainbow</em> (70% tasa de golpe crítico) junto a tres Prism Helms o un Prism Dress.
+                </p>
+<div class="flex items-center gap-space-md pt-1 text-label-xs font-label-xs text-outline">
+<button class="text-secondary hover:underline flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> Votar positivo (+289)
+                  </button>
+<button class="hover:text-on-surface transition-colors" type="button">Ver las otras 4 respuestas</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Rail Sidebar (4 Cols on Desktop) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-xl">
+<!-- Module 1: Dónde Jugar Legalmente Hoy -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">videogame_asset</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Dónde Jugarlo Hoy</h3>
+</div>
+<p class="font-body-sm text-body-sm text-outline">Ediciones oficiales disponibles con preservación activa</p>
+<div class="space-y-2">
+<!-- Platform Item: Steam -->
+<a class="flex items-center justify-between p-space-sm bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">desktop_windows</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface group-hover:text-primary transition-colors">PC (Steam Edition)</span>
+<span class="font-label-xs text-label-xs text-outline">Actualizado a 60 FPS &amp; UI renovada</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">14.99 €</span>
+</a>
+<!-- Platform Item: Mobile -->
+<a class="flex items-center justify-between p-space-sm bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[22px]">smartphone</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface group-hover:text-secondary transition-colors">iOS &amp; Android Store</span>
+<span class="font-label-xs text-label-xs text-outline">Soporte nativo táctil y mandos</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-on-surface">10.99 €</span>
+</a>
+<!-- Platform Item: Retro Physical Cartridge -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container/60 rounded-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[22px]">album</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Cartucho SNES / DS Físico</span>
+<span class="font-label-xs text-label-xs text-outline">Mercado coleccionista</span>
+</div>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 bg-surface-container-high rounded text-outline">Coleccionismo</span>
+</div>
+</div>
+</div>
+<!-- Module 2: Juegos Similares Recomendados -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[20px]">auto_awesome</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Si te gustó Chrono Trigger</h3>
+</div>
+<span class="font-label-xs text-label-xs text-outline">Similitud 96%</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Recommendation 1: Final Fantasy VI -->
+<a class="flex items-center gap-space-sm p-2 rounded-lg hover:bg-surface-container transition-colors group" href="#">
+<div class="w-14 h-20 rounded-md overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Box art of Final Fantasy VI pixel remaster featuring Terra Bradford riding Magitek Armor over snowy cliffs in gothic steampunk aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApXC0DnKSuaFSDyeRxWUP5e_Lp9f1ADITHI-YP4Ipz-HCBOLjgdsVcIxTpv8kyL0rIcYyf1HUL7Ot3G3jcyXHx--GTcJsr95yF2x1MRRx625TOqPKg4YDLNaaD3Pb-gDwf3Axc9RtdP2zfErMuJXVffwPcZalsbbROidhiMGhqNcvIpGd0T-HivSB9WPcGd144mIs-qV64Tz5HrdWwJlR-aNqMwgIBQvpwCsfAahsj9-l4jVPe1CE">
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Final Fantasy VI</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Misma era dorada de Square (1994)</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-1.5 py-0.2 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold">96 Metacritic</span>
+<span class="text-outline font-label-xs text-label-xs">JRPG Clásico</span>
+</div>
+</div>
+</a>
+<!-- Recommendation 2: Sea of Stars -->
+<a class="flex items-center gap-space-sm p-2 rounded-lg hover:bg-surface-container transition-colors group" href="#">
+<div class="w-14 h-20 rounded-md overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Vibrant modern pixel art cover of Sea of Stars featuring the Solstice Warriors Valere and Zale casting moon and sun spells on a tropical fantasy archway." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4X5Ynd1FU5DMp81kVljM2Fk_xXAGRrQuDXyE06UrlYDJvUWDackyRnP30Dnxx6iEGvIajJIf-C9k8O0Ki4nCFGnPgjNZDmEmdbWQfN23r1krhoqJx2dGJZvyWP0zKaNq7BnM0EvJVAL3GlhhmvASRWMBhFQ-i26P_hIeMMdXeawtP6V48zi3u1MyJqfq4UYNPUZuez9sUjbVzV3ScoiyIGuKuxlTpZetsz9OHyvL_KW7n9YWVDk0">
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Sea of Stars</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Homenaje con música de Yasunori Mitsuda</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-1.5 py-0.2 bg-secondary-container/30 text-secondary font-label-xs text-label-xs rounded font-bold">89 Metacritic</span>
+<span class="text-outline font-label-xs text-label-xs">Indie 2023</span>
+</div>
+</div>
+</a>
+<!-- Recommendation 3: Radiant Historia -->
+<a class="flex items-center gap-space-sm p-2 rounded-lg hover:bg-surface-container transition-colors group" href="#">
+<div class="w-14 h-20 rounded-md overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform" data-alt="Anime illustration of Stocke holding the White Chronicle tome in Radiant Historia Perfect Chronology with branching temporal timelines in background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYUnf0l3qyA6bu8K56yUP5vY6ekqt2gPO4jc7wSqqOIjffR3_fV5QIdUAMI2K2PDE9Mdub813cirUbIzTUjFfYkLAmzSFQ2Rj7ASMux8r6-0oLRmO29T-WqqrfU78Ci5KQc5D71nFjmJZvg9euXr9dyXj0f9YDIGEGBFkf-Y_3GVS6kwPAqLD86pmuBG-q0MpLIB2M8Q9WjnJjF5L84wqF5e-qidVDaXYf9yAWTTBkJW63FdJmGmY">
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate group-hover:text-primary transition-colors">Radiant Historia: PC</span>
+<span class="font-body-sm text-body-sm text-outline truncate">Mecánica pura de líneas de tiempo</span>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-1.5 py-0.2 bg-surface-container-highest text-on-surface-variant font-label-xs text-label-xs rounded font-bold">85 Metacritic</span>
+<span class="text-outline font-label-xs text-label-xs">Atlus</span>
+</div>
+</div>
+</a>
+</div>
+</div>
+<!-- Module 3: Tier Lists & Colecciones Comunitarias -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">format_list_bulleted</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Aparece en Tier Lists</h3>
+</div>
+<div class="space-y-2">
+<a class="block p-space-sm bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md font-bold text-on-surface group-hover:text-primary transition-colors">Los 100 Mejores RPGs de la Historia</span>
+<span class="px-1.5 py-0.2 bg-tertiary-container/30 text-tertiary font-label-xs text-label-xs rounded font-bold">Rango S+</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Por Comunidad QuestLog • 45,210 vistas</span>
+</a>
+<a class="block p-space-sm bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md font-bold text-on-surface group-hover:text-primary transition-colors">Catálogo Definitivo de Super Nintendo</span>
+<span class="px-1.5 py-0.2 bg-primary-container/30 text-primary font-label-xs text-label-xs rounded font-bold">Puesto #1</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Por RetroVault Society • 18,940 vistas</span>
+</a>
+<a class="block p-space-sm bg-surface-container rounded-lg hover:bg-surface-container-high transition-colors group" href="#">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md font-bold text-on-surface group-hover:text-primary transition-colors">Bandas Sonoras Inmortales del Gaming</span>
+<span class="px-1.5 py-0.2 bg-secondary-container/30 text-secondary font-label-xs text-label-xs rounded font-bold">Tier SS</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Por MitsudaArchive • 12,100 vistas</span>
+</a>
+</div>
+</div>
+<!-- Archival Meta Footprint -->
+<div class="p-space-md bg-surface-container-lowest rounded-xl flex items-center justify-between text-outline text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+<span class="">ID de Archivo: QL-SFC-1995-0012</span>
+</div>
+<span class="font-label-xs text-label-xs text-secondary font-bold">SHA-256 Verificado</span>
+</div>
+</aside>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest/90 py-space-xl shadow-[0_-1px_12px_rgba(0,0,0,0.3)]"><div class="w-full px-gutter lg:px-margin max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-space-lg text-on-surface-variant"><div class="flex items-center gap-space-sm"><span class="font-headline-sm text-headline-sm text-on-surface font-bold">Quest<span class="text-primary">Log</span></span><span class="font-label-xs text-label-xs text-outline">— Base de Datos y Bitácora de Videojuegos</span></div><div class="flex flex-wrap items-center justify-center gap-space-lg font-label-md text-label-md"><a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Directorio Retro</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">API Metadatos</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Manifiesto de Preservación</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacidad</a><a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Términos</a></div><div class="font-label-xs text-label-xs text-outline text-center md:text-right">© 2025 QuestLog Network. Todos los derechos reservados.</div></div></footer>
+
+</body></html>

@@ -10,7 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 // Servicios y Modelos
-import { GameDetail } from '../../models/rawg.model';
+import { Game, GameAchievement, GameDetail } from '../../models/rawg.model';
 import { UserGame, GameStatus, GAME_STATUS_LABELS } from '../../models/user-game.model';
 import { RawgService } from '../../services/rawg';
 import { UserGamesService } from '../../services/user-games';
@@ -45,6 +45,12 @@ export class GameDetailComponent implements OnInit {
   // Estados de datos
   game = signal<GameDetail | null>(null);
   screenshots = signal<string[]>([]);
+  seriesGames = signal<Game[]>([]);
+  dlcAdditions = signal<Game[]>([]);
+  loadingSeries = signal<boolean>(false);
+  achievements = signal<GameAchievement[]>([]);
+  loadingAchievements = signal<boolean>(false);
+  achievementFilter = signal<'all' | 'unlocked' | 'locked'>('all');
   userGame = signal<UserGame | null>(null);
   loading = signal<boolean>(true);
   saving = signal<boolean>(false);
@@ -131,6 +137,12 @@ export class GameDetailComponent implements OnInit {
   private resetGameState(): void {
     this.game.set(null);
     this.screenshots.set([]);
+    this.seriesGames.set([]);
+    this.dlcAdditions.set([]);
+    this.loadingSeries.set(false);
+    this.achievements.set([]);
+    this.loadingAchievements.set(false);
+    this.achievementFilter.set('all');
     this.userGame.set(null);
     this.selectedStatus.set(null);
     this.userRating.set(null);
@@ -157,6 +169,9 @@ export class GameDetailComponent implements OnInit {
         next: (shots) => this.screenshots.set(shots)
       });
 
+      this.loadFranchiseData(id);
+      this.loadAchievementsData(id);
+
       if (this.authService.currentUser()) {
         const userGameData = await this.userGamesService.getGameStatusForUser(numericId);
         if (userGameData) {
@@ -168,6 +183,87 @@ export class GameDetailComponent implements OnInit {
     } catch (error) {
       console.error('Error al inicializar la ficha del juego:', error);
       this.loading.set(false);
+    }
+  }
+
+  private loadFranchiseData(id: string): void {
+    const numId = Number(id);
+    this.loadingSeries.set(true);
+
+    this.rawgService.getGameSeries(id).subscribe({
+      next: (games) => {
+        // Excluir el juego actual de la lista de secuelas/precuelas si viene incluido
+        this.seriesGames.set(games.filter(g => g.id !== numId));
+        this.loadingSeries.set(false);
+      },
+      error: (err) => {
+        console.warn('Error al cargar saga de videojuegos:', err);
+        this.loadingSeries.set(false);
+      }
+    });
+
+    this.rawgService.getGameAdditions(id).subscribe({
+      next: (dlcs) => {
+        this.dlcAdditions.set(dlcs);
+      },
+      error: (err) => {
+        console.warn('Error al cargar expansiones o DLCs:', err);
+      }
+    });
+  }
+
+  private loadAchievementsData(id: string): void {
+    this.loadingAchievements.set(true);
+
+    this.rawgService.getGameAchievements(id, 32).subscribe({
+      next: (list) => {
+        this.achievements.set(list || []);
+        this.loadingAchievements.set(false);
+      },
+      error: (err) => {
+        console.warn('Error al consultar logros canónicos:', err);
+        this.achievements.set([]);
+        this.loadingAchievements.set(false);
+      }
+    });
+  }
+
+  setAchievementFilter(filter: 'all' | 'unlocked' | 'locked'): void {
+    this.achievementFilter.set(filter);
+  }
+
+  getFilteredAchievements(): GameAchievement[] {
+    const list = this.achievements();
+    const filter = this.achievementFilter();
+    if (filter === 'all') return list;
+    if (filter === 'unlocked') {
+      // Consideramos desbloqueado para visualización si tiene un % de obtención general significativo o estado sim
+      return list.filter(a => parseFloat(a.percent) >= 15);
+    }
+    return list.filter(a => parseFloat(a.percent) < 15);
+  }
+
+  getRarityLabel(percentStr: string): { label: string; color: string; bg: string } {
+    const num = parseFloat(percentStr) || 0;
+    if (num < 2) return { label: 'Mítico / Ultra Raro', color: 'var(--tertiary)', bg: 'rgba(255, 185, 95, 0.2)' };
+    if (num < 10) return { label: 'Épico', color: 'var(--primary)', bg: 'rgba(160, 120, 255, 0.2)' };
+    if (num < 30) return { label: 'Raro', color: 'var(--secondary)', bg: 'rgba(76, 215, 246, 0.2)' };
+    return { label: 'Común', color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.08)' };
+  }
+
+  getYear(dateStr?: string): string {
+    if (!dateStr) return 'N/A';
+    return dateStr.substring(0, 4);
+  }
+
+  getGameScore(g: Game): number {
+    return g.metacritic || (g.rating ? Math.round(g.rating * 20) : 0);
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = 'assets/images/placeholder-game.png';
     }
   }
 

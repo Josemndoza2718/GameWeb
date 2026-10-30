@@ -194,6 +194,152 @@
         </section>
         }
 
+        <!-- LOGROS & TROFEOS CANÓNICOS (Diseño Stitch: RetroVerse Gaming Hub) -->
+        <section class="card-bitacora p-4 border-round-xl">
+          <!-- Cabecera de Logros -->
+          <div class="flex flex-column sm:flex-row sm:align-items-center justify-content-between gap-3 pb-3 border-bottom-1 surface-border">
+            <div class="flex align-items-center gap-3">
+              <div class="achievements-badge-icon flex align-items-center justify-content-center border-round-xl shrink-0">
+                <span class="material-symbols-outlined text-2xl text-tertiary">military_tech</span>
+              </div>
+              <div>
+                <div class="flex align-items-center gap-2 flex-wrap">
+                  <h2 class="font-title text-lg font-bold m-0 text-color">Logros & Trofeos Canónicos</h2>
+                  <span class="achievements-origin-tag font-title uppercase font-bold">
+                    Vault Protocol • Steam • PSN
+                  </span>
+                </div>
+                <p class="text-xs text-muted font-body m-0 mt-1">
+                  Registro canónico de hazañas, secretos y pruebas de maestría
+                </p>
+              </div>
+            </div>
+
+            @if (achievements().length > 0) {
+            <div class="flex align-items-center gap-2">
+              <span class="protocol-chip px-3 py-1 border-round-full font-title text-xs text-secondary font-bold">
+                {{ achievements().length }} Hazañas
+              </span>
+            </div>
+            }
+          </div>
+
+          <!-- Estado 1: Cargando -->
+          @if (loadingAchievements()) {
+          <div class="flex align-items-center justify-content-center gap-2 py-6">
+            <p-progress-spinner strokeWidth="3" animationDuration=".8s" styleClass="w-2rem h-2rem" />
+            <span class="text-xs text-muted font-title tracking-wider uppercase">Sincronizando hazañas de la base de datos...</span>
+          </div>
+          }
+
+          <!-- Estado 2: Tiene Logros -->
+          @else if (achievements().length > 0) {
+          <div class="pt-3">
+            <!-- Barra de Progreso y Desglose -->
+            <div class="achievements-telemetry-box p-3 border-round-xl mb-3">
+              <div class="flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="flex align-items-center gap-2">
+                  <span class="font-title text-sm font-bold text-color">Hazañas Disponibles</span>
+                  <span class="text-secondary font-title font-bold text-xs">({{ achievements().length }} registradas)</span>
+                  <span class="badge-mastery font-title font-bold text-xs px-2 py-0.5 border-round">Consenso Oficial</span>
+                </div>
+                <div class="flex align-items-center gap-1 text-xs text-muted font-title">
+                  <span class="material-symbols-outlined text-sm text-tertiary">token</span>
+                  <span class="text-color font-bold">Registro de Preservación Activo</span>
+                </div>
+              </div>
+
+              <!-- Barra Neón -->
+              <div class="achievements-progress-bar w-full border-round-full overflow-hidden">
+                <div class="achievements-progress-fill h-full border-round-full" style="width: 100%;"></div>
+              </div>
+
+              <!-- Filtros por Categoría -->
+              <div class="flex align-items-center gap-2 mt-3 pt-2 border-top-1 surface-border flex-wrap">
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="achievementFilter() === 'all'" (click)="setAchievementFilter('all')">
+                  Todos ({{ achievements().length }})
+                </button>
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="achievementFilter() === 'unlocked'" (click)="setAchievementFilter('unlocked')">
+                  Más Comunes / Accesibles
+                </button>
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="achievementFilter() === 'locked'" (click)="setAchievementFilter('locked')">
+                  Épicos & Ocultos
+                </button>
+              </div>
+            </div>
+
+            <!-- Grid de Tarjetas de Logros (2 Columnas responsive) -->
+            <div class="grid">
+              @for (ach of getFilteredAchievements(); track ach.id) {
+              <div class="col-12 sm:col-6">
+                <div class="achievement-card p-3 border-round-xl flex align-items-start gap-3 transition-all h-full">
+                  <!-- Thumbnail o Icono -->
+                  <div class="achievement-thumb-box flex-shrink-0 border-round-lg overflow-hidden relative">
+                    @if (ach.image) {
+                    <img [src]="ach.image" [alt]="ach.name" loading="lazy" (error)="onImageError($event)"
+                      class="w-full h-full object-cover" />
+                    } @else {
+                    <div class="w-full h-full flex align-items-center justify-content-center bg-surface-lowest">
+                      <span class="material-symbols-outlined text-xl text-tertiary">emoji_events</span>
+                    </div>
+                    }
+                  </div>
+
+                  <!-- Detalles del Logro -->
+                  <div class="flex-1 min-w-0 flex flex-column justify-content-between">
+                    <div>
+                      <div class="flex align-items-center justify-content-between gap-1 mb-1">
+                        <h4 class="font-title text-xs font-bold text-color m-0 truncate" [title]="ach.name">
+                          {{ ach.name }}
+                        </h4>
+                        @if (ach.percent) {
+                        <span class="badge-rarity font-title font-bold text-xs px-2 py-0.5 border-round"
+                          [style.color]="getRarityLabel(ach.percent).color"
+                          [style.background-color]="getRarityLabel(ach.percent).bg">
+                          {{ ach.percent }}%
+                        </span>
+                        }
+                      </div>
+                      <p class="font-body text-xs text-muted m-0 line-height-2 achievement-desc" [title]="ach.description">
+                        {{ ach.description || 'Hazaña canónica documentada para el archivo.' }}
+                      </p>
+                    </div>
+
+                    <!-- Pie de Tarjeta de Logro -->
+                    <div class="flex align-items-center justify-content-between mt-2 pt-1 border-top-1 surface-border" style="font-size: 10px;">
+                      <span class="font-title text-secondary flex align-items-center gap-1 font-bold">
+                        <span class="material-symbols-outlined text-xs">verified</span>
+                        <span>{{ getRarityLabel(ach.percent).label }}</span>
+                      </span>
+                      <span class="text-muted font-title">Sincronizado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Estado 3: Sin Logros Disponibles -->
+          @else {
+          <div class="no-achievements-box p-4 border-round-xl text-center my-2 flex flex-column align-items-center justify-content-center">
+            <div class="no-achieve-icon-wrapper flex align-items-center justify-content-center border-round-circle mb-2">
+              <span class="material-symbols-outlined text-3xl text-muted opacity-60">military_tech</span>
+            </div>
+            <h3 class="font-title text-sm font-bold text-color m-0 mb-1">
+              Sin Logros Canónicos Sincronizados
+            </h3>
+            <p class="text-xs text-muted font-body m-0 max-w-md line-height-3">
+              Este título no cuenta con un sistema de logros oficiales registrado en los proveedores de preservación. Puedes registrar tus propios hitos directamente en tu bitácora personal.
+            </p>
+          </div>
+          }
+        </section>
+
       </div>
 
       <!-- Right / Specs Column (4 Cols) -->
@@ -264,6 +410,105 @@
 
     </div>
   </div>
+
+  <!-- SAGA & FRANQUICIA / SECUELAS & EXPANSIONES -->
+  @if (loadingSeries() || seriesGames().length > 0 || dlcAdditions().length > 0) {
+  <section class="max-w-7xl mx-auto px-3 sm:px-4 pb-6">
+    <div class="card-bitacora p-4 border-round-xl">
+      <div class="flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div class="flex align-items-center gap-2">
+          <span class="terminal-dot"></span>
+          <span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+          <h2 class="font-title text-lg font-bold m-0 text-color">Saga, Secuelas & Franquicia</h2>
+        </div>
+        @if (seriesGames().length > 0) {
+        <span class="text-xs text-muted font-title">{{ seriesGames().length }} entregas registradas en la serie</span>
+        }
+      </div>
+
+      @if (loadingSeries()) {
+      <div class="flex align-items-center gap-2 py-4">
+        <p-progress-spinner strokeWidth="3" animationDuration=".8s" styleClass="w-2rem h-2rem" />
+        <span class="text-xs text-muted font-title tracking-wider uppercase">Rastreando cronología y entregas vinculadas...</span>
+      </div>
+      } @else if (seriesGames().length > 0) {
+      <div class="series-scroll-container">
+        <div class="series-cards-track">
+          @for (sg of seriesGames(); track sg.id) {
+          <a [routerLink]="['/game', sg.id]" class="series-game-card group" [title]="sg.name">
+            <div class="series-cover-wrapper">
+              @if (sg.background_image) {
+              <img [src]="sg.background_image" [alt]="sg.name" loading="lazy" (error)="onImageError($event)"
+                class="series-cover-img" />
+              } @else {
+              <div class="series-no-image flex flex-column align-items-center justify-content-center">
+                <span class="material-symbols-outlined text-2xl text-muted opacity-40">hide_image</span>
+              </div>
+              }
+              <div class="series-cover-gradient"></div>
+              @if (getGameScore(sg) > 0) {
+              <div class="series-score-badge font-title font-bold">
+                {{ getGameScore(sg) }}
+              </div>
+              }
+            </div>
+            <div class="series-card-info p-2">
+              <h4 class="series-card-title font-title font-bold m-0" [title]="sg.name">{{ sg.name }}</h4>
+              <div class="flex align-items-center justify-content-between mt-1 text-muted font-title" style="font-size: 10px;">
+                <span>{{ getYear(sg.released) }}</span>
+                @if (sg.platforms && sg.platforms[0]) {
+                <span class="truncate ml-1" style="max-width: 80px;">{{ sg.platforms[0].platform.name }}</span>
+                }
+              </div>
+            </div>
+          </a>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="text-xs text-muted font-title py-2">
+        No se han encontrado secuelas o precuelas adicionales registradas directamente para esta entrega.
+      </div>
+      }
+
+      <!-- DLCs & Expansiones si existen -->
+      @if (dlcAdditions().length > 0) {
+      <div class="mt-4 pt-3 border-top-1 surface-border">
+        <div class="flex align-items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-secondary text-base">extension</span>
+          <h3 class="font-title text-sm font-bold m-0 text-color">DLCs & Expansiones Oficiales ({{ dlcAdditions().length }})</h3>
+        </div>
+        <div class="series-scroll-container">
+          <div class="series-cards-track">
+            @for (dlc of dlcAdditions(); track dlc.id) {
+            <a [routerLink]="['/game', dlc.id]" class="series-game-card group" [title]="dlc.name">
+              <div class="series-cover-wrapper">
+                @if (dlc.background_image) {
+                <img [src]="dlc.background_image" [alt]="dlc.name" loading="lazy" (error)="onImageError($event)"
+                  class="series-cover-img" />
+                } @else {
+                <div class="series-no-image flex flex-column align-items-center justify-content-center">
+                  <span class="material-symbols-outlined text-2xl text-muted opacity-40">hide_image</span>
+                </div>
+                }
+                <div class="series-cover-gradient"></div>
+              </div>
+              <div class="series-card-info p-2">
+                <h4 class="series-card-title font-title font-bold m-0" [title]="dlc.name">{{ dlc.name }}</h4>
+                <div class="flex align-items-center justify-content-between mt-1 text-muted font-title" style="font-size: 10px;">
+                  <span>{{ getYear(dlc.released) }}</span>
+                  <span class="text-secondary font-bold">DLC</span>
+                </div>
+              </div>
+            </a>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+  }
 
   }
 

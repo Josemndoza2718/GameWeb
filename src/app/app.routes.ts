@@ -34,6 +34,12 @@ export const routes: Routes = [
     title: 'Comunidad - Game Web'
   },
   {
+    path: 'onboarding',
+    loadComponent: () =>
+      import('./pages/onboarding/onboarding').then((m) => m.OnboardingComponent),
+    title: 'Protocolo de Activación · QuestLog'
+  },
+  {
     path: 'tierlist/create',
     loadComponent: () =>
       import('./pages/tierlist-editor/tierlist-editor').then((m) => m.TierlistEditorComponent),

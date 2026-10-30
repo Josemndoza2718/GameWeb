@@ -127,14 +127,37 @@ export class AuthComponent {
           throw new Error('Debes aceptar los Términos del Manifiesto de Preservación.');
         }
 
-        await this.authService.signUp(this.email().trim(), this.password(), this.username().trim());
-        this.successMessage.set('¡Bóveda creada exitosamente! Revisa tu correo electrónico para confirmar tu credencial.');
+        const authData = await this.authService.signUp(this.email().trim(), this.password(), this.username().trim());
+        
+        // Si Supabase devuelve la sesión activa de inmediato (confirmación deshabilitada), ingresa directo al flujo de onboarding
+        if (authData.session) {
+          this.successMessage.set('¡Bóveda forjada con éxito! Iniciando secuencia de activación...');
+          // Redirigir de inmediato al onboarding para forjar su bóveda
+          this.router.navigate(['/onboarding']);
+        } else {
+          this.successMessage.set('¡Bóveda creada exitosamente! Accediendo a tu protocolo de iniciación...');
+          // En caso de que se haya creado sin sesión automática, iniciamos sesión programática
+          try {
+            await this.authService.signIn(this.email().trim(), this.password());
+            this.router.navigate(['/onboarding']);
+          } catch {
+            this.isRegister.set(false);
+          }
+        }
       } else {
         if (!this.email().trim() || !this.password()) {
           throw new Error('Por favor, ingresa tu identificador y contraseña maestra.');
         }
 
-        await this.authService.signIn(this.email().trim(), this.password());
+        const res = await this.authService.signIn(this.email().trim(), this.password());
+        const user = res.user;
+
+        // Si el usuario no ha completado el onboarding, llevarlo a /onboarding primero
+        if (user && !this.authService.hasCompletedOnboarding(user.id)) {
+          this.router.navigate(['/onboarding']);
+          return;
+        }
+
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/dashboard';
         this.router.navigateByUrl(returnUrl);
       }

@@ -37,8 +37,17 @@ export interface GameDetail extends Game {
     description_raw: string;
     website: string;
     metacritic: number;
+    achievements_count?: number;
     developers: { id: number; name: string }[];
     publishers: { id: number; name: string }[];
+}
+
+export interface GameAchievement {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    percent: string;
 }
 
 export interface GameScreenshot {

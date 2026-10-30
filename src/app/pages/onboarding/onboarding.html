@@ -1,0 +1,372 @@
+<p-toast></p-toast>
+
+<div class="onboarding-container min-h-screen flex flex-column justify-content-between p-3 sm:p-5 relative overflow-hidden">
+
+  <!-- Ambient Glows -->
+  <div class="ambient-glow glow-top-right"></div>
+  <div class="ambient-glow glow-bottom-left"></div>
+
+  <!-- 1. HEADER: BRANDING & STEPPER PROGRESS -->
+  <header class="max-w-5xl w-full mx-auto flex flex-column gap-3 z-2">
+    <div class="flex align-items-center justify-content-between flex-wrap gap-2">
+      <!-- Brand Logo -->
+      <div class="flex align-items-center gap-2">
+        <div class="brand-badge-icon flex align-items-center justify-content-center">
+          <span class="material-symbols-outlined text-primary text-xl">token</span>
+        </div>
+        <div>
+          <span class="font-title font-bold text-base text-color tracking-wider uppercase block">QuestLog</span>
+          <span class="text-xs text-muted font-title tracking-widest uppercase">Protocolo de Activación</span>
+        </div>
+      </div>
+
+      <!-- Live Protocol Badge -->
+      <div class="protocol-chip flex align-items-center gap-2 px-3 py-1 border-round-full font-title text-xs">
+        <span class="terminal-dot pulse-fast"></span>
+        <span class="text-secondary font-bold">TERMINAL RECON v3.8</span>
+      </div>
+    </div>
+
+    <!-- Stepper Indicator -->
+    <div class="stepper-card p-3 border-round-xl mt-2">
+      <div class="flex align-items-center justify-content-between mb-2">
+        <div class="flex align-items-center gap-2">
+          <span class="text-xs font-title uppercase tracking-widest text-muted">Secuencia de Iniciación</span>
+          <span class="step-counter font-title font-bold text-xs text-primary">PASO {{ currentStep() }} DE {{ totalSteps }}</span>
+        </div>
+        <span class="font-title text-xs font-bold text-tertiary">{{ stepProgressPercent() }}% CALIBRADO</span>
+      </div>
+
+      <!-- Progress Track -->
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" [style.width.%]="stepProgressPercent()"></div>
+      </div>
+
+      <!-- Step Labels -->
+      <div class="grid grid-nogutter mt-3 text-center">
+        <div class="col-4 step-label-item" [class.active]="currentStep() === 1" [class.completed]="currentStep() > 1">
+          <div class="flex align-items-center justify-content-center gap-1 font-title text-xs">
+            <span class="material-symbols-outlined text-sm">badge</span>
+            <span class="hidden sm:inline">1. Identidad & Rol</span>
+          </div>
+        </div>
+        <div class="col-4 step-label-item" [class.active]="currentStep() === 2" [class.completed]="currentStep() > 2">
+          <div class="flex align-items-center justify-content-center gap-1 font-title text-xs">
+            <span class="material-symbols-outlined text-sm">storage</span>
+            <span class="hidden sm:inline">2. Calibración Bóveda</span>
+          </div>
+        </div>
+        <div class="col-4 step-label-item" [class.active]="currentStep() === 3">
+          <div class="flex align-items-center justify-content-center gap-1 font-title text-xs">
+            <span class="material-symbols-outlined text-sm">hub</span>
+            <span class="hidden sm:inline">3. Ecosistemas & Firma</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. MAIN INTERACTIVE CONTENT AREA -->
+  <main class="max-w-5xl w-full mx-auto my-4 flex-1 flex flex-column justify-content-center z-2">
+
+    <!-- ========================================== -->
+    <!-- PASO 1: IDENTIDAD Y ARQUETIPO DEL ARCHIVISTA -->
+    <!-- ========================================== -->
+    @if (currentStep() === 1) {
+    <section class="step-pane-card p-4 sm:p-5 border-round-2xl">
+      <div class="step-header mb-4">
+        <div class="flex align-items-center gap-2 mb-1">
+          <span class="material-symbols-outlined text-primary text-2xl">shield_person</span>
+          <h1 class="font-title text-2xl sm:text-3xl font-bold m-0 text-color">Credencial de Archivista</h1>
+        </div>
+        <p class="text-sm text-muted m-0 line-height-3">
+          Forja tu reputación en la red de preservación interactiva. Define tu alias de custodio y elige tu arquetipo dialéctico.
+        </p>
+      </div>
+
+      <div class="grid">
+        <!-- Input Identidad -->
+        <div class="col-12 md:col-6 flex flex-column gap-3">
+          <div>
+            <label class="block font-title text-xs uppercase tracking-wider text-muted font-bold mb-1">
+              Nombre de Archivista (Alias Público)
+            </label>
+            <div class="input-with-icon relative">
+              <span class="material-symbols-outlined input-icon text-muted">alternate_email</span>
+              <input type="text" [(ngModel)]="displayName" placeholder="Ej. AlexVance" maxlength="28"
+                class="onboarding-input w-full p-3 pl-6 border-round-lg font-title" />
+            </div>
+            <span class="text-xs text-muted mt-1 block">Visible en debates del Ágora, clasificaciones y fichas públicas.</span>
+          </div>
+
+          <div>
+            <label class="block font-title text-xs uppercase tracking-wider text-muted font-bold mb-1">
+              Manifiesto Breve / Bio
+            </label>
+            <textarea [(ngModel)]="bioSnippet" rows="3" maxlength="140"
+              placeholder="¿Cuál es tu filosofía al catalogar o debatir videojuegos?"
+              class="onboarding-input w-full p-3 border-round-lg font-body text-sm"></textarea>
+            <span class="text-xs text-muted mt-1 flex justify-content-between">
+              <span>Máx. 140 caracteres</span>
+              <span>{{ bioSnippet().length }}/140</span>
+            </span>
+          </div>
+
+          <!-- Credential Preview Mini-Card -->
+          <div class="preview-mini-card p-3 border-round-xl border-1 surface-border flex align-items-center gap-3 mt-1">
+            <div class="preview-avatar flex align-items-center justify-content-center font-title font-bold text-xl text-primary">
+              {{ (displayName() ? displayName().charAt(0) : 'A') | uppercase }}
+            </div>
+            <div class="flex flex-column min-w-0">
+              <span class="font-title text-xs text-secondary font-bold uppercase tracking-wider">CREDENCIAL PRELIMINAR</span>
+              <span class="font-title text-base font-bold text-color truncate">
+                &#64;{{ displayName() || 'Archivista' }}
+              </span>
+              <span class="text-xs text-muted truncate">
+                Rango: {{ rolesList[0].title }} • Iniciado
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selector de Arquetipo Dialéctico -->
+        <div class="col-12 md:col-6 flex flex-column gap-2">
+          <label class="block font-title text-xs uppercase tracking-wider text-muted font-bold mb-1">
+            Selecciona tu Arquetipo en la Comunidad
+          </label>
+
+          @for (role of rolesList; track role.id) {
+          <div class="role-selector-card p-3 border-round-xl cursor-pointer transition-all"
+            [class.selected]="selectedRole() === role.id"
+            (click)="selectRole(role.id)">
+            <div class="flex align-items-start gap-3">
+              <div class="role-icon-box flex align-items-center justify-content-center border-round-lg"
+                [style.color]="role.accent">
+                <span class="material-symbols-outlined text-2xl">{{ role.icon }}</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex align-items-center justify-content-between">
+                  <h3 class="font-title text-sm font-bold m-0 text-color">{{ role.title }}</h3>
+                  @if (selectedRole() === role.id) {
+                  <span class="material-symbols-outlined text-primary text-base">check_circle</span>
+                  }
+                </div>
+                <span class="text-xs text-secondary font-semibold font-title block mb-1">{{ role.tagline }}</span>
+                <p class="text-xs text-muted m-0 line-height-2">{{ role.description }}</p>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </section>
+    }
+
+    <!-- ========================================== -->
+    <!-- PASO 2: CALIBRACIÓN DEL BACKLOG INICIAL -->
+    <!-- ========================================== -->
+    @if (currentStep() === 2) {
+    <section class="step-pane-card p-4 sm:p-5 border-round-2xl">
+      <div class="step-header mb-4">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-2xl">stacks</span>
+            <h1 class="font-title text-2xl sm:text-3xl font-bold m-0 text-color">Calibración de Bóveda & Backlog</h1>
+          </div>
+          <div class="badge-selection-count font-title text-xs px-3 py-1 border-round-full"
+            [class.completed]="selectedGames().length >= 1">
+            <span>{{ selectedGames().length }} / {{ maxSelectedGames }} TÍTULOS SELECCIONADOS</span>
+          </div>
+        </div>
+        <p class="text-sm text-muted m-0 line-height-3">
+          Elige hasta 5 videojuegos que definan tu gusto o que tengas en tu lista prioritaria. Servirán para inicializar tu bitácora y afinar las recomendaciones de la comunidad.
+        </p>
+      </div>
+
+      <!-- Buscador Predictivo RAWG -->
+      <div class="search-backlog-box mb-3">
+        <div class="input-with-icon relative">
+          <span class="material-symbols-outlined input-icon text-muted">search</span>
+          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)"
+            placeholder="Buscar por título (ej. Chrono Trigger, Bloodborne, Metal Gear, Halo)..."
+            class="onboarding-input w-full p-3 pl-6 border-round-lg font-title" />
+          @if (searchingGames()) {
+          <div class="search-spinner-pos">
+            <p-progress-spinner strokeWidth="3" animationDuration=".8s" styleClass="w-1rem h-1rem" />
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Selected Chips Ribbon -->
+      @if (selectedGames().length > 0) {
+      <div class="selected-ribbon mb-4 p-2 border-round-lg flex align-items-center gap-2 overflow-x-auto">
+        <span class="text-xs text-muted font-title uppercase font-bold pl-1 flex-shrink-0">En tu Bóveda:</span>
+        @for (sg of selectedGames(); track sg.id) {
+        <div class="selected-game-chip flex align-items-center gap-2 px-2 py-1 border-round-full flex-shrink-0">
+          <span class="font-title text-xs font-bold text-color truncate" style="max-width: 140px;">{{ sg.name }}</span>
+          <button type="button" class="btn-remove-chip border-none cursor-pointer flex align-items-center"
+            (click)="removeSelectedGame(sg.id)" title="Quitar">
+            <span class="material-symbols-outlined text-xs">close</span>
+          </button>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Grid de Sugerencias / Resultados -->
+      <div class="games-picker-grid">
+        @for (game of suggestedGames(); track game.id) {
+        <div class="game-picker-card border-round-xl overflow-hidden cursor-pointer transition-all relative"
+          [class.selected]="isGameSelected(game.id)"
+          (click)="toggleGameSelection(game)">
+          <!-- Cover -->
+          <div class="game-picker-thumb relative">
+            @if (game.background_image) {
+            <img [src]="game.background_image" [alt]="game.name" loading="lazy" (error)="onImageError($event)"
+              class="w-full h-full object-cover" />
+            } @else {
+            <div class="w-full h-full flex align-items-center justify-content-center bg-surface-lowest">
+              <span class="material-symbols-outlined text-muted text-xl opacity-40">hide_image</span>
+            </div>
+            }
+            <div class="game-picker-scrim"></div>
+
+            <!-- Selection Check Indicator -->
+            <div class="game-select-indicator flex align-items-center justify-content-center border-round-circle">
+              <span class="material-symbols-outlined text-sm font-bold">
+                {{ isGameSelected(game.id) ? 'check' : 'add' }}
+              </span>
+            </div>
+
+            <!-- Score Badge -->
+            @if (game.metacritic) {
+            <div class="picker-score font-title font-bold text-xs">{{ game.metacritic }}</div>
+            }
+          </div>
+
+          <!-- Title & Year -->
+          <div class="game-picker-info p-2 flex flex-column justify-content-between">
+            <h4 class="font-title text-xs font-bold text-color m-0 truncate" [title]="game.name">{{ game.name }}</h4>
+            <span class="text-muted font-title mt-1" style="font-size: 10px;">
+              {{ game.released ? game.released.substring(0, 4) : 'N/A' }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- ========================================== -->
+    <!-- PASO 3: ECOSISTEMAS & ACTIVACIÓN FINAL -->
+    <!-- ========================================== -->
+    @if (currentStep() === 3) {
+    <section class="step-pane-card p-4 sm:p-5 border-round-2xl">
+      <div class="step-header mb-4">
+        <div class="flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+          <div class="flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary text-2xl">hub</span>
+            <h1 class="font-title text-2xl sm:text-3xl font-bold m-0 text-color">Sincronización de Ecosistemas</h1>
+          </div>
+          <span class="protocol-chip px-3 py-1 border-round-full font-title text-xs text-secondary font-bold">
+            {{ connectedEcosystemsCount() }} ACTIVAS
+          </span>
+        </div>
+        <p class="text-sm text-muted m-0 line-height-3">
+          Conecta tus cuentas y plataformas para importar telemetría de logros, sincronizar estados y consolidar una bitácora omnicanal. Puedes cambiar esto en cualquier momento desde tu perfil.
+        </p>
+      </div>
+
+      <!-- Grid de Ecosistemas -->
+      <div class="grid mb-4">
+        @for (eco of ecosystems(); track eco.id) {
+        <div class="col-12 sm:col-6">
+          <div class="ecosystem-card p-3 border-round-xl border-1 flex align-items-center justify-content-between transition-all"
+            [class.connected]="eco.connected">
+            <div class="flex align-items-center gap-3">
+              <div class="eco-icon-wrapper flex align-items-center justify-content-center border-round-lg"
+                [style.background-color]="eco.color + '22'" [style.color]="eco.color">
+                <span class="material-symbols-outlined text-2xl">{{ eco.icon }}</span>
+              </div>
+              <div>
+                <div class="flex align-items-center gap-2">
+                  <h3 class="font-title text-sm font-bold text-color m-0">{{ eco.name }}</h3>
+                  <span class="eco-badge font-title font-semibold" style="font-size: 9px;">{{ eco.badge }}</span>
+                </div>
+                <span class="text-xs text-muted block">{{ eco.category }}</span>
+                @if (eco.connected && eco.accountHandle) {
+                <span class="text-xs text-secondary font-title font-bold mt-1 block">
+                  Enlazado como &#64;{{ eco.accountHandle }}
+                </span>
+                }
+              </div>
+            </div>
+
+            <!-- Action Button / Toggle -->
+            <button type="button" (click)="toggleEcosystem(eco.id)"
+              class="btn-eco-toggle px-3 py-2 border-round-lg font-title text-xs font-bold cursor-pointer transition-all border-none"
+              [class.active]="eco.connected">
+              {{ eco.connected ? 'Desvincular' : 'Conectar' }}
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Resumen Final de Activación -->
+      <div class="activation-summary-box p-4 border-round-xl border-1 surface-border">
+        <div class="flex align-items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+          <h3 class="font-title text-sm font-bold text-color m-0">Compromiso del Archivista de QuestLog</h3>
+        </div>
+        <p class="text-xs text-muted m-0 line-height-3 mb-3">
+          Al completar este protocolo, te comprometes a preservar la memoria interactiva, catalogar con rigor y participar dialécticamente con respeto en los duelos argumentales del Ágora.
+        </p>
+        <div class="flex align-items-center justify-content-between flex-wrap gap-2 text-xs font-title">
+          <span class="text-muted">Custodio: <strong class="text-color">&#64;{{ displayName() || 'Archivista' }}</strong></span>
+          <span class="text-muted">Colección Base: <strong class="text-secondary">{{ selectedGames().length }} obras</strong></span>
+          <span class="text-muted">Rango Inicial: <strong class="text-tertiary">LV. 1 Archivista Novicio</strong></span>
+        </div>
+      </div>
+    </section>
+    }
+
+  </main>
+
+  <!-- 3. FOOTER: NAVIGATION CONTROLS -->
+  <footer class="max-w-5xl w-full mx-auto flex align-items-center justify-content-between pt-3 border-top-1 surface-border z-2">
+    <div>
+      @if (currentStep() > 1) {
+      <button type="button" (click)="goToPreviousStep()"
+        class="btn-onboarding-back flex align-items-center gap-1 px-4 py-2 border-round-lg font-title text-xs font-bold cursor-pointer border-none">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        <span>Paso Anterior</span>
+      </button>
+      }
+    </div>
+
+    <div class="flex align-items-center gap-3">
+      @if (currentStep() < totalSteps) {
+      <button type="button" (click)="goToNextStep()"
+        class="btn-onboarding-next flex align-items-center gap-2 px-5 py-3 border-round-lg font-title text-xs font-bold cursor-pointer border-none shadow-4">
+        <span>Continuar Protocolo</span>
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+      } @else {
+      <button type="button" (click)="finishOnboarding()" [disabled]="saving()"
+        class="btn-onboarding-finish flex align-items-center gap-2 px-5 py-3 border-round-lg font-title text-xs font-bold cursor-pointer border-none shadow-5">
+        @if (saving()) {
+        <p-progress-spinner strokeWidth="3" animationDuration=".8s" styleClass="w-1rem h-1rem" />
+        <span>Activando Bóveda...</span>
+        } @else {
+        <span class="material-symbols-outlined text-base">rocket_launch</span>
+        <span>Forjar Mi Bóveda & Entrar al Archivo</span>
+        }
+      </button>
+      }
+    </div>
+  </footer>
+
+</div>
+

@@ -31,6 +31,24 @@ export class AuthService {
   }
 
   /**
+   * Indica si el usuario recién completó o tiene pendiente su onboarding
+   */
+  hasCompletedOnboarding(userId?: string): boolean {
+    if (typeof window === 'undefined') return true;
+    const id = userId || this.currentUser()?.id;
+    if (!id) return false;
+    return localStorage.getItem(`questlog_onboarded_${id}`) === 'true';
+  }
+
+  setOnboardingCompleted(userId?: string): void {
+    if (typeof window === 'undefined') return;
+    const id = userId || this.currentUser()?.id;
+    if (id) {
+      localStorage.setItem(`questlog_onboarded_${id}`, 'true');
+    }
+  }
+
+  /**
    * Garantiza que la sesión se haya evaluado antes de responder (evita redirecciones erróneas en recargas)
    */
   async ensureAuthenticated(): Promise<boolean> {
