@@ -292,8 +292,6 @@ export class OnboardingComponent implements OnInit {
     try {
       // 1. Guardar o actualizar perfil básico si hay usuario autenticado
       if (user) {
-        this.authService.setOnboardingCompleted(user.id);
-
         await this.profileService.updateProfile(user.id, {
           username: this.displayName().trim(),
           bio: `[${this.rolesList.find(r => r.id === this.selectedRole())?.title}] ${this.bioSnippet().trim()}`
@@ -308,6 +306,9 @@ export class OnboardingComponent implements OnInit {
             status: 'plan_to_play'
           });
         }
+
+        // 3. Marcar el onboarding como completado solo cuando todo lo anterior se guardó
+        await this.authService.setOnboardingCompleted(user.id);
       }
 
       this.messageService.add({
@@ -323,6 +324,9 @@ export class OnboardingComponent implements OnInit {
 
     } catch (error: unknown) {
       console.error('Error al guardar onboarding:', error);
+      // El servidor no lo registró: se marca solo en este navegador para no bloquear al usuario.
+      // En otro dispositivo se le volverá a ofrecer el onboarding.
+      if (user) this.authService.markOnboardingCompletedLocally(user.id);
       this.messageService.add({
         severity: 'warn',
         summary: 'Activación en Modo Local',

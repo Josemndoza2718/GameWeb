@@ -83,7 +83,8 @@ Este documento recopila el contexto general, las decisiones arquitectónicas, la
 - **Diseño Split-Screen Asimétrico**: Panel izquierdo con branding de la Bóveda QuestLog y panel derecho con formularios de alta fidelidad.
 - **Modo Login**: Entrada con correo/usuario, contraseña con toggle de visibilidad y acceso con proveedores externos. Al iniciar sesión, verifica `hasCompletedOnboarding(userId)` y redirige a `/onboarding` si corresponde, o a `/dashboard` si ya completó el proceso.
 - **Modo Registro**: Handle único de archivista con slug dinámico, medidor de seguridad de contraseña de 4 niveles, selector de plataformas preferidas (chips seleccionables) y aceptación de protocolo. Tras un registro exitoso con sesión activa, redirige automáticamente a `/onboarding`.
-- **Flag de Onboarding**: `AuthService` expone `hasCompletedOnboarding(userId)` y `setOnboardingCompleted(userId)`. El estado se persiste en `localStorage` bajo la clave `questlog_onboarded_{userId}`.
+- **Flag de Onboarding**: `AuthService` expone `hasCompletedOnboarding(userId)` y `setOnboardingCompleted(userId)` (asíncronos). La fuente de verdad es la columna `profiles.onboarding_completed_at` en Supabase (migración en `supabase/migrations/`); `localStorage` (`questlog_onboarded_{userId}`) solo actúa como caché.
+- **OAuth (Google / Discord)**: Al volver del proveedor se redirige a `/onboarding`, donde `onboardingGuard` envía al dashboard a los usuarios ya activados.
 
 ### 3.6 Perfil de Usuario & Configuración Modular (`/profile`)
 - **Cabecera de Identidad**: Avatar con gradiente, insignia de rango (ej. *Archivista Rango Maestro LV. 46*), botón de compartir ficha y estadísticas globales.
@@ -109,8 +110,8 @@ Este documento recopila el contexto general, las decisiones arquitectónicas, la
   1. *Identidad & Arquetipo*: Alias público, previsualización en vivo de credencial, biografía y selección de rol (*Curador de Bóveda*, *Hereje Dialéctico*, *Custodio del 100%*).
   2. *Calibración de Bóveda*: Buscador predictivo conectado a RAWG para seleccionar hasta 5 títulos que definan el gusto inicial del usuario.
   3. *Ecosistemas & Activación*: Sincronización omnicanal (Steam, PlayStation, Nintendo, Xbox), confirmación del compromiso de preservación y persistencia directa en Supabase (`profiles` y `user_games`).
-- **Persistencia de estado**: Al finalizar el paso 3, `AuthService.setOnboardingCompleted(userId)` guarda la clave `questlog_onboarded_{userId}` en `localStorage` y redirige a `/dashboard`.
-- **Flujo de acceso**: La ruta `/onboarding` está protegida por `authGuard`. Solo usuarios autenticados que no hayan completado el onboarding llegan a esta pantalla.
+- **Persistencia de estado**: Al finalizar el paso 3, y solo después de guardar perfil y juegos, `AuthService.setOnboardingCompleted(userId)` registra `onboarding_completed_at` en Supabase y la caché local, y redirige a `/dashboard`. Si el servidor falla, se marca solo en el navegador actual (modo local).
+- **Flujo de acceso**: La ruta `/onboarding` está protegida por `onboardingGuard` (renderizado solo en cliente): sin sesión redirige a `/auth` y con onboarding completado redirige a `/dashboard`.
 
 ---
 

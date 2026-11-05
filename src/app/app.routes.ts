@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './guards';
+import { authGuard, guestGuard, onboardingGuard } from './guards';
 
 export const routes: Routes = [
   {
@@ -35,6 +35,7 @@ export const routes: Routes = [
   },
   {
     path: 'onboarding',
+    canActivate: [onboardingGuard],
     loadComponent: () =>
       import('./pages/onboarding/onboarding').then((m) => m.OnboardingComponent),
     title: 'Protocolo de Activación · QuestLog'

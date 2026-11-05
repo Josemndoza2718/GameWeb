@@ -8,6 +8,7 @@ export interface UserProfileData {
   avatar_url: string | null;
   bio: string | null;
   created_at: string;
+  onboarding_completed_at?: string | null;
 }
 
 export interface UserProfileStats {

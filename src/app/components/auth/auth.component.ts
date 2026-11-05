@@ -153,7 +153,7 @@ export class AuthComponent {
         const user = res.user;
 
         // Si el usuario no ha completado el onboarding, llevarlo a /onboarding primero
-        if (user && !this.authService.hasCompletedOnboarding(user.id)) {
+        if (user && !(await this.authService.hasCompletedOnboarding(user.id))) {
           this.router.navigate(['/onboarding']);
           return;
         }

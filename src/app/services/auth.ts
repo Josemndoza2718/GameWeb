@@ -31,20 +31,77 @@ export class AuthService {
   }
 
   /**
-   * Indica si el usuario recién completó o tiene pendiente su onboarding
+   * Indica si el usuario ya completó su onboarding.
+   * La fuente de verdad es `profiles.onboarding_completed_at` en Supabase;
+   * localStorage solo actúa como caché para evitar consultas repetidas.
    */
-  hasCompletedOnboarding(userId?: string): boolean {
+  async hasCompletedOnboarding(userId?: string): Promise<boolean> {
     if (typeof window === 'undefined') return true;
     const id = userId || this.currentUser()?.id;
     if (!id) return false;
-    return localStorage.getItem(`questlog_onboarded_${id}`) === 'true';
+
+    if (this.readOnboardingCache(id)) return true;
+
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('onboarding_completed_at')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('No se pudo verificar el estado de onboarding:', error);
+      return false;
+    }
+
+    const completed = !!data?.onboarding_completed_at;
+    if (completed) this.writeOnboardingCache(id);
+    return completed;
   }
 
-  setOnboardingCompleted(userId?: string): void {
-    if (typeof window === 'undefined') return;
+  /**
+   * Marca el onboarding como completado en Supabase y en la caché local.
+   * Lanza error si no se pudo persistir en el servidor.
+   */
+  async setOnboardingCompleted(userId?: string): Promise<void> {
     const id = userId || this.currentUser()?.id;
-    if (id) {
-      localStorage.setItem(`questlog_onboarded_${id}`, 'true');
+    if (!id) return;
+
+    const { error } = await this.supabase
+      .from('profiles')
+      .update({ onboarding_completed_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw error;
+    this.writeOnboardingCache(id);
+  }
+
+  /**
+   * Marca el onboarding como completado solo en este navegador
+   * (modo local cuando el servidor no está disponible).
+   */
+  markOnboardingCompletedLocally(userId?: string): void {
+    const id = userId || this.currentUser()?.id;
+    if (id) this.writeOnboardingCache(id);
+  }
+
+  private onboardingCacheKey(userId: string): string {
+    return `questlog_onboarded_${userId}`;
+  }
+
+  private readOnboardingCache(userId: string): boolean {
+    try {
+      return localStorage.getItem(this.onboardingCacheKey(userId)) === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  private writeOnboardingCache(userId: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(this.onboardingCacheKey(userId), 'true');
+    } catch {
+      // Almacenamiento no disponible (modo privado, cuota llena): se ignora.
     }
   }
 
@@ -87,7 +144,9 @@ export class AuthService {
     const { data, error } = await this.supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: window.location.origin
+        // Al volver del proveedor, onboardingGuard decide si mostrar el onboarding
+        // (usuario nuevo) o redirigir al dashboard (usuario ya activado).
+        redirectTo: `${window.location.origin}/onboarding`
       }
     });
     if (error) throw error;

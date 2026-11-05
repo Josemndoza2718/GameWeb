@@ -38,7 +38,7 @@ Este documento define la hoja de ruta técnica completa, el estado de cada fase 
 - Implementación de pantalla dividida con panel de marca ("Forja de Archivistas") a la izquierda y formularios a la derecha.
 - **Login**: Validación reactiva, alternador de visibilidad de contraseña y proveedores OAuth. Al autenticar, verifica `hasCompletedOnboarding(userId)` y redirige a `/onboarding` o `/dashboard` según corresponda.
 - **Registro**: Generación de handle público único, cálculo en vivo de robustez de contraseña, selección interactiva de plataformas favoritas (chips) y creación de perfil en Supabase. Tras un registro exitoso con sesión activa, redirige automáticamente a `/onboarding`.
-- **Flag de Onboarding**: `AuthService.hasCompletedOnboarding(userId)` / `setOnboardingCompleted(userId)` usando clave `questlog_onboarded_{userId}` en `localStorage`.
+- **Flag de Onboarding**: `AuthService.hasCompletedOnboarding(userId)` / `setOnboardingCompleted(userId)` persistido en `profiles.onboarding_completed_at` (Supabase), con caché `questlog_onboarded_{userId}` en `localStorage`. `onboardingGuard` protege `/onboarding` y el retorno OAuth pasa por esa ruta.
 
 ### Fase 8: Perfil de Usuario Modular (`/profile`)
 - Encabezado con banner heroico, avatar personalizable, medalla de nivel XP y resumen numérico.
@@ -66,7 +66,7 @@ Este documento define la hoja de ruta técnica completa, el estado de cada fase 
 - **Paso 1 (Identidad)**: Alias público `@username`, previsualización de credencial de archivista, biografía/manifiesto y selector de arquetipo dialéctico (*Curador de Bóveda*, *Hereje Dialéctico*, *Custodio del 100%*).
 - **Paso 2 (Backlog & Calibración)**: Buscador predictivo RAWG en tiempo real, selector de hasta 5 obras clave para la bóveda inicial con tarjetas y chips interactivos.
 - **Paso 3 (Ecosistemas & Activación)**: Sincronización simulada con Steam, PlayStation, Nintendo y Xbox, compromiso del archivista y guardado automático en Supabase (`profiles` y `user_games`). Redirección fluida al Dashboard.
-- **Persistencia**: Al completar el paso 3, se llama a `AuthService.setOnboardingCompleted(userId)` → clave `questlog_onboarded_{userId}` en `localStorage`.
+- **Persistencia**: Al completar el paso 3 (tras guardar perfil y juegos), se llama a `AuthService.setOnboardingCompleted(userId)` → `profiles.onboarding_completed_at` en Supabase + caché en `localStorage`.
 
 ### Fase 13: Logros & Trofeos Canónicos (`/game/:id`)
 - Extensión de la **Ficha Detallada** para mostrar los logros oficiales del juego consumidos desde `GET /games/{id}/achievements`.

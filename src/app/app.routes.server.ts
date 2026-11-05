@@ -18,6 +18,12 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client
   },
   {
+    // Depende de la sesión del navegador: el guard debe evaluarse en el cliente
+    // (también procesa el retorno de los proveedores OAuth).
+    path: 'onboarding',
+    renderMode: RenderMode.Client
+  },
+  {
     path: '**',
     renderMode: RenderMode.Prerender
   }
