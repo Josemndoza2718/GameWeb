@@ -188,6 +188,18 @@
   <!-- 2. LIBRARY TABS & GAMES COLLECTION -->
   <section class="max-w-7xl mx-auto px-3 sm:px-4 py-5">
 
+    <!-- Spin Wheel trigger -->
+    <div class="flex align-items-center justify-content-between mb-3">
+      <h2 class="font-title text-xl font-bold m-0 text-color">Mi Bitácora</h2>
+      <button type="button" (click)="openWheelModal()"
+        class="btn-wheel-trigger flex align-items-center gap-2 px-3 py-2 border-round-lg font-title font-bold text-sm cursor-pointer"
+        [disabled]="library().length < 2"
+        title="Rueda de la Fortuna — elige un juego al azar">
+        <span class="material-symbols-outlined text-lg">casino</span>
+        <span class="hidden sm:inline">Rueda de la Fortuna</span>
+      </button>
+    </div>
+
     @if (loading()) {
     <div class="flex flex-column align-items-center justify-content-center py-8 gap-3">
       <p-progress-spinner strokeWidth="3" fill="transparent" animationDuration=".8s" ariaLabel="Cargando biblioteca" />
@@ -245,9 +257,11 @@
       <div class="grid library-grid">
         @for (game of gamesList; track game.game_id) {
         <div class="col-12 sm:col-6 md:col-4 lg:col-3">
-          <div class="library-card flex flex-column h-full border-round-xl overflow-hidden relative cursor-pointer"
-               [routerLink]="['/game', game.game_id]"
-               [title]="'Ver ficha de ' + game.game_title">
+          <div class="library-card flex flex-column h-full border-round-xl overflow-hidden relative cursor-pointer">
+            <a [routerLink]="['/game', game.game_id]"
+               class="card-stretched-link"
+               [attr.aria-label]="'Ver ficha de ' + game.game_title"
+               [title]="'Ver ficha de ' + game.game_title"></a>
 
             <!-- Game Cover with Aspect Ratio -->
             <div class="lib-cover-wrapper relative w-full overflow-hidden">
@@ -271,14 +285,11 @@
             <!-- Card Body -->
             <div class="p-3 flex-1 flex flex-column justify-content-between">
               <div>
-                <h3 class="font-title text-base font-bold m-0 mb-3 truncate" [title]="game.game_title">
-                  <a [routerLink]="['/game', game.game_id]" (click)="$event.stopPropagation()"
-                     class="no-underline text-color hover:text-primary transition-colors">
-                    {{ game.game_title }}
-                  </a>
+                <h3 class="font-title text-base font-bold m-0 mb-3 truncate text-color" [title]="game.game_title">
+                  {{ game.game_title }}
                 </h3>
 
-                <div class="flex flex-column gap-3" (click)="$event.stopPropagation()">
+                <div class="flex flex-column gap-3 relative" style="z-index: 2;">
                   <!-- Dropdown de estado -->
                   <div class="flex flex-column gap-1">
                     <small class="text-muted font-title uppercase font-semibold" style="font-size: 10px;">
@@ -307,8 +318,8 @@
               </div>
 
               <!-- Card Footer Actions -->
-              <div class="flex align-items-center justify-content-between mt-3 pt-2 border-top-1 surface-border">
-                <a [routerLink]="['/game', game.game_id]" (click)="$event.stopPropagation()"
+              <div class="flex align-items-center justify-content-between mt-3 pt-2 border-top-1 surface-border relative" style="z-index: 2;">
+                <a [routerLink]="['/game', game.game_id]"
                   class="link-details flex align-items-center gap-1 font-title font-semibold text-xs no-underline">
                   <span class="material-symbols-outlined text-sm">visibility</span>
                   <span>Ver Ficha</span>
@@ -398,6 +409,303 @@
         <div class="text-xs text-muted font-title mt-2 pt-2 border-top-1 surface-border" style="font-size: 10px;">
           Cada nivel requiere 1,000 XP. ¡Sigue completando tu catálogo para alcanzar el rango de <strong>Archivist
             Prime</strong>!
+        </div>
+      </div>
+
+    </div>
+  </div>
+  }
+
+  <!-- 4. SPIN WHEEL MODAL (Stitch: Ruleta Aleatoria de Biblioteca) -->
+  @if (showWheelModal()) {
+  <div class="wheel-modal-backdrop fixed flex align-items-center justify-content-center p-2 sm:p-4 overflow-y-auto"
+    (click)="closeWheelModal()" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1100;">
+
+    <!-- Ambient Accent Orbs -->
+    <div class="wheel-orb-primary" aria-hidden="true"></div>
+    <div class="wheel-orb-secondary" aria-hidden="true"></div>
+
+    <div class="wheel-modal-card w-full border-round-xl flex flex-column overflow-hidden relative my-auto shadow-8"
+      (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="wheelModalTitle">
+
+      <!-- Top Decorative Scanning Beam Line -->
+      <div class="wheel-scan-beam w-full"></div>
+
+      <!-- Header Section -->
+      <div class="wheel-modal-header px-3 sm:px-4 pt-3 pb-3 flex align-items-start justify-content-between gap-3">
+        <div class="flex flex-column gap-1">
+          <div class="flex align-items-center gap-2 flex-wrap">
+            <span class="wheel-protocol-pill inline-flex align-items-center gap-2 px-2 py-1 border-round-3xl font-title text-xs uppercase font-bold">
+              <span class="wheel-pulse-dot"></span>
+              Aleatorizador v2.4 • Generador de Entropía
+            </span>
+            <span class="font-title text-xs text-muted hidden sm:inline" style="letter-spacing: 0.06em;">
+              PROTOCOLO // ORÁCULO CANÓNICO
+            </span>
+          </div>
+          <h3 id="wheelModalTitle" class="font-title text-xl sm:text-2xl font-bold m-0 text-color">
+            Ruleta de Destino Canónico <span class="text-primary font-mono text-base">#BÓVEDA</span>
+          </h3>
+          <p class="text-xs sm:text-sm text-muted m-0 line-height-2">
+            Deja que el azar cuántico decida cuál será tu próxima aventura según tu biblioteca y filtros de catalogación.
+          </p>
+        </div>
+
+        <!-- Close Button & ESC indicator -->
+        <button type="button" (click)="closeWheelModal()"
+          aria-label="Cerrar modal"
+          class="btn-wheel-close flex align-items-center gap-2 px-3 py-2 border-round-lg border-none cursor-pointer flex-shrink-0">
+          <span class="font-title text-xs text-muted uppercase hidden sm:inline">ESC</span>
+          <span class="material-symbols-outlined text-lg wheel-close-icon">close</span>
+        </button>
+      </div>
+
+      <!-- Filters & Category Strip -->
+      <div class="wheel-filters-bar px-3 sm:px-4 py-3 flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="flex align-items-center gap-2 overflow-x-auto pb-1">
+          @for (opt of wheelFilterOptions; track opt.v) {
+            <button type="button" (click)="setWheelFilter(opt.v)"
+              [class.wheel-filter-active]="wheelFilter() === opt.v"
+              class="wheel-filter-btn px-3 py-2 border-round-lg font-title text-xs font-semibold border-none cursor-pointer flex align-items-center gap-1 white-space-nowrap">
+              @if (wheelFilter() === opt.v) {
+                <span class="material-symbols-outlined text-sm">bolt</span>
+              }
+              <span>{{ opt.l }} ({{ getWheelFilterCount(opt.v) }})</span>
+            </button>
+          }
+        </div>
+
+        <button type="button" (click)="toggleSfx()"
+          [class.wheel-sfx-active]="sfxEnabled()"
+          class="wheel-sfx-btn flex align-items-center gap-1 px-2 py-1 border-round font-title text-xs border-none cursor-pointer flex-shrink-0"
+          [attr.aria-label]="sfxEnabled() ? 'Desactivar sonido' : 'Activar sonido'">
+          <span class="material-symbols-outlined text-base">{{ sfxEnabled() ? 'volume_up' : 'volume_off' }}</span>
+          <span>{{ sfxEnabled() ? 'SFX ON' : 'SFX OFF' }}</span>
+        </button>
+      </div>
+
+      <!-- MAIN CONTENT SPLIT: Wheel & Spotlight Card -->
+      <div class="p-3 sm:p-4 grid m-0 align-items-stretch overflow-y-auto">
+
+        <!-- LEFT COLUMN: Neon Orbit Roulette (5 Cols) -->
+        <div class="col-12 lg:col-5 p-0 lg:pr-3 mb-3 lg:mb-0 flex">
+          <div class="wheel-orbit-panel w-full border-round-xl p-3 sm:p-4 flex flex-column align-items-center justify-content-center relative overflow-hidden">
+
+            <!-- Background Radial Grid Visualizer -->
+            <svg class="wheel-radial-grid" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <radialGradient id="matrixGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#a078ff" stop-opacity="0.28"></stop>
+                  <stop offset="100%" stop-color="#080b10" stop-opacity="0"></stop>
+                </radialGradient>
+              </defs>
+              <rect fill="url(#matrixGlow)" width="400" height="400"></rect>
+              <circle cx="200" cy="200" r="90" fill="none" stroke="rgba(160,120,255,0.22)" stroke-width="1"></circle>
+              <circle cx="200" cy="200" r="140" fill="none" stroke="rgba(76,215,246,0.22)" stroke-width="1" stroke-dasharray="4 8"></circle>
+              <circle cx="200" cy="200" r="188" fill="none" stroke="rgba(149,142,160,0.16)" stroke-width="1"></circle>
+            </svg>
+
+            <!-- Top Glowing Needle Pointer -->
+            <div class="wheel-needle-wrapper flex flex-column align-items-center relative" aria-hidden="true">
+              <div class="wheel-needle-diamond"></div>
+              <div class="wheel-needle-stem"></div>
+            </div>
+
+            <!-- Wheel Canvas + Centered Kinetic Spin Button -->
+            <div class="wheel-canvas-shell relative flex align-items-center justify-content-center my-2">
+              <canvas #wheelCanvas width="310" height="310" class="wheel-canvas border-round-circle"></canvas>
+
+              <button type="button" (click)="spinWheel()"
+                [disabled]="wheelSpinning() || wheelGames().length < 2"
+                class="wheel-center-spin-btn border-round-circle p-1 cursor-pointer"
+                aria-label="Girar ruleta">
+                <span class="wheel-center-spin-inner border-round-circle flex flex-column align-items-center justify-content-center text-center">
+                  <span class="material-symbols-outlined text-2xl wheel-spin-icon"
+                    [class.wheel-spin-icon-active]="wheelSpinning()">casino</span>
+                  <span class="font-title font-bold text-xs tracking-wider mt-1">
+                    {{ wheelSpinning() ? 'GIRANDO' : 'GIRAR' }}
+                  </span>
+                  <span class="font-title text-xs opacity-80" style="font-size: 9px;">[ESPACIO]</span>
+                </span>
+              </button>
+            </div>
+
+            <!-- Micro Status beneath the wheel -->
+            <div class="mt-2 flex align-items-center justify-content-between w-full px-1 font-title text-xs text-muted relative" style="z-index: 2;">
+              <span class="flex align-items-center gap-2">
+                <span class="wheel-count-dot"></span>
+                <span>{{ wheelGames().length }} títulos en órbita</span>
+                @if (getWheelFilterCount(wheelFilter()) > 20) {
+                  <span class="text-secondary">· máx. 20</span>
+                }
+              </span>
+              <span class="font-mono text-secondary">RNG: Cuántico v2</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Oracle Candidate Spotlight Card (7 Cols) -->
+        <div class="col-12 lg:col-7 p-0 flex">
+          <div class="wheel-spotlight-panel w-full border-round-xl p-3 sm:p-4 flex flex-column justify-content-between relative overflow-hidden">
+
+            <!-- Subtle Decorative Watermark Icon -->
+            <span class="material-symbols-outlined wheel-watermark-icon" aria-hidden="true">auto_awesome</span>
+
+            @if (wheelWinner(); as winner) {
+              <!-- WINNER REVEAL -->
+              <div class="relative" style="z-index: 2;">
+                <!-- Banner Ribbon -->
+                <div class="flex align-items-center justify-content-between gap-2 pb-3 flex-wrap">
+                  <div class="flex align-items-center gap-2">
+                    <span class="wheel-verdict-badge px-2 py-1 border-round font-title text-xs font-bold uppercase flex align-items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">stars</span>
+                      <span>Veredicto del Oráculo</span>
+                    </span>
+                    <span class="font-title text-xs text-muted">{{ wheelFilterLabel() }}</span>
+                  </div>
+                  <span class="wheel-order-chip font-mono text-xs px-2 py-1 border-round">
+                    ID #{{ winner.game_id }}
+                  </span>
+                </div>
+
+                <!-- Spotlight Game Card Layout -->
+                <div class="flex flex-column sm:flex-row gap-3">
+                  <!-- Cover 2:3 -->
+                  <div class="wheel-winner-cover relative border-round-xl overflow-hidden flex-shrink-0 shadow-4">
+                    @if (winner.game_cover) {
+                      <img [src]="winner.game_cover" [alt]="winner.game_title" class="w-full h-full object-cover" />
+                    } @else {
+                      <div class="w-full h-full flex flex-column align-items-center justify-content-center p-2 text-center">
+                        <span class="material-symbols-outlined text-4xl text-muted opacity-50">videogame_asset</span>
+                      </div>
+                    }
+                    <div class="wheel-cover-gradient"></div>
+                    <div class="wheel-cover-top-badge font-title text-xs font-bold uppercase">
+                      {{ getStatusLabel(winner.status) }}
+                    </div>
+                    @if (winner.user_rating) {
+                      <div class="wheel-cover-rating flex align-items-center gap-1 px-2 py-1 border-round">
+                        <span class="material-symbols-outlined text-xs text-warning">star</span>
+                        <span class="font-title text-xs font-bold text-color">{{ winner.user_rating }}/10</span>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Metadata Breakdown -->
+                  <div class="flex-1 flex flex-column justify-content-between min-w-0">
+                    <div>
+                      <h4 class="font-title text-xl sm:text-2xl font-bold m-0 text-color line-height-2">
+                        {{ winner.game_title }}
+                      </h4>
+                      <p class="font-title text-xs text-secondary uppercase font-semibold mt-1 mb-3 tracking-wide">
+                        Candidato Seleccionado de tu Bóveda Personal
+                      </p>
+
+                      <div class="wheel-meta-box p-3 border-round-lg flex flex-column gap-2">
+                        <div class="flex align-items-center justify-content-between text-xs sm:text-sm">
+                          <span class="text-muted">Estado en Bóveda:</span>
+                          <span class="text-color font-semibold flex align-items-center gap-2">
+                            <span class="wheel-status-dot"></span>
+                            {{ getStatusLabel(winner.status) }}
+                          </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-between text-xs sm:text-sm">
+                          <span class="text-muted">Tu Calificación:</span>
+                          <span class="text-color font-bold font-mono">
+                            {{ winner.user_rating ? winner.user_rating + ' / 10' : 'Sin calificar' }}
+                          </span>
+                        </div>
+                        <div class="flex align-items-center justify-content-between text-xs sm:text-sm">
+                          <span class="text-muted">Muestra del Sorteo:</span>
+                          <span class="text-secondary font-mono text-xs">{{ wheelGames().length }} títulos</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Secondary XP / Vault Badges -->
+                    <div class="flex align-items-center gap-2 pt-3 flex-wrap">
+                      <span class="wheel-mini-badge px-2 py-1 border-round font-title text-xs flex align-items-center gap-1">
+                        <span class="material-symbols-outlined text-sm text-primary">verified</span>
+                        <span>En tu Bóveda</span>
+                      </span>
+                      <span class="wheel-mini-badge px-2 py-1 border-round font-title text-xs flex align-items-center gap-1 text-warning">
+                        <span class="material-symbols-outlined text-sm">local_fire_department</span>
+                        <span>+400 XP al Completar</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Action CTA Buttons -->
+              <div class="pt-3 mt-3 flex flex-column sm:flex-row align-items-center gap-2 relative" style="z-index: 2;">
+                <button type="button" (click)="acceptWinnerDestination(winner)"
+                  class="btn-wheel-accept w-full sm:flex-1 py-3 px-3 border-round-lg font-title font-bold text-sm border-none cursor-pointer flex align-items-center justify-content-center gap-2">
+                  <span class="material-symbols-outlined text-lg">play_circle</span>
+                  <span>{{ winner.status === 'playing' ? '¡En Curso! Continuar' : '¡Aceptar Destino & Jugar!' }}</span>
+                </button>
+                <button type="button" (click)="spinWheel()" [disabled]="wheelSpinning() || wheelGames().length < 2"
+                  class="btn-wheel-reroll w-full sm:w-auto py-3 px-3 border-round-lg font-title font-semibold text-sm border-none cursor-pointer flex align-items-center justify-content-center gap-2">
+                  <span class="material-symbols-outlined text-base">replay</span>
+                  <span>Volver a Girar</span>
+                </button>
+                <a [routerLink]="['/game', winner.game_id]" (click)="closeWheelModal()"
+                  class="btn-wheel-detail w-full sm:w-auto py-3 px-3 border-round-lg font-title font-semibold text-sm no-underline flex align-items-center justify-content-center gap-1">
+                  <span class="material-symbols-outlined text-base">open_in_new</span>
+                  <span>Ver Ficha</span>
+                </a>
+              </div>
+            } @else {
+              <!-- STANDBY / SPINNING STATE -->
+              <div class="flex-1 flex flex-column align-items-center justify-content-center text-center py-6 px-3 relative" style="z-index: 2;">
+                <div class="wheel-standby-emblem mb-3 flex align-items-center justify-content-center border-round-circle"
+                  [class.wheel-standby-spinning]="wheelSpinning()">
+                  <span class="material-symbols-outlined text-4xl text-primary">
+                    {{ wheelSpinning() ? 'cyclone' : 'auto_awesome' }}
+                  </span>
+                </div>
+                <span class="wheel-verdict-badge px-3 py-1 border-round font-title text-xs font-bold uppercase mb-2">
+                  {{ wheelSpinning() ? 'Calculando Trayectoria Cuántica...' : 'Oráculo en Espera' }}
+                </span>
+                <h4 class="font-title text-xl font-bold m-0 mb-2 text-color">
+                  @if (wheelGames().length < 2) {
+                    Necesitas al menos 2 títulos en "{{ wheelFilterLabel() }}"
+                  } @else if (wheelSpinning()) {
+                    Seleccionando tu próxima aventura...
+                  } @else {
+                    Listo para revelar tu próximo destino
+                  }
+                </h4>
+                <p class="text-xs sm:text-sm text-muted m-0 max-w-26rem line-height-2">
+                  @if (wheelGames().length < 2) {
+                    Cambia el filtro superior o añade más juegos a esta categoría para activar la ruleta.
+                  } @else {
+                    Presiona el botón central <strong class="text-color">GIRAR</strong> o la tecla <strong class="text-primary">Espacio</strong> para que el Oráculo elija un juego de tu colección.
+                  }
+                </p>
+              </div>
+            }
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Persistent Vault Footer Legend -->
+      <div class="wheel-modal-footer px-3 sm:px-4 py-2 flex flex-column sm:flex-row align-items-center justify-content-between gap-2">
+        <div class="flex align-items-center gap-2 flex-wrap font-title text-xs text-muted">
+          <span class="flex align-items-center gap-1">
+            <span class="wheel-pulse-dot"></span>
+            <span>Entropía: 100% Imparcial</span>
+          </span>
+          <span>•</span>
+          <span class="font-mono">Semilla: <strong class="text-color">#RNG-VAULT</strong></span>
+        </div>
+        <div class="flex align-items-center gap-3 font-mono text-xs text-muted">
+          <span><kbd class="wheel-kbd">Espacio</kbd> Girar</span>
+          <span><kbd class="wheel-kbd">R</kbd> Re-roll</span>
+          <span><kbd class="wheel-kbd">Esc</kbd> Cerrar</span>
         </div>
       </div>
 

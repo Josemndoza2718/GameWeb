@@ -334,6 +334,18 @@
   box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.8), 0 0 16px -4px var(--primary-glow);
 }
 
+.card-stretched-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card-stretched-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: inherit;
+}
+
 .card-cover-wrapper {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -397,6 +409,7 @@
   position: absolute;
   inset-x: 0;
   bottom: 0;
+  z-index: 3;
   background: rgba(10, 14, 20, 0.96);
   backdrop-filter: blur(8px);
   transform: translateY(100%);

@@ -454,9 +454,11 @@
       <!-- GRILLA ESTILO BÓVEDA PÚBLICA (IDÉNTICA EN TAMAÑO Y PROPORCIÓN AL PERFIL) -->
       <div class="catalog-grid">
         @for (game of games(); track game.id) {
-          <div class="catalog-game-card flex flex-column h-full border-round-md overflow-hidden relative group cursor-pointer"
-               [routerLink]="['/game', game.id]"
-               [title]="'Ver ficha de ' + game.name">
+          <div class="catalog-game-card flex flex-column h-full border-round-md overflow-hidden relative group cursor-pointer">
+            <a [routerLink]="['/game', game.id]"
+               class="card-stretched-link"
+               [attr.aria-label]="'Ver ficha de ' + game.name"
+               [title]="'Ver ficha de ' + game.name"></a>
             
             <!-- Card Image & Overlay -->
             <div class="card-cover-wrapper relative w-full overflow-hidden">
@@ -518,11 +520,9 @@
                 <span class="genre-text font-title font-semibold" style="font-size: 10px;">
                   {{ game.genres && game.genres[0] ? game.genres[0].name : 'Aventura' }}
                 </span>
-                <a [routerLink]="['/game', game.id]" (click)="$event.stopPropagation()" class="no-underline text-color">
-                  <h3 class="card-title font-title font-bold m-0 mt-1 truncate" [title]="game.name">
-                    {{ game.name }}
-                  </h3>
-                </a>
+                <h3 class="card-title font-title font-bold m-0 mt-1 truncate" [title]="game.name">
+                  {{ game.name }}
+                </h3>
               </div>
 
               <div class="flex align-items-center justify-content-between text-muted text-xs mt-2 pt-1 border-top-1 surface-border">

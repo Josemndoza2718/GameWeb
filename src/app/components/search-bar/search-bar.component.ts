@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { AutoCompleteModule, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 
@@ -11,7 +11,7 @@ import { RawgService } from '../../services/rawg';
 @Component({
   selector: 'app-search-bar',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, AutoCompleteModule],
+  imports: [CommonModule, FormsModule, AutoCompleteModule, RouterLink],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.css'
 })

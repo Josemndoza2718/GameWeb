@@ -65,6 +65,19 @@ export class TierlistEditorComponent implements OnInit {
   selectedGameSearch = signal<Game | null>(null);
   gameSuggestions = signal<Game[]>([]);
 
+  // Fila actualmente en edición (modal)
+  editingRowIndex = signal<number | null>(null);
+  editingRow = computed(() => {
+    const idx = this.editingRowIndex();
+    return idx !== null ? this.rows()[idx] ?? null : null;
+  });
+
+  // Paleta rápida para selector de color de filas
+  readonly rowColorPresets: string[] = [
+    '#dc2626', '#ea580c', '#f59e0b', '#10b981',
+    '#06b6d4', '#6366f1', '#a855f7', '#ec4899', '#64748b'
+  ];
+
   // Métricas de estado
   totalRanked = computed(() => {
     return this.rows().reduce((sum, r) => sum + r.games.length, 0);
@@ -144,14 +157,15 @@ export class TierlistEditorComponent implements OnInit {
   }
 
   // Agrega un juego seleccionado al banco sin clasificar
-  addGameToBank(game: Game): void {
-    if (!game) return;
+  addGameToBank(game: Game | string | null): void {
+    if (!game || typeof game === 'string' || !game.id) return;
 
     const existsInBank = this.bankGames().some(g => g.game_id === game.id);
     const existsInRows = this.rows().some(r => r.games.some(g => g.game_id === game.id));
 
     if (existsInBank || existsInRows) {
       this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: 'El juego ya está en el tablero' });
+      this.selectedGameSearch.set(null);
       return;
     }
 
@@ -179,12 +193,16 @@ export class TierlistEditorComponent implements OnInit {
         event.currentIndex
       );
     }
+    this.rows.update(r => [...r]);
+    this.bankGames.update(b => [...b]);
   }
 
   // Elimina una portada del tablero/banco
   removeGameFromTablero(list: TierGame[], index: number, event: Event): void {
     event.stopPropagation();
     list.splice(index, 1);
+    this.rows.update(r => [...r]);
+    this.bankGames.update(b => [...b]);
   }
 
   // Vaciar tablero y mover todo al pool
@@ -208,8 +226,75 @@ export class TierlistEditorComponent implements OnInit {
     
     this.rows.update(list => [
       ...list,
-      { tier: nextLetter, color: '#64748b', games: [] }
+      { tier: nextLetter, color: '#64748b', description: 'Nuevo Rango', games: [] }
     ]);
+  }
+
+  getRowColor(row: TierRow): string {
+    return row.color || this.tierColors[row.tier] || '#6366f1';
+  }
+
+  getRowDescription(row: TierRow): string {
+    return row.description !== undefined
+      ? row.description
+      : (this.tierDescriptions[row.tier] || 'Rango');
+  }
+
+  openRowEditor(index: number): void {
+    this.editingRowIndex.set(index);
+  }
+
+  closeRowEditor(): void {
+    this.editingRowIndex.set(null);
+  }
+
+  updateRowField(index: number, patch: Partial<Pick<TierRow, 'tier' | 'color' | 'description'>>): void {
+    this.rows.update(list =>
+      list.map((row, i) => (i === index ? { ...row, ...patch } : row))
+    );
+  }
+
+  moveRow(index: number, direction: -1 | 1): void {
+    const targetIndex = index + direction;
+    const list = this.rows();
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+
+    const updated = [...list];
+    moveItemInArray(updated, index, targetIndex);
+    this.rows.set(updated);
+
+    if (this.editingRowIndex() === index) {
+      this.editingRowIndex.set(targetIndex);
+    }
+  }
+
+  deleteRow(index: number): void {
+    const list = this.rows();
+    if (list.length <= 1) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Mínimo requerido',
+        detail: 'La tierlist debe tener al menos una fila'
+      });
+      return;
+    }
+
+    const removedRow = list[index];
+    if (removedRow.games.length > 0) {
+      this.bankGames.update(pool => [...pool, ...removedRow.games]);
+    }
+
+    this.rows.set(list.filter((_, i) => i !== index));
+    if (this.editingRowIndex() === index) {
+      this.editingRowIndex.set(null);
+    }
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Fila eliminada',
+      detail: removedRow.games.length > 0
+        ? `Se devolvieron ${removedRow.games.length} juegos al banco`
+        : `Se eliminó la fila ${removedRow.tier}`
+    });
   }
 
   // Guardar en Supabase
