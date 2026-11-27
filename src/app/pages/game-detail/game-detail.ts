@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { Game, GameAchievement, GameDetail } from '../../models/rawg.model';
 import { UserGame, GameStatus, GAME_STATUS_LABELS } from '../../models/user-game.model';
 import { RawgService } from '../../services/rawg';
+import { RetroAchievementsService, RetroAchievementItem } from '../../services/retro-achievements';
 import { UserGamesService } from '../../services/user-games';
 import { AuthService } from '../../services/auth';
 
@@ -38,6 +39,7 @@ export class GameDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private rawgService = inject(RawgService);
+  private retroAchievementsService = inject(RetroAchievementsService);
   private userGamesService = inject(UserGamesService);
   public authService = inject(AuthService);
   private messageService = inject(MessageService);
@@ -49,8 +51,37 @@ export class GameDetailComponent implements OnInit {
   dlcAdditions = signal<Game[]>([]);
   loadingSeries = signal<boolean>(false);
   achievements = signal<GameAchievement[]>([]);
+  retroAchievements = signal<RetroAchievementItem[]>([]);
+  achievementSource = signal<'rawg' | 'retroachievements' | null>(null);
+  retroMeta = signal<{ raGameId: number; consoleName: string; totalPoints: number } | null>(null);
+  retroTypeFilter = signal<'all' | 'progression' | 'missable' | 'standard'>('all');
   loadingAchievements = signal<boolean>(false);
   achievementFilter = signal<'all' | 'unlocked' | 'locked'>('all');
+  private pendingRetroFallback = false;
+
+  totalAchievementCount = computed(() =>
+    this.achievementSource() === 'retroachievements'
+      ? this.retroAchievements().length
+      : this.achievements().length
+  );
+
+  filteredRetroAchievements = computed(() => {
+    const list = this.retroAchievements();
+    const filter = this.retroTypeFilter();
+    if (filter === 'all') return list;
+    if (filter === 'progression') return list.filter(a => a.type === 'progression' || a.type === 'win_condition');
+    if (filter === 'missable') return list.filter(a => a.type === 'missable');
+    return list.filter(a => a.type === 'standard');
+  });
+
+  retroCounts = computed(() => {
+    const list = this.retroAchievements();
+    return {
+      progression: list.filter(a => a.type === 'progression' || a.type === 'win_condition').length,
+      missable: list.filter(a => a.type === 'missable').length,
+      standard: list.filter(a => a.type === 'standard').length
+    };
+  });
   userGame = signal<UserGame | null>(null);
   loading = signal<boolean>(true);
   saving = signal<boolean>(false);
@@ -141,8 +172,13 @@ export class GameDetailComponent implements OnInit {
     this.dlcAdditions.set([]);
     this.loadingSeries.set(false);
     this.achievements.set([]);
+    this.retroAchievements.set([]);
+    this.achievementSource.set(null);
+    this.retroMeta.set(null);
+    this.retroTypeFilter.set('all');
     this.loadingAchievements.set(false);
     this.achievementFilter.set('all');
+    this.pendingRetroFallback = false;
     this.userGame.set(null);
     this.selectedStatus.set(null);
     this.userRating.set(null);
@@ -158,10 +194,18 @@ export class GameDetailComponent implements OnInit {
         next: (data) => {
           this.game.set(data);
           this.loading.set(false);
+          if (this.pendingRetroFallback) {
+            this.pendingRetroFallback = false;
+            void this.tryLoadRetroAchievements(data);
+          }
         },
         error: (err) => {
           console.error('Error cargando detalles del juego:', err);
           this.loading.set(false);
+          if (this.pendingRetroFallback) {
+            this.pendingRetroFallback = false;
+            this.loadingAchievements.set(false);
+          }
         }
       });
 
@@ -217,15 +261,73 @@ export class GameDetailComponent implements OnInit {
 
     this.rawgService.getGameAchievements(id, 32).subscribe({
       next: (list) => {
-        this.achievements.set(list || []);
-        this.loadingAchievements.set(false);
+        if (list && list.length > 0) {
+          this.achievements.set(list);
+          this.achievementSource.set('rawg');
+          this.loadingAchievements.set(false);
+          return;
+        }
+        const currentGame = this.game();
+        if (currentGame) {
+          void this.tryLoadRetroAchievements(currentGame);
+        } else {
+          this.pendingRetroFallback = true;
+        }
       },
       error: (err) => {
         console.warn('Error al consultar logros canónicos:', err);
         this.achievements.set([]);
-        this.loadingAchievements.set(false);
+        const currentGame = this.game();
+        if (currentGame) {
+          void this.tryLoadRetroAchievements(currentGame);
+        } else {
+          this.pendingRetroFallback = true;
+        }
       }
     });
+  }
+
+  private async tryLoadRetroAchievements(game: GameDetail): Promise<void> {
+    this.loadingAchievements.set(true);
+    try {
+      const platformTerms: string[] = [];
+      for (const p of game.platforms || []) {
+        if (p.platform?.slug) platformTerms.push(p.platform.slug);
+        if (p.platform?.name) platformTerms.push(p.platform.name);
+      }
+
+      const result = await this.retroAchievementsService.findAndGetAchievements(game.name, platformTerms);
+      if (result && result.achievements.length > 0) {
+        this.retroAchievements.set(result.achievements);
+        this.retroMeta.set({
+          raGameId: result.raGameId,
+          consoleName: result.consoleName,
+          totalPoints: result.totalPoints
+        });
+        this.achievementSource.set('retroachievements');
+      } else {
+        this.retroAchievements.set([]);
+        this.achievementSource.set(null);
+      }
+    } catch {
+      this.retroAchievements.set([]);
+      this.achievementSource.set(null);
+    } finally {
+      this.loadingAchievements.set(false);
+    }
+  }
+
+  getRetroTypeMeta(type: RetroAchievementItem['type']): { label: string; color: string; bg: string } {
+    if (type === 'progression') {
+      return { label: 'Progresión', color: 'var(--secondary)', bg: 'rgba(76, 215, 246, 0.16)' };
+    }
+    if (type === 'missable') {
+      return { label: 'Perdible', color: 'var(--tertiary)', bg: 'rgba(255, 185, 95, 0.2)' };
+    }
+    if (type === 'win_condition') {
+      return { label: 'Meta Final', color: 'var(--primary)', bg: 'rgba(160, 120, 255, 0.2)' };
+    }
+    return { label: 'Coleccionable / Reto', color: 'var(--text-muted)', bg: 'rgba(255, 255, 255, 0.08)' };
   }
 
   setAchievementFilter(filter: 'all' | 'unlocked' | 'locked'): void {

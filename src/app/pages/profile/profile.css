@@ -610,6 +610,24 @@
   gap: 1.25rem;
 }
 
+.preferences-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .preferences-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.preferences-cards-grid > .security-subcard {
+  width: 100%;
+  height: 100%;
+}
+
 /* Robustness Meter */
 .robustness-meter {
   display: flex;
@@ -900,6 +918,61 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   background: #0a0e14;
+}
+
+.game-vault-thumb.boxart-1to1 {
+  aspect-ratio: 1 / 1;
+}
+
+.vault-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.vault-status-pill {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-low);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-title);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vault-status-pill:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+.vault-status-pill.active {
+  background: rgba(160, 120, 255, 0.16);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+
+.vault-tierlists-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .vault-tierlists-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .vault-tierlists-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .game-vault-info {

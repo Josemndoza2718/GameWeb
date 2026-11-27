@@ -19,6 +19,18 @@ export interface Genre {
     slug: string;
 }
 
+export interface EsrbRating {
+    id: number;
+    name: string;
+    slug: string;
+}
+
+export interface GameTag {
+    id: number;
+    name: string;
+    slug: string;
+}
+
 export interface Game {
     id: number;
     slug: string;
@@ -31,6 +43,8 @@ export interface Game {
     playtime?: number;
     platforms?: PlatformInfo[];
     genres?: Genre[];
+    esrb_rating?: EsrbRating | null;
+    tags?: GameTag[];
 }
 
 export interface GameDetail extends Game {

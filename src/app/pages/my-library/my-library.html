@@ -35,8 +35,12 @@
             <div class="flex flex-column sm:flex-row align-items-start sm:align-items-center gap-3 relative z-1">
               <div class="avatar-wrapper relative flex-shrink-0 cursor-pointer" (click)="toggleXpModal()"
                 title="Clic para ver criterios de nivel">
-                <div class="avatar-large flex align-items-center justify-content-center border-round-xl">
-                  {{ userInitial() }}
+                <div class="avatar-large flex align-items-center justify-content-center border-round-xl overflow-hidden">
+                  @if (avatarUrl(); as avatar) {
+                    <img [src]="avatar" [alt]="username()" class="w-full h-full object-cover" />
+                  } @else {
+                    {{ userInitial() }}
+                  }
                 </div>
                 <div class="badge-level font-title font-bold">
                   LVL {{ level() }}
@@ -264,7 +268,8 @@
                [title]="'Ver ficha de ' + game.game_title"></a>
 
             <!-- Game Cover with Aspect Ratio -->
-            <div class="lib-cover-wrapper relative w-full overflow-hidden">
+            <div class="lib-cover-wrapper relative w-full overflow-hidden"
+              [class.boxart-1to1]="profileService.boxartMode() === 'original_1to1'">
               @if (game.game_cover) {
                 <img [src]="game.game_cover" [alt]="game.game_title"
                   loading="lazy" class="w-full h-full object-cover" />

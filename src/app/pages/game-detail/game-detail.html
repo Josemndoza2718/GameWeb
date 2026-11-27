@@ -206,19 +206,32 @@
                 <div class="flex align-items-center gap-2 flex-wrap">
                   <h2 class="font-title text-lg font-bold m-0 text-color">Logros & Trofeos Canónicos</h2>
                   <span class="achievements-origin-tag font-title uppercase font-bold">
-                    Vault Protocol • Steam • PSN
+                    @if (achievementSource() === 'retroachievements') {
+                      RetroAchievements • {{ retroMeta()?.consoleName }}
+                    } @else {
+                      Vault Protocol • Steam • PSN
+                    }
                   </span>
                 </div>
                 <p class="text-xs text-muted font-body m-0 mt-1">
-                  Registro canónico de hazañas, secretos y pruebas de maestría
+                  @if (achievementSource() === 'retroachievements') {
+                    Objetivos retro, coleccionables y retos perdibles sincronizados con RetroAchievements
+                  } @else {
+                    Registro canónico de hazañas, secretos y pruebas de maestría
+                  }
                 </p>
               </div>
             </div>
 
-            @if (achievements().length > 0) {
+            @if (totalAchievementCount() > 0) {
             <div class="flex align-items-center gap-2">
+              @if (achievementSource() === 'retroachievements' && retroMeta(); as rm) {
+              <span class="protocol-chip px-3 py-1 border-round-full font-title text-xs text-tertiary font-bold">
+                {{ rm.totalPoints }} pts
+              </span>
+              }
               <span class="protocol-chip px-3 py-1 border-round-full font-title text-xs text-secondary font-bold">
-                {{ achievements().length }} Hazañas
+                {{ totalAchievementCount() }} Hazañas
               </span>
             </div>
             }
@@ -315,6 +328,91 @@
                         <span>{{ getRarityLabel(ach.percent).label }}</span>
                       </span>
                       <span class="text-muted font-title">Sincronizado</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          <!-- Estado 2B: Logros RetroAchievements (Coleccionables, Perdibles & Progresión) -->
+          @else if (achievementSource() === 'retroachievements' && retroAchievements().length > 0) {
+          <div class="pt-3">
+            <div class="achievements-telemetry-box p-3 border-round-xl mb-3">
+              <div class="flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="flex align-items-center gap-2">
+                  <span class="font-title text-sm font-bold text-color">Objetivos RetroAchievements</span>
+                  <span class="text-secondary font-title font-bold text-xs">({{ retroAchievements().length }} registrados)</span>
+                  <span class="badge-mastery font-title font-bold text-xs px-2 py-0.5 border-round">{{ retroMeta()?.consoleName }}</span>
+                </div>
+                <a [href]="'https://retroachievements.org/game/' + retroMeta()?.raGameId" target="_blank" rel="noopener noreferrer"
+                  class="flex align-items-center gap-1 text-xs text-primary font-title font-bold no-underline hover:underline">
+                  <span>Ver en RetroAchievements</span>
+                  <span class="material-symbols-outlined text-xs">open_in_new</span>
+                </a>
+              </div>
+
+              <div class="achievements-progress-bar w-full border-round-full overflow-hidden">
+                <div class="achievements-progress-fill h-full border-round-full" style="width: 100%;"></div>
+              </div>
+
+              <div class="flex align-items-center gap-2 mt-3 pt-2 border-top-1 surface-border flex-wrap">
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="retroTypeFilter() === 'all'" (click)="retroTypeFilter.set('all')">
+                  Todos ({{ retroAchievements().length }})
+                </button>
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="retroTypeFilter() === 'progression'" (click)="retroTypeFilter.set('progression')">
+                  Progresión ({{ retroCounts().progression }})
+                </button>
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="retroTypeFilter() === 'missable'" (click)="retroTypeFilter.set('missable')">
+                  Perdibles ({{ retroCounts().missable }})
+                </button>
+                <button type="button" class="btn-achieve-filter font-title text-xs font-bold"
+                  [class.active]="retroTypeFilter() === 'standard'" (click)="retroTypeFilter.set('standard')">
+                  Coleccionables & Retos ({{ retroCounts().standard }})
+                </button>
+              </div>
+            </div>
+
+            <div class="grid">
+              @for (ach of filteredRetroAchievements(); track ach.id) {
+              <div class="col-12 sm:col-6">
+                <div class="achievement-card p-3 border-round-xl flex align-items-start gap-3 transition-all h-full">
+                  <div class="achievement-thumb-box flex-shrink-0 border-round-lg overflow-hidden relative">
+                    <img [src]="ach.badgeUrl" [alt]="ach.title" loading="lazy" (error)="onImageError($event)"
+                      class="w-full h-full object-cover" />
+                  </div>
+
+                  <div class="flex-1 min-w-0 flex flex-column justify-content-between">
+                    <div>
+                      <div class="flex align-items-center justify-content-between gap-1 mb-1">
+                        <h4 class="font-title text-xs font-bold text-color m-0 truncate" [title]="ach.title">
+                          {{ ach.title }}
+                        </h4>
+                        <span class="badge-rarity font-title font-bold text-xs px-2 py-0.5 border-round"
+                          [style.color]="getRetroTypeMeta(ach.type).color"
+                          [style.background-color]="getRetroTypeMeta(ach.type).bg">
+                          {{ ach.points }} pts
+                        </span>
+                      </div>
+                      <p class="font-body text-xs text-muted m-0 line-height-2 achievement-desc" [title]="ach.description">
+                        {{ ach.description }}
+                      </p>
+                    </div>
+
+                    <div class="flex align-items-center justify-content-between mt-2 pt-1 border-top-1 surface-border" style="font-size: 10px;">
+                      <span class="font-title flex align-items-center gap-1 font-bold"
+                        [style.color]="getRetroTypeMeta(ach.type).color">
+                        <span class="material-symbols-outlined text-xs">
+                          {{ ach.type === 'missable' ? 'warning' : (ach.type === 'progression' ? 'flag' : 'emoji_events') }}
+                        </span>
+                        <span>{{ getRetroTypeMeta(ach.type).label }}</span>
+                      </span>
+                      <span class="text-muted font-title">{{ ach.percent }}% jugadores</span>
                     </div>
                   </div>
                 </div>

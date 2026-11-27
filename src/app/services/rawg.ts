@@ -3,14 +3,38 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Game, GameAchievement, GameDetail, GameScreenshot, RawgResponse } from '../models/rawg.model';
 import { environment } from '../../env/environment';
+import { ProfileService } from './profile';
+
+const ADULT_TAG_SLUGS = new Set(['nudity', 'sexual-content', 'nsfw', 'hentai']);
 
 @Injectable({
   providedIn: 'root'
 })
 export class RawgService {
   private http = inject(HttpClient);
+  private profileService = inject(ProfileService);
   private baseUrl = 'https://api.rawg.io/api';
   private apiKey = environment.rawgApiKey;
+
+  /**
+   * Determina si un juego contiene contenido +18 o desnudos explícitos según RAWG
+   */
+  isAdultGame(game: Game): boolean {
+    if (game.esrb_rating?.slug?.toLowerCase() === 'adults-only') {
+      return true;
+    }
+    return !!game.tags?.some(tag => ADULT_TAG_SLUGS.has(tag.slug.toLowerCase()));
+  }
+
+  /**
+   * Filtra juegos +18 si el usuario tiene desactivada la preferencia de contenido adulto
+   */
+  private filterAdultGames(games: Game[]): Game[] {
+    if (this.profileService.showAdultContent()) {
+      return games;
+    }
+    return games.filter(g => !this.isAdultGame(g));
+  }
 
   /**
    * Búsqueda por palabra clave (ideal para autocompletado)
@@ -23,7 +47,7 @@ export class RawgService {
 
     return this.http
       .get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params })
-      .pipe(map(response => response.results));
+      .pipe(map(response => this.filterAdultGames(response.results)));
   }
 
   /**
@@ -45,7 +69,7 @@ export class RawgService {
 
     return this.http
       .get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params })
-      .pipe(map(response => response.results));
+      .pipe(map(response => this.filterAdultGames(response.results)));
   }
 
   /**
@@ -92,7 +116,12 @@ export class RawgService {
       params = params.set('search_precise', 'true');
     }
 
-    return this.http.get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params });
+    return this.http.get<RawgResponse<Game>>(`${this.baseUrl}/games`, { params }).pipe(
+      map(res => ({
+        ...res,
+        results: this.filterAdultGames(res.results)
+      }))
+    );
   }
 
   /**
@@ -104,7 +133,7 @@ export class RawgService {
       .set('page_size', pageSize.toString());
     return this.http
       .get<RawgResponse<Game>>(`${this.baseUrl}/games/${id}/game-series`, { params })
-      .pipe(map(res => res.results));
+      .pipe(map(res => this.filterAdultGames(res.results)));
   }
 
   /**
@@ -116,7 +145,7 @@ export class RawgService {
       .set('page_size', pageSize.toString());
     return this.http
       .get<RawgResponse<Game>>(`${this.baseUrl}/games/${id}/additions`, { params })
-      .pipe(map(res => res.results));
+      .pipe(map(res => this.filterAdultGames(res.results)));
   }
 
   /**
